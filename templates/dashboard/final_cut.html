@@ -1,0 +1,2812 @@
+{% extends "base.html" %}
+{% load gingao_tags %}
+
+{% block title %}
+Corte final &middot; {{ project.title }} &middot; Gingao
+{% endblock %}
+
+{% block content %}
+<section class="final-premium-page">
+
+
+<div class="workspace-top">
+
+    <div>
+
+        <a
+            href="{% url 'videos_workspace' project.id %}"
+            class="back-link final-back-premium"
+        >
+        <span class="final-back-icon">
+            &#8592;
+        </span>
+
+        <span class="final-back-copy">
+            <small>VOLVER</small>
+            <strong>V&iacute;deo</strong>
+        </span>
+    </a>
+
+        <h1>
+            {{ project.title }}
+        </h1>
+
+        <p>
+            Montaje y exportaci&oacute;n final
+        </p>
+
+    </div>
+
+    <span class="status-pill large">
+        Corte final
+    </span>
+
+</div>
+
+
+<div class="production-tabs">
+
+    <a
+        href="{% url 'project_workspace' project.id %}"
+        class="production-tab"
+    >
+        <span>1</span>
+        Gui&oacute;n
+    </a>
+
+    <a
+        href="{% url 'images_workspace' project.id %}"
+        class="production-tab"
+    >
+        <span>2</span>
+        Im&aacute;genes
+    </a>
+
+    <a
+        href="{% url 'videos_workspace' project.id %}"
+        class="production-tab"
+    >
+        <span>3</span>
+        V&iacute;deo
+    </a>
+
+    <div class="production-tab active">
+        <span>4</span>
+        Corte final
+    </div>
+
+</div>
+
+
+<div class="final-layout final-layout-premium">
+
+    <section class="workspace-panel final-main-panel">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="eyebrow">
+                    PREVIEW
+                </span>
+
+                <h2>
+                    V&iacute;deo completo
+                </h2>
+
+                <p>
+                    {{ ready_count }}/{{ scene_count }}
+                    escenas preparadas
+                    &middot;
+                    {{ total_duration }} segundos
+                </p>
+
+            </div>
+
+        </div>
+
+
+        
+<div class="final-preview-stack">
+
+    <div class="final-video-cover-premium">
+
+        <div class="final-video-cover-badges">
+
+            <span class="final-video-cover-type">
+                V&Iacute;DEO
+            </span>
+
+            <span class="final-video-cover-demo">
+                DEMO
+            </span>
+
+        </div>
+
+
+        <div class="final-video-cover-orb">
+
+            <span class="final-video-cover-light"></span>
+
+            <div class="final-video-cover-copy">
+
+                <strong>
+                    VIDEO
+                </strong>
+
+                <span>
+                    {{ project.title|upper }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="final-video-cover-meta">
+
+            <span>
+                {{ scene_count }} escenas
+            </span>
+
+            <strong>
+                {{ total_duration }} s
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="final-preview final-preview-premium final-real-preview"
+        id="gingaoRealPreview"
+    >
+
+        {% for item in timeline %}
+
+        <div
+            class="final-preview-scene final-preview-scene-premium"
+            data-preview-scene="{{ forloop.counter0 }}"
+            data-preview-duration="{{ item.duration }}"
+            {% if not forloop.first %}
+                style="display:none;"
+            {% endif %}
+        >
+
+            {% if item.preview_url %}
+
+            <img
+                src="{{ item.preview_url }}"
+                alt="Escena {{ item.scene.position }}"
+            >
+
+            {% else %}
+
+            <div class="final-preview-placeholder-premium">
+
+                <div class="final-preview-placeholder-orb">
+
+                    <span class="final-preview-placeholder-mark">
+                        G
+                    </span>
+
+                </div>
+
+                <span class="final-preview-placeholder-eyebrow">
+                    GINGAO STUDIO
+                </span>
+
+                <strong>
+                    Escena {{ item.scene.position }}
+                </strong>
+
+                <span class="final-preview-placeholder-status">
+                    Preview pendiente
+                </span>
+
+            </div>
+
+            {% endif %}
+
+
+            <div class="final-preview-caption final-preview-caption-premium">
+
+                <strong>
+                    Escena {{ item.scene.position }}
+                </strong>
+
+                <span>
+                    {{ item.duration }} s
+                </span>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+
+        <div class="final-preview-controls final-preview-controls-premium">
+
+            <button
+                class="gingao-audio-generate-premium secondary-button final-preview-button-premium"
+                type="button"
+                id="gingaoPreviewButton"
+            >
+        <span class="final-play-icon">
+            &#9654;
+        </span>
+
+        <span class="final-preview-button-label">
+            Reproducir preview
+        </span>
+    </button>
+
+            <span class="legacy-preview-duration-pill" id="gingaoPreviewStatus">
+                {{ total_duration }} s
+            </span>
+
+        </div>
+
+
+        
+
+<!-- GINGAO_FINAL_TRANSPORT_V19 -->
+
+<div
+    class="final-review-player"
+    id="gingaoFinalReviewPlayer"
+>
+
+    <div class="final-review-toolbar">
+
+        <button
+            type="button"
+            class="review-control review-control-secondary"
+            id="gingaoReviewRestart"
+            title="Reiniciar"
+        >
+            <span class="review-control-icon">&#8634;</span>
+            <span class="review-control-text">Reiniciar</span>
+        </button>
+
+
+        <button
+            type="button"
+            class="review-control review-control-secondary"
+            id="gingaoReviewPrevious"
+            title="Escena anterior"
+        >
+            <span class="review-control-icon">&#9198;</span>
+            <span class="review-control-text">Anterior</span>
+        </button>
+
+
+        <button
+            type="button"
+            class="review-control review-control-primary"
+            id="gingaoReviewPlay"
+        >
+            <span
+                class="review-control-icon"
+                id="gingaoReviewPlayIcon"
+            >
+                &#9654;
+            </span>
+
+            <span
+                class="review-control-text"
+                id="gingaoReviewPlayText"
+            >
+                Reproducir
+            </span>
+        </button>
+
+
+        <button
+            type="button"
+            class="review-control review-control-secondary"
+            id="gingaoReviewPause"
+        >
+            <span class="review-control-icon">&#10074;&#10074;</span>
+            <span class="review-control-text">Pausar</span>
+        </button>
+
+
+        <button
+            type="button"
+            class="review-control review-control-secondary"
+            id="gingaoReviewNext"
+            title="Escena siguiente"
+        >
+            <span class="review-control-icon">&#9197;</span>
+            <span class="review-control-text">Siguiente</span>
+        </button>
+
+
+        <button
+            type="button"
+            class="review-control review-control-stop"
+            id="gingaoReviewStop"
+        >
+            <span class="review-control-icon">&#9632;</span>
+            <span class="review-control-text">Detener</span>
+        </button>
+
+    </div>
+
+
+    <div class="final-review-progress">
+
+        <span
+            class="review-time"
+            id="gingaoReviewCurrent"
+        >
+            0.0 s
+        </span>
+
+
+        <div class="review-seek-wrap">
+
+            <input
+                type="range"
+                class="review-seek"
+                id="gingaoReviewSeek"
+                min="0"
+                max="{{ total_duration }}"
+                step="0.1"
+                value="0"
+                aria-label="Posici&#243;n del v&#237;deo"
+            >
+
+            <div
+                class="review-seek-progress"
+                id="gingaoReviewSeekProgress"
+            ></div>
+
+        </div>
+
+
+        <span
+            class="review-time review-time-total"
+            id="gingaoReviewTotal"
+            data-total="{{ total_duration }}"
+        >
+            {{ total_duration }} s
+        </span>
+
+    </div>
+
+
+    <div class="final-review-status">
+
+        <span
+            class="review-status-dot"
+            id="gingaoReviewStatusDot"
+        ></span>
+
+        <span id="gingaoReviewStatusText">
+            Listo para revisar
+        </span>
+
+
+        <span
+            class="review-scene-current"
+            id="gingaoReviewScene"
+        >
+            Escena 1
+        </span>
+
+    </div>
+
+</div>
+
+
+<div class="gingao-playback-clock" id="gingaoPlaybackClock">
+    <span class="gingao-playback-clock-dot"></span>
+
+    <strong id="gingaoPlaybackCurrent">0.0 s</strong>
+
+    <span class="gingao-playback-clock-separator">/</span>
+
+    <span>{{ total_duration }} s</span>
+</div>
+
+<div class="final-timeline final-timeline-premium">
+
+            {% for item in timeline %}
+
+            <div
+                class="
+                    final-timeline-item final-timeline-item-premium
+                    {% if item.ready %}
+                        ready
+                    {% else %}
+                        missing
+                    {% endif %}
+                "
+            
+            data-gingao-scene="{{ item.scene.position }}"
+            data-gingao-start="{{ item.start }}"
+            data-gingao-end="{{ item.end }}"
+            data-gingao-duration="{{ item.duration }}"
+        >
+
+                <div class="final-timeline-thumb final-timeline-thumb-premium">
+
+                    {% if item.url %}
+
+                    <img
+                        src="{{ item.url }}"
+                        alt="Escena {{ item.scene.position }}"
+                    >
+
+                    {% else %}
+
+                    <div class="timeline-missing">
+                        &#8212;
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+                <div>
+
+                    <strong>
+                        Escena {{ item.scene.position }}
+                    </strong>
+
+                    <p>
+                        {{ item.start }}s
+                        &rarr;
+                        {{ item.end }}s
+                    </p>
+
+                </div>
+
+                <span>
+                    {{ item.duration }} s
+                </span>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+
+        <section class="audio-studio-premium audio-production-card audio-production-premium">
+
+            <div class="audio-production-head audio-production-head-premium">
+
+                <div>
+
+                    <span class="eyebrow">
+                        GINGAO NARRATION
+                    </span>
+
+                    <h3>
+                        Narraci&oacute;n y audio
+                    </h3>
+
+                    <p>
+                        Proveedor:
+                        <strong>
+                            {% if audio_provider_code == "mock" %}
+                                Mock Audio Provider
+                            {% else %}
+                                {{ audio_provider_code }}
+                            {% endif %}
+                        </strong>
+                        &middot;
+                        coste:
+                        <strong>0 cr&eacute;ditos</strong>
+                    </p>
+
+<div class="gingao-audio-meta-premium">
+
+    <div class="gingao-audio-meta-item">
+
+        <span class="gingao-audio-meta-icon">
+            &#9835;
+        </span>
+
+        <div>
+            <small>Duraci&oacute;n</small>
+
+            <strong>
+                {{ total_duration }} s
+            </strong>
+        </div>
+
+    </div>
+
+
+    <div class="gingao-audio-meta-item">
+
+        <span class="gingao-audio-meta-icon">
+            M
+        </span>
+
+        <div>
+            <small>Motor actual</small>
+
+            <strong>
+                Mock
+            </strong>
+        </div>
+
+    </div>
+
+
+    <div class="gingao-audio-meta-item">
+
+        <span class="gingao-audio-meta-icon">
+            0
+        </span>
+
+        <div>
+            <small>Coste</small>
+
+            <strong>
+                0 cr&eacute;ditos
+            </strong>
+        </div>
+
+    </div>
+
+</div>
+
+
+                </div>
+
+                <form
+                    method="post"
+                    action="{% url 'generate_project_audio' project.id %}"
+                >
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="secondary-button final-audio-button-premium"
+                    >
+                        {% if audio_info.url %}
+                            Regenerar audio Mock
+                        {% else %}
+                            Generar narraci&oacute;n
+                        {% endif %}
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            {% if audio_info.url %}
+
+            <div class="audio-ready-box audio-ready-premium">
+
+                <div>
+
+                    <span class="audio-ready-dot"></span>
+
+                    <strong>
+                        Audio preparado
+                    </strong>
+
+                </div>
+
+                <audio
+    id="gingaoMasterAudio"
+    class="gingao-master-audio"
+    preload="auto"
+    src="{{ audio_info.url }}"
+></audio>
+
+<div class="gingao-audio-sync-ready">
+
+    <span class="gingao-audio-sync-icon">
+        &#9835;
+    </span>
+
+    <div>
+        <strong>
+            Narraci&oacute;n conectada
+        </strong>
+
+        <span>
+            Sincronizada con el reproductor final
+        </span>
+    </div>
+
+</div>
+
+            </div>
+
+            {% else %}
+
+            <div class="audio-empty-box audio-empty-premium">
+<div class="gingao-audio-status-orb">
+    <span>&#9835;</span>
+</div>
+
+
+
+                <strong>
+                    Narraci&oacute;n pendiente
+                </strong>
+
+                <p>
+                    Genera una pista Mock para validar
+                    el flujo de audio antes de conectar
+                    un servicio de voz real.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <div class="workspace-action final-workspace-action-premium">
+
+            <div>
+
+                {% if all_ready %}
+
+                    <strong>
+                        Proyecto preparado
+                    </strong>
+
+                    <p>
+                        Todas las escenas est&aacute;n listas
+                        para crear el corte final Mock.
+                    </p>
+
+                {% else %}
+
+                    <strong>
+                        Faltan escenas
+                    </strong>
+
+                    <p>
+                        Genera todos los v&iacute;deos antes
+                        de exportar.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+
+            {% if all_ready %}
+
+            
+
+{% if final_export_url %}
+
+<!-- GINGAO_REAL_EXPORT_RESULT_V32 -->
+<section class="gingao-real-export-result">
+
+    <div class="gingao-real-export-head">
+
+        <div class="gingao-real-export-badge">
+            MP4
+        </div>
+
+        <div>
+            <span class="eyebrow">
+                EXPORTACI&Oacute;N REAL
+            </span>
+
+            <h3>
+                Tu v&iacute;deo final est&aacute; preparado
+            </h3>
+
+            <p>
+                720p / 1080p / 1440p
+                &middot;
+                H.264
+                &middot;
+                {{ total_duration }} s
+            </p>
+        </div>
+
+    </div>
+
+
+    <video
+        class="gingao-real-export-video"
+        controls
+        preload="metadata"
+        playsinline
+        src="{{ final_export_url }}"
+    ></video>
+
+
+    <div class="gingao-real-export-actions">
+
+        <a
+            href="{{ final_export_url }}"
+            target="_blank"
+            rel="noopener"
+            class="secondary-button"
+        >
+            Abrir MP4
+        </a>
+
+        <a
+            href="{{ final_export_url }}"
+            download
+            class="primary-button"
+        >
+            Descargar MP4
+        </a>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- GINGAO_REAL_VISUAL_COVERAGE_UI_V34 -->
+
+<section class="gingao-visual-coverage">
+
+    <div class="gingao-visual-coverage-head">
+
+        <div>
+
+            <span class="eyebrow">
+                COBERTURA VISUAL
+            </span>
+
+            <h3>
+                {{ visual_coverage.real_count }}
+                de
+                {{ visual_coverage.scene_count }}
+                escenas reales
+            </h3>
+
+            <p>
+                {{ visual_coverage.real_percent }}%
+                del proyecto tiene material visual
+                listo para el v&iacute;deo final.
+            </p>
+
+        </div>
+
+
+        <div class="gingao-visual-score">
+            {{ visual_coverage.real_percent }}%
+        </div>
+
+    </div>
+
+
+    <div class="gingao-visual-progress">
+
+        <span
+            style="
+                width:
+                {{ visual_coverage.real_percent }}%;
+            "
+        ></span>
+
+    </div>
+
+
+    <div class="gingao-visual-scene-grid">
+
+        {% for item in visual_coverage.scenes %}
+
+        <div
+            class="
+                gingao-visual-scene
+                {% if item.is_real %}
+                    is-real
+                {% elif item.is_mock %}
+                    is-mock
+                {% else %}
+                    is-missing
+                {% endif %}
+            "
+        >
+
+            <div class="gingao-visual-scene-number">
+                {{ item.position }}
+            </div>
+
+            <div class="gingao-visual-scene-copy">
+
+                <strong>
+                    Escena {{ item.position }}
+                </strong>
+
+                <span>
+
+                    {% if item.source_type == "video" %}
+
+                        V&iacute;deo real
+
+                    {% elif item.source_type == "image" %}
+
+                        Imagen real + movimiento
+
+                    {% elif item.source_type == "mock" %}
+
+                        Visual Mock
+
+                    {% else %}
+
+                        Visual pendiente
+
+                    {% endif %}
+
+                    &middot;
+                    {{ item.duration }} s
+
+                </span>
+
+            </div>
+
+
+            <div class="gingao-visual-state">
+
+                {% if item.is_real %}
+                    LISTA
+                {% elif item.is_mock %}
+                    MOCK
+                {% else %}
+                    FALTA
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    {% if not visual_coverage.complete %}
+
+    <div class="gingao-visual-warning">
+
+        <strong>
+            El MP4 puede exportarse,
+            pero todav&iacute;a no es el
+            resultado visual definitivo.
+        </strong>
+
+        <span>
+            Sustituye las escenas Mock por
+            im&aacute;genes o v&iacute;deos reales
+            desde la etapa Im&aacute;genes.
+        </span>
+
+    </div>
+
+    {% else %}
+
+    <div class="gingao-visual-complete">
+
+        <strong>
+            Todas las escenas tienen
+            material visual real.
+        </strong>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+<!-- GINGAO_EXPORT_STATUS_V31 -->
+<div class="gingao-export-status-v31">
+
+    <span class="gingao-export-status-icon">
+        &#10003;
+    </span>
+
+    <div>
+        <strong>
+            Proyecto listo para exportaci&oacute;n
+        </strong>
+
+        <span>
+            Timeline, escenas y audio sincronizado
+            se incluir&aacute;n en el corte final.
+        </span>
+    </div>
+
+</div>
+
+<form
+                method="post"
+                action="{% url 'export_final_cut' project.id %}"
+            >
+                {% csrf_token %}
+
+                <!-- GINGAO_EXPORT_QUALITY_V43B -->
+                <div class="final-export-quality-v43b">
+                    <label for="gingaoExportQuality">
+                        <strong>
+                            Calidad de exportaci&oacute;n
+                        </strong>
+                    </label>
+
+                    <select
+                        id="gingaoExportQuality"
+                        name="export_quality"
+                        class="gingao-export-quality-select"
+                    >
+                        <option
+                            value="fast"
+                            {% if project.quality_tier == "fast" %}selected{% endif %}
+                        >
+                            HD &middot; 720p
+                        </option>
+
+                        <option
+                            value="standard"
+                            {% if project.quality_tier == "standard" %}selected{% endif %}
+                        >
+                            Full HD &middot; 1080p
+                        </option>
+
+                        <option
+                            value="premium"
+                            {% if project.quality_tier == "premium" %}selected{% endif %}
+                        >
+                            2K &middot; 1440p
+                        </option>
+                    </select>
+
+                    <small>
+                        La calidad elegida se aplica solo a esta exportaci&oacute;n.
+                    </small>
+                </div>
+
+                <button
+                    type="submit"
+                    class="primary-button final-export-button-premium"
+                >
+        <span class="final-export-icon">
+            &#10024;
+        </span>
+
+        <span>
+            Preparar exportaci&oacute;n
+        </span>
+
+        <span class="final-export-arrow">
+            &#8594;
+        </span>
+    </button>
+
+            </form>
+
+            {% else %}
+
+            <a
+                href="{% url 'videos_workspace' project.id %}"
+                class="primary-button final-return-videos-premium"
+            >
+        <span>
+            &#8592;
+        </span>
+
+        <span>
+            Volver a v&iacute;deos
+        </span>
+    </a>
+
+            {% endif %}
+
+        </div>
+
+
+        {% with final_url=request.session|get_item:"gingao_final_" %}
+        {% endwith %}
+
+        {% if request.session %}
+
+            {% for key,value in request.session.items %}
+
+                {% if key == "gingao_final_"|add:project.id|stringformat:"s" %}
+
+                <div class="final-export-ready final-export-ready-premium">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            EXPORTACI&Oacute;N MOCK
+                        </span>
+
+                        <strong>
+                            Manifiesto final preparado
+                        </strong>
+
+                    </div>
+
+                    <a
+                        href="{{ value }}"
+                        class="secondary-button final-download-premium"
+                        download
+                    >
+                        Descargar manifiesto
+                    </a>
+
+                </div>
+
+                {% endif %}
+
+            {% endfor %}
+
+        {% endif %}
+
+    </section>
+
+
+    <aside class="final-summary final-summary-premium">
+
+        <span class="eyebrow">
+            PROYECTO
+        </span>
+
+        <h2>
+            Resumen
+        </h2>
+
+        <div class="summary-row final-summary-row-premium">
+            <span>Formato</span>
+            <strong>{{ project.aspect_ratio }}</strong>
+        </div>
+
+        <div class="summary-row final-summary-row-premium">
+            <span>Escenas</span>
+            <strong>{{ scene_count }}</strong>
+        </div>
+
+        <div class="summary-row final-summary-row-premium">
+            <span>Preparadas</span>
+            <strong>{{ ready_count }}</strong>
+        </div>
+
+        <div class="summary-row final-summary-row-premium">
+            <span>Duraci&oacute;n</span>
+            <strong>{{ total_duration }} s</strong>
+        </div>
+
+        <div class="summary-row final-summary-row-premium">
+            <span>Proveedor</span>
+            <strong>Mock</strong>
+        </div>
+
+        <div class="summary-credit final-summary-credit-premium">
+            <span>Coste externo</span>
+            <strong>$0.00</strong>
+        </div>
+
+    </aside>
+
+</div>
+
+
+<script>
+(function () {
+
+    const preview =
+        document.getElementById(
+            "gingaoFinalPreview"
+        );
+
+    const button =
+        document.getElementById(
+            "gingaoPreviewButton"
+        );
+
+    const status =
+        document.getElementById(
+            "gingaoPreviewStatus"
+        );
+
+    if (!preview || !button) {
+        return;
+    }
+
+    const scenes = Array.from(
+        preview.querySelectorAll(
+            ".final-preview-scene"
+        )
+    );
+
+    let timers = [];
+
+    function stopPreview() {
+
+        timers.forEach(
+            timer => clearTimeout(timer)
+        );
+
+        timers = [];
+
+        scenes.forEach(
+            scene => scene.classList.remove(
+                "active"
+            )
+        );
+
+        button.innerHTML =
+            '<span class="final-play-icon">&#9654;</span>'
+            + '<span class="final-preview-button-label">'
+            + 'Reproducir preview'
+            + '</span>';
+
+        status.textContent =
+            "{{ total_duration }} s";
+    }
+
+    function playPreview() {
+
+        stopPreview();
+
+        if (!scenes.length) {
+            return;
+        }
+
+        button.innerHTML =
+            '<span class="final-stop-icon">&#9632;</span>'
+            + '<span class="final-preview-button-label">'
+            + 'Detener'
+            + '</span>';
+
+        let elapsed = 0;
+
+        scenes.forEach(
+            (scene, index) => {
+
+                const duration =
+                    parseInt(
+                        scene.dataset.duration || "1",
+                        10
+                    ) * 1000;
+
+                timers.push(
+                    setTimeout(
+                        () => {
+
+                            scenes.forEach(
+                                item =>
+                                    item.classList.remove(
+                                        "active"
+                                    )
+                            );
+
+                            scene.classList.add(
+                                "active"
+                            );
+
+                            status.textContent =
+                                "Escena "
+                                + (index + 1)
+                                + " / "
+                                + scenes.length;
+
+                        },
+                        elapsed
+                    )
+                );
+
+                elapsed += duration;
+
+            }
+        );
+
+        timers.push(
+            setTimeout(
+                stopPreview,
+                elapsed
+            )
+        );
+    }
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            if (
+                button.textContent.includes(
+                    "Detener"
+                )
+            ) {
+                stopPreview();
+            } else {
+                playPreview();
+            }
+
+        }
+    );
+
+})();
+</script>
+
+
+</section>
+
+
+<script>
+/* GINGAO_FINAL_COVER_RUNTIME_V8_FIXED */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const button =
+            document.getElementById(
+                "gingaoPreviewButton"
+            );
+
+        const stack =
+            document.querySelector(
+                ".final-preview-stack"
+            );
+
+        const preview =
+            document.getElementById(
+                "gingaoRealPreview"
+            );
+
+        if (
+            !button
+            || !stack
+            || !preview
+        ) {
+            return;
+        }
+
+
+        function syncCover() {
+
+            const text =
+                button.textContent
+                    .trim()
+                    .toLowerCase();
+
+            const playing =
+                text.includes(
+                    "detener"
+                );
+
+            stack.classList.toggle(
+                "is-playing",
+                playing
+            );
+
+            preview.classList.toggle(
+                "is-playing",
+                playing
+            );
+
+        }
+
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                setTimeout(
+                    syncCover,
+                    20
+                );
+
+            }
+        );
+
+
+        const observer =
+            new MutationObserver(
+                syncCover
+            );
+
+        observer.observe(
+            button,
+            {
+                childList:
+                    true,
+
+                subtree:
+                    true,
+
+                characterData:
+                    true
+            }
+        );
+
+
+        syncCover();
+
+    }
+);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+/* GINGAO_FINAL_PLAYER_TRANSPORT_V19 */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const stack =
+            document.querySelector(
+                ".final-preview-stack"
+            );
+
+        const preview =
+            document.getElementById(
+                "gingaoRealPreview"
+            );
+
+        const scenes =
+            Array.from(
+                document.querySelectorAll(
+                    "#gingaoRealPreview .final-preview-scene-premium"
+                )
+            );
+
+        const cards =
+            Array.from(
+                document.querySelectorAll(
+                    ".final-timeline-item-premium[data-gingao-start]"
+                )
+            );
+
+
+        const play =
+            document.getElementById(
+                "gingaoReviewPlay"
+            );
+
+        const pause =
+            document.getElementById(
+                "gingaoReviewPause"
+            );
+
+        const stop =
+            document.getElementById(
+                "gingaoReviewStop"
+            );
+
+        const previous =
+            document.getElementById(
+                "gingaoReviewPrevious"
+            );
+
+        const next =
+            document.getElementById(
+                "gingaoReviewNext"
+            );
+
+        const restart =
+            document.getElementById(
+                "gingaoReviewRestart"
+            );
+
+        const seek =
+            document.getElementById(
+                "gingaoReviewSeek"
+            );
+
+        const seekProgress =
+            document.getElementById(
+                "gingaoReviewSeekProgress"
+            );
+
+        const currentLabel =
+            document.getElementById(
+                "gingaoReviewCurrent"
+            );
+
+        const totalLabel =
+            document.getElementById(
+                "gingaoReviewTotal"
+            );
+
+        const sceneLabel =
+            document.getElementById(
+                "gingaoReviewScene"
+            );
+
+        const statusText =
+            document.getElementById(
+                "gingaoReviewStatusText"
+            );
+
+        const statusDot =
+            document.getElementById(
+                "gingaoReviewStatusDot"
+            );
+
+        const playText =
+            document.getElementById(
+                "gingaoReviewPlayText"
+            );
+
+        const playIcon =
+            document.getElementById(
+                "gingaoReviewPlayIcon"
+            );
+
+
+        if (
+            !stack
+            || !preview
+            || !cards.length
+            || !play
+            || !seek
+        ) {
+
+            console.error(
+                "[GINGAO V19] Player elements missing"
+            );
+
+            return;
+        }
+
+
+        const timeline =
+            cards.map(
+                function (card, index) {
+
+                    return {
+                        index: index,
+
+                        card: card,
+
+                        start:
+                            Number(
+                                card.dataset
+                                    .gingaoStart
+                                || 0
+                            ),
+
+                        end:
+                            Number(
+                                card.dataset
+                                    .gingaoEnd
+                                || 0
+                            ),
+
+                        duration:
+                            Number(
+                                card.dataset
+                                    .gingaoDuration
+                                || 0
+                            )
+                    };
+
+                }
+            );
+
+
+        const totalDuration =
+            Math.max(
+                0,
+                ...timeline.map(
+                    item => item.end
+                )
+            );
+
+
+        seek.max =
+            totalDuration.toFixed(1);
+
+
+        if (totalLabel) {
+
+            totalLabel.textContent =
+                Math.round(
+                    totalDuration
+                )
+                + " s";
+
+        }
+
+
+        let currentTime = 0;
+
+        let activeIndex = 0;
+
+        let playing = false;
+
+        let startedAt = 0;
+
+        let startingTime = 0;
+
+        let frameId = null;
+
+
+        function clamp(value) {
+
+            return Math.max(
+                0,
+                Math.min(
+                    totalDuration,
+                    value
+                )
+            );
+
+        }
+
+
+        function formatTime(seconds) {
+
+            return clamp(
+                seconds
+            ).toFixed(1)
+            + " s";
+
+        }
+
+
+        function sceneForTime(seconds) {
+
+            const safe =
+                clamp(seconds);
+
+
+            for (
+                let i = 0;
+                i < timeline.length;
+                i++
+            ) {
+
+                if (
+                    safe >= timeline[i].start
+                    &&
+                    safe < timeline[i].end
+                ) {
+
+                    return i;
+
+                }
+
+            }
+
+
+            return timeline.length - 1;
+
+        }
+
+
+        function showScene(index) {
+
+            const safeIndex =
+                Math.max(
+                    0,
+                    Math.min(
+                        timeline.length - 1,
+                        index
+                    )
+                );
+
+
+            activeIndex =
+                safeIndex;
+
+
+            cards.forEach(
+                function (card, i) {
+
+                    card.classList.toggle(
+                        "is-active",
+                        i === safeIndex
+                    );
+
+                }
+            );
+
+
+            scenes.forEach(
+                function (scene, i) {
+
+                    scene.style.display =
+                        i === safeIndex
+                            ? ""
+                            : "none";
+
+                }
+            );
+
+
+            if (sceneLabel) {
+
+                sceneLabel.textContent =
+                    "Escena "
+                    + (
+                        safeIndex + 1
+                    );
+
+            }
+
+
+            const activeCard =
+                cards[safeIndex];
+
+
+            if (activeCard) {
+
+                activeCard.scrollIntoView({
+                    behavior:
+                        "smooth",
+
+                    inline:
+                        "center",
+
+                    block:
+                        "nearest"
+                });
+
+            }
+
+        }
+
+
+        function updateProgress() {
+
+            currentTime =
+                clamp(
+                    currentTime
+                );
+
+
+            seek.value =
+                currentTime.toFixed(1);
+
+
+            if (currentLabel) {
+
+                currentLabel.textContent =
+                    formatTime(
+                        currentTime
+                    );
+
+            }
+
+
+            const percent =
+                totalDuration > 0
+                    ? (
+                        currentTime
+                        /
+                        totalDuration
+                    ) * 100
+                    : 0;
+
+
+            if (seekProgress) {
+
+                seekProgress.style.width =
+                    percent + "%";
+
+            }
+
+
+            showScene(
+                sceneForTime(
+                    currentTime
+                )
+            );
+
+        }
+
+
+        function setPlayingState(
+            state
+        ) {
+
+            playing = state;
+
+
+            if (playing) {
+
+                stack.classList.add(
+                    "is-playing"
+                );
+
+
+                if (statusText) {
+
+                    statusText.textContent =
+                        "Reproduciendo";
+
+                }
+
+
+                if (statusDot) {
+
+                    statusDot.classList.add(
+                        "is-playing"
+                    );
+
+                }
+
+
+                if (playText) {
+
+                    playText.textContent =
+                        "Reproduciendo";
+
+                }
+
+
+                if (playIcon) {
+
+                    playIcon.innerHTML =
+                        "&#9654;";
+
+                }
+
+            } else {
+
+                if (statusText) {
+
+                    statusText.textContent =
+                        currentTime > 0
+                            ? "Pausado"
+                            : "Listo para revisar";
+
+                }
+
+
+                if (statusDot) {
+
+                    statusDot.classList.remove(
+                        "is-playing"
+                    );
+
+                }
+
+
+                if (playText) {
+
+                    playText.textContent =
+                        currentTime > 0
+                            ? "Continuar"
+                            : "Reproducir";
+
+                }
+
+            }
+
+        }
+
+
+        function cancelFrame() {
+
+            if (frameId) {
+
+                cancelAnimationFrame(
+                    frameId
+                );
+
+            }
+
+            frameId = null;
+
+        }
+
+
+        function frame(now) {
+
+            if (!playing) {
+                return;
+            }
+
+
+            currentTime =
+                startingTime
+                + (
+                    now - startedAt
+                ) / 1000;
+
+
+            if (
+                currentTime
+                >= totalDuration
+            ) {
+
+                currentTime =
+                    totalDuration;
+
+                updateProgress();
+
+                pausePlayback();
+
+                if (statusText) {
+
+                    statusText.textContent =
+                        "Revisi?n completada";
+
+                }
+
+                return;
+
+            }
+
+
+            updateProgress();
+
+
+            frameId =
+                requestAnimationFrame(
+                    frame
+                );
+
+        }
+
+
+        function playPlayback() {
+
+            if (playing) {
+                return;
+            }
+
+
+            if (
+                currentTime
+                >= totalDuration
+            ) {
+
+                currentTime = 0;
+
+            }
+
+
+            startingTime =
+                currentTime;
+
+
+            startedAt =
+                performance.now();
+
+
+            setPlayingState(
+                true
+            );
+
+
+            updateProgress();
+
+
+            frameId =
+                requestAnimationFrame(
+                    frame
+                );
+
+        }
+
+
+        function pausePlayback() {
+
+            if (!playing) {
+
+                setPlayingState(
+                    false
+                );
+
+                return;
+
+            }
+
+
+            playing = false;
+
+            cancelFrame();
+
+            setPlayingState(
+                false
+            );
+
+        }
+
+
+        function stopPlayback() {
+
+            playing = false;
+
+            cancelFrame();
+
+            currentTime = 0;
+
+            stack.classList.remove(
+                "is-playing"
+            );
+
+            updateProgress();
+
+            setPlayingState(
+                false
+            );
+
+
+            if (statusText) {
+
+                statusText.textContent =
+                    "Listo para revisar";
+
+            }
+
+        }
+
+
+        function seekTo(
+            seconds
+        ) {
+
+            const wasPlaying =
+                playing;
+
+
+            if (wasPlaying) {
+
+                pausePlayback();
+
+            }
+
+
+            currentTime =
+                clamp(
+                    seconds
+                );
+
+
+            updateProgress();
+
+
+            if (wasPlaying) {
+
+                playPlayback();
+
+            }
+
+        }
+
+
+        function jumpScene(
+            direction
+        ) {
+
+            let targetIndex =
+                activeIndex
+                + direction;
+
+
+            targetIndex =
+                Math.max(
+                    0,
+                    Math.min(
+                        timeline.length - 1,
+                        targetIndex
+                    )
+                );
+
+
+            seekTo(
+                timeline[
+                    targetIndex
+                ].start
+            );
+
+        }
+
+
+        play.addEventListener(
+            "click",
+            playPlayback
+        );
+
+
+        pause.addEventListener(
+            "click",
+            pausePlayback
+        );
+
+
+        stop.addEventListener(
+            "click",
+            stopPlayback
+        );
+
+
+        restart.addEventListener(
+            "click",
+            function () {
+
+                stopPlayback();
+
+                playPlayback();
+
+            }
+        );
+
+
+        previous.addEventListener(
+            "click",
+            function () {
+
+                jumpScene(-1);
+
+            }
+        );
+
+
+        next.addEventListener(
+            "click",
+            function () {
+
+                jumpScene(1);
+
+            }
+        );
+
+
+        seek.addEventListener(
+            "input",
+            function () {
+
+                seekTo(
+                    Number(
+                        seek.value
+                    )
+                );
+
+            }
+        );
+
+
+        cards.forEach(
+            function (card, index) {
+
+                card.addEventListener(
+                    "click",
+                    function () {
+
+                        seekTo(
+                            timeline[
+                                index
+                            ].start
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        /*
+           Keyboard controls:
+           Space = play/pause
+           Left/Right = -/+ 2 seconds
+        */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                const tag =
+                    (
+                        event.target.tagName
+                        || ""
+                    ).toLowerCase();
+
+
+                if (
+                    tag === "input"
+                    ||
+                    tag === "textarea"
+                ) {
+                    return;
+                }
+
+
+                if (
+                    event.code
+                    === "Space"
+                ) {
+
+                    event.preventDefault();
+
+
+                    if (playing) {
+
+                        pausePlayback();
+
+                    } else {
+
+                        playPlayback();
+
+                    }
+
+                }
+
+
+                if (
+                    event.code
+                    === "ArrowLeft"
+                ) {
+
+                    event.preventDefault();
+
+                    seekTo(
+                        currentTime - 2
+                    );
+
+                }
+
+
+                if (
+                    event.code
+                    === "ArrowRight"
+                ) {
+
+                    event.preventDefault();
+
+                    seekTo(
+                        currentTime + 2
+                    );
+
+                }
+
+            }
+        );
+
+
+        currentTime = 0;
+
+        updateProgress();
+
+        setPlayingState(false);
+
+
+        console.log(
+            "[GINGAO V19] Final review player ready",
+            {
+                scenes:
+                    timeline.length,
+
+                totalDuration:
+                    totalDuration
+            }
+        );
+
+    }
+);
+</script>
+
+
+
+<script>
+/* GINGAO_MASTER_AUDIO_SYNC_RUNTIME_V30 */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const audio =
+            document.getElementById(
+                "gingaoMasterAudio"
+            );
+
+        if (!audio) {
+
+            console.info(
+                "[GINGAO V30] No audio track yet."
+            );
+
+            return;
+        }
+
+
+        const seek =
+            document.getElementById(
+                "gingaoReviewSeek"
+            );
+
+        const play =
+            document.getElementById(
+                "gingaoReviewPlay"
+            );
+
+        const pause =
+            document.getElementById(
+                "gingaoReviewPause"
+            );
+
+        const stop =
+            document.getElementById(
+                "gingaoReviewStop"
+            );
+
+        const restart =
+            document.getElementById(
+                "gingaoReviewRestart"
+            );
+
+        const previous =
+            document.getElementById(
+                "gingaoReviewPrevious"
+            );
+
+        const next =
+            document.getElementById(
+                "gingaoReviewNext"
+            );
+
+        const statusText =
+            document.getElementById(
+                "gingaoReviewStatusText"
+            );
+
+
+        if (!seek) {
+
+            console.error(
+                "[GINGAO V30] Seek control missing."
+            );
+
+            return;
+        }
+
+
+        let audioReady = false;
+
+
+        function clampAudioTime(
+            value
+        ) {
+
+            let target =
+                Number(
+                    value || 0
+                );
+
+            if (
+                !Number.isFinite(
+                    target
+                )
+            ) {
+
+                target = 0;
+            }
+
+
+            const duration =
+                Number.isFinite(
+                    audio.duration
+                )
+                ? audio.duration
+                : Number(
+                    seek.max || 0
+                );
+
+
+            if (
+                Number.isFinite(
+                    duration
+                )
+                && duration > 0
+            ) {
+
+                target =
+                    Math.min(
+                        target,
+                        Math.max(
+                            0,
+                            duration - 0.02
+                        )
+                    );
+            }
+
+
+            return Math.max(
+                0,
+                target
+            );
+        }
+
+
+        function masterTime() {
+
+            return clampAudioTime(
+                seek.value
+            );
+        }
+
+
+        function syncAudio(
+            force=false
+        ) {
+
+            const target =
+                masterTime();
+
+
+            if (
+                !Number.isFinite(
+                    audio.currentTime
+                )
+            ) {
+
+                return;
+            }
+
+
+            const difference =
+                Math.abs(
+                    audio.currentTime
+                    - target
+                );
+
+
+            if (
+                force
+                || difference > 0.22
+            ) {
+
+                try {
+
+                    audio.currentTime =
+                        target;
+
+                } catch (error) {
+
+                    console.debug(
+                        "[GINGAO V30] "
+                        + "Audio seek deferred",
+                        error
+                    );
+                }
+            }
+        }
+
+
+        async function playAudio() {
+
+            syncAudio(
+                true
+            );
+
+
+            try {
+
+                await audio.play();
+
+                if (
+                    statusText
+                ) {
+
+                    statusText.textContent =
+                        "Reproduciendo con narraci?n";
+                }
+
+            } catch (error) {
+
+                console.warn(
+                    "[GINGAO V30] "
+                    + "Audio playback blocked:",
+                    error
+                );
+            }
+        }
+
+
+        function pauseAudio() {
+
+            audio.pause();
+
+            syncAudio(
+                true
+            );
+        }
+
+
+        function stopAudio() {
+
+            audio.pause();
+
+            try {
+
+                audio.currentTime = 0;
+
+            } catch (error) {
+
+                console.debug(
+                    error
+                );
+            }
+        }
+
+
+        function jumpSync(
+            continuePlayback
+        ) {
+
+            window.setTimeout(
+                function () {
+
+                    syncAudio(
+                        true
+                    );
+
+
+                    if (
+                        continuePlayback
+                    ) {
+
+                        audio.play().catch(
+                            function () {}
+                        );
+                    }
+
+                },
+                0
+            );
+        }
+
+
+        audio.addEventListener(
+            "loadedmetadata",
+            function () {
+
+                audioReady = true;
+
+                syncAudio(
+                    true
+                );
+
+                console.info(
+                    "[GINGAO V30] "
+                    + "Master audio ready:",
+                    audio.duration
+                );
+            }
+        );
+
+
+        /*
+         * PLAY
+         */
+
+        if (play) {
+
+            play.addEventListener(
+                "click",
+                function () {
+
+                    window.setTimeout(
+                        playAudio,
+                        0
+                    );
+                }
+            );
+        }
+
+
+        /*
+         * PAUSE
+         */
+
+        if (pause) {
+
+            pause.addEventListener(
+                "click",
+                function () {
+
+                    pauseAudio();
+                }
+            );
+        }
+
+
+        /*
+         * STOP
+         */
+
+        if (stop) {
+
+            stop.addEventListener(
+                "click",
+                function () {
+
+                    stopAudio();
+                }
+            );
+        }
+
+
+        /*
+         * RESTART
+         */
+
+        if (restart) {
+
+            restart.addEventListener(
+                "click",
+                function () {
+
+                    const continuePlayback =
+                        !audio.paused;
+
+                    window.setTimeout(
+                        function () {
+
+                            syncAudio(
+                                true
+                            );
+
+                            if (
+                                continuePlayback
+                            ) {
+
+                                audio
+                                .play()
+                                .catch(
+                                    function () {}
+                                );
+                            }
+
+                        },
+                        0
+                    );
+                }
+            );
+        }
+
+
+        /*
+         * PREVIOUS SCENE
+         */
+
+        if (previous) {
+
+            previous.addEventListener(
+                "click",
+                function () {
+
+                    const continuePlayback =
+                        !audio.paused;
+
+                    jumpSync(
+                        continuePlayback
+                    );
+                }
+            );
+        }
+
+
+        /*
+         * NEXT SCENE
+         */
+
+        if (next) {
+
+            next.addEventListener(
+                "click",
+                function () {
+
+                    const continuePlayback =
+                        !audio.paused;
+
+                    jumpSync(
+                        continuePlayback
+                    );
+                }
+            );
+        }
+
+
+        /*
+         * SEEK BAR
+         */
+
+        seek.addEventListener(
+            "input",
+            function () {
+
+                syncAudio(
+                    true
+                );
+            }
+        );
+
+
+        seek.addEventListener(
+            "change",
+            function () {
+
+                syncAudio(
+                    true
+                );
+            }
+        );
+
+
+        /*
+         * TIMELINE CARDS
+         *
+         * Existing V19 changes the master seek.
+         * We only follow the resulting value.
+         */
+
+        document
+        .querySelectorAll(
+            ".final-timeline-item-premium"
+        )
+        .forEach(
+            function (card) {
+
+                card.addEventListener(
+                    "click",
+                    function () {
+
+                        const continuePlayback =
+                            !audio.paused;
+
+                        jumpSync(
+                            continuePlayback
+                        );
+                    }
+                );
+            }
+        );
+
+
+        /*
+         * MASTER CLOCK GUARD
+         *
+         * The video/player timeline remains authoritative.
+         * Audio follows it continuously.
+         */
+
+        function syncLoop() {
+
+            if (
+                audioReady
+                && !audio.paused
+            ) {
+
+                syncAudio(
+                    false
+                );
+            }
+
+
+            window.requestAnimationFrame(
+                syncLoop
+            );
+        }
+
+
+        window.requestAnimationFrame(
+            syncLoop
+        );
+
+
+        /*
+         * When tab becomes visible again,
+         * prevent accumulated drift.
+         */
+
+        document.addEventListener(
+            "visibilitychange",
+            function () {
+
+                if (
+                    document.visibilityState
+                    === "visible"
+                ) {
+
+                    syncAudio(
+                        true
+                    );
+                }
+            }
+        );
+
+
+        /*
+         * Space bar is already handled by V19.
+         * Read resulting player state shortly afterwards.
+         */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.code !== "Space"
+                ) {
+
+                    return;
+                }
+
+
+                window.setTimeout(
+                    function () {
+
+                        const playText =
+                            document
+                            .getElementById(
+                                "gingaoReviewPlayText"
+                            );
+
+
+                        const label =
+                            (
+                                playText
+                                ?.textContent
+                                || ""
+                            )
+                            .trim()
+                            .toLowerCase();
+
+
+                        if (
+                            label.includes(
+                                "paus"
+                            )
+                        ) {
+
+                            playAudio();
+
+                        } else {
+
+                            pauseAudio();
+                        }
+
+                    },
+                    20
+                );
+            }
+        );
+
+
+        console.info(
+            "[GINGAO V30] "
+            + "Master audio synchronization connected."
+        );
+    }
+);
+
+</script>
+
+{% endblock %}

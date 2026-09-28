@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+{% load gingao_tags %}
+
+{% block title %}
+V&iacute;deo ? {{ project.title }} ? Gingao
+
+
+<section class="workspace-panel next-stage-panel video-next-stage-premium">
+
+    <div class="workspace-action video-workspace-action-premium">
+
+        <div>
+
+            <strong>
+                Animaci&oacute;n preparada
+            </strong>
+
+            <p>
+                Cuando las escenas est&eacute;n listas,
+                contin&uacute;a al montaje final.
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'final_cut' project.id %}"
+            class="primary-button video-continue-final-premium"
+        >
+        <span class="video-global-icon">
+            &#10024;
+        </span>
+
+        <span>
+            Continuar al corte final
+        </span>
+
+        <span class="video-action-arrow">
+            &#8594;
+        </span>
+    </a>
+
+    </div>
+
+</section>
+
+
+{% endblock %}
+
+{% block content %}
+<section class="videos-premium-page">
+
+
+<div class="workspace-top">
+
+    <div>
+
+        <a
+            href="{% url 'images_workspace' project.id %}"
+            class="back-link video-back-premium"
+        >
+                <span class="video-back-icon">
+                    &#8592;
+                </span>
+
+                <span class="video-back-copy">
+                    <small>VOLVER</small>
+                    <strong>Im&aacute;genes</strong>
+                </span>
+            </a>
+
+        <h1>
+            {{ project.title }}
+        </h1>
+
+        <p>
+            Animaci&oacute;n de las escenas
+        </p>
+
+    </div>
+
+    <span class="status-pill large">
+        V&iacute;deo
+    </span>
+
+</div>
+
+
+<div class="production-tabs">
+
+    <a
+        href="{% url 'project_workspace' project.id %}"
+        class="production-tab"
+    >
+        <span>1</span>
+        Gui&oacute;n
+    </a>
+
+    <a
+        href="{% url 'images_workspace' project.id %}"
+        class="production-tab"
+    >
+        <span>2</span>
+        Im&aacute;genes
+    </a>
+
+    <div class="production-tab active">
+        <span>3</span>
+        V&iacute;deo
+    </div>
+
+</div>
+
+
+<section class="workspace-panel">
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="eyebrow">
+                ANIMACI&Oacute;N
+            </span>
+
+            <h2>
+                V&iacute;deos de las escenas
+            </h2>
+
+            <p>
+                Proveedor:
+                <strong>
+                    {% if video_provider_code == "mock" %}
+                        Mock Video Provider
+                    {% else %}
+                        {{ video_provider_code }}
+                    {% endif %}
+                </strong>
+                &middot;
+                coste actual:
+                <strong>0 cr&eacute;ditos</strong>
+            </p>
+
+        </div>
+
+
+        {% if video_provider_code == "mock" %}
+
+        <form
+            method="post"
+            action="{% url 'generate_all_videos' project.id %}"
+        >
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="primary-button video-generate-all-premium"
+            >
+        <span class="video-global-icon">
+            &#10024;
+        </span>
+
+        <span>
+            Generar todos los v&iacute;deos
+        </span>
+
+        <span class="video-action-arrow">
+            &#8594;
+        </span>
+    </button>
+
+        </form>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="video-scene-grid video-scene-grid-premium">
+
+        {% for scene in scenes %}
+
+        <article class="video-scene-card video-scene-card-premium">
+
+            <div class="video-preview video-preview-premium">
+
+                {% if scene.id in scene_videos %}
+
+                    {% with video=scene_videos|get_item:scene.id %}
+
+                    <img
+                        src="{{ video.url }}"
+                        alt="Video escena {{ scene.position }}"
+                        class="mock-video-motion"
+                    >
+
+                    {% endwith %}
+
+                {% elif scene.storyboard_image.image_url %}
+
+                    <img
+                        src="{{ scene.storyboard_image.image_url }}"
+                        alt="Storyboard escena {{ scene.position }}"
+                    >
+
+                    <div class="video-overlay">
+                        Pendiente de animaci&oacute;n
+                    </div>
+
+                {% else %}
+
+                    <div class="video-empty">
+                        Sin imagen
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="video-scene-body video-scene-body-premium">
+
+                <div class="storyboard-top">
+
+                    <span class="status-pill">
+                        Escena {{ scene.position }}
+                    </span>
+
+                    <span class="scene-time">
+                        {{ scene.duration_seconds }} s
+                    </span>
+
+                </div>
+
+                <p>
+                    {{ scene.script }}
+                </p>
+
+                <details class="prompt-details">
+
+                    <summary>
+                        Prompt de v&iacute;deo
+                    </summary>
+
+                    <div class="prompt-box">
+                        {{ scene.video_prompt }}
+                    </div>
+
+                </details>
+
+
+                <form
+                    method="post"
+                    action="{% url 'generate_scene_video' project.id scene.id %}"
+                >
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="secondary-button full video-generate-scene-premium"
+                    >
+                        Generar animaci&oacute;n
+                    </button>
+
+                </form>
+
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+
+    <div class="workspace-action video-workspace-action-premium">
+
+        <div>
+
+            <strong>
+                Motor de v&iacute;deo Mock
+            </strong>
+
+            <p>
+                Validamos la producci&oacute;n completa
+                sin consumir una API externa.
+            </p>
+
+        </div>
+
+        {% if video_provider_code == "mock" %}
+
+        <form
+            method="post"
+            action="{% url 'generate_all_videos' project.id %}"
+        >
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="primary-button video-generate-all-scenes-premium"
+            >
+        <span class="video-global-icon">
+            &#10024;
+        </span>
+
+        <span>
+            Generar todas las escenas
+        </span>
+
+        <span class="video-action-arrow">
+            &#8594;
+        </span>
+    </button>
+
+        </form>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+
+<section class="workspace-panel next-stage-panel video-next-stage-premium">
+
+    <div class="workspace-action video-workspace-action-premium">
+
+        <div>
+
+            <strong>
+                Animaci&oacute;n preparada
+            </strong>
+
+            <p>
+                Cuando las escenas est&eacute;n listas,
+                contin&uacute;a al montaje final.
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'final_cut' project.id %}"
+            class="primary-button video-continue-final-premium"
+        >
+        <span class="video-global-icon">
+            &#10024;
+        </span>
+
+        <span>
+            Continuar al corte final
+        </span>
+
+        <span class="video-action-arrow">
+            &#8594;
+        </span>
+    </a>
+
+    </div>
+
+</section>
+
+
+
+</section>
+{% endblock %}

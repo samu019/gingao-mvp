@@ -1,0 +1,487 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Pago | Gingao
+{% endblock %}
+
+{% block content %}
+
+<div class="payment-page payment-production-page">
+
+    <a
+        href="{% url 'billing' %}"
+        class="premium-back-link checkout-back-link"
+    >
+
+        <span
+            class="premium-back-icon"
+            aria-hidden="true"
+        >
+            &#8592;
+        </span>
+
+        <span class="premium-back-text">
+            Volver a planes
+        </span>
+
+    </a>
+
+
+    <section class="payment-checkout-card production-checkout-card">
+
+        <div class="checkout-heading">
+
+            <span class="eyebrow">
+                GINGAO CHECKOUT
+            </span>
+
+            <h1>
+
+                {% if payment.payment_method == "usdt" %}
+                    Pago con USDT
+                {% else %}
+                    Pago con tarjeta
+                {% endif %}
+
+            </h1>
+
+            <p>
+                Revisa los detalles de tu operaci&oacute;n.
+            </p>
+
+        </div>
+
+
+        <div class="payment-total">
+
+            <div>
+
+                <span>
+                    Total
+                </span>
+
+                <small>
+                    Importe de la operaci&oacute;n
+                </small>
+
+            </div>
+
+            <strong>
+                ${{ payment.amount_usd }}
+            </strong>
+
+        </div>
+
+
+        <div class="payment-summary">
+
+            <div class="payment-info-row">
+
+                <span>
+                    Plan
+                </span>
+
+                <strong>
+                    {{ payment.plan_code|upper }}
+                </strong>
+
+            </div>
+
+
+            <div class="payment-info-row">
+
+                <span>
+                    Cr&eacute;ditos
+                </span>
+
+                <strong>
+                    {{ payment.credits }}
+                </strong>
+
+            </div>
+
+
+            <div class="payment-info-row">
+
+                <span>
+                    M&eacute;todo
+                </span>
+
+                <strong>
+
+                    {% if payment.payment_method == "usdt" %}
+
+                        <span
+                            class="payment-method-icon"
+                            aria-hidden="true"
+                        >
+                            &#128181;
+                        </span>
+
+                        USDT
+
+                    {% else %}
+
+                        <span
+                            class="payment-method-icon"
+                            aria-hidden="true"
+                        >
+                            &#128179;
+                        </span>
+
+                        Tarjeta bancaria
+
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+
+            <div class="payment-info-row">
+
+                <span>
+                    Estado
+                </span>
+
+                <strong
+                    class="
+                        payment-status
+                        {{ payment.status }}
+                    "
+                >
+
+                    {% if payment.status == "paid" %}
+
+                        PAGADO
+
+                    {% elif payment.status == "failed" %}
+
+                        FALLIDO
+
+                    {% elif payment.status == "processing" %}
+
+                        PROCESANDO
+
+                    {% elif payment.status == "expired" %}
+
+                        EXPIRADO
+
+                    {% else %}
+
+                        PENDIENTE
+
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        {% if payment.status == "pending" %}
+
+        <div class="payment-state-card pending">
+
+            <div class="payment-state-icon">
+                &#9203;
+            </div>
+
+            <div>
+
+                <strong>
+                    Pago pendiente
+                </strong>
+
+                <p>
+
+                    La operaci&oacute;n est&aacute;
+                    pendiente de confirmaci&oacute;n.
+
+                    {% if payment.payment_method == "usdt" %}
+
+                        Cuando la transacci&oacute;n sea
+                        confirmada, los cr&eacute;ditos
+                        se a&ntilde;adir&aacute;n a tu saldo.
+
+                    {% else %}
+
+                        Cuando el procesador confirme
+                        el pago, los cr&eacute;ditos se
+                        a&ntilde;adir&aacute;n a tu saldo.
+
+                    {% endif %}
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% elif payment.status == "processing" %}
+
+        <div class="payment-state-card processing">
+
+            <div class="payment-state-icon">
+                &#8635;
+            </div>
+
+            <div>
+
+                <strong>
+                    Procesando pago
+                </strong>
+
+                <p>
+                    Estamos esperando la confirmaci&oacute;n
+                    definitiva de la operaci&oacute;n.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% elif payment.status == "paid" %}
+
+        <div class="payment-state-card paid">
+
+            <div class="payment-state-icon">
+                &#10003;
+            </div>
+
+            <div>
+
+                <strong>
+                    Pago confirmado
+                </strong>
+
+                <p>
+                    Los {{ payment.credits }}
+                    cr&eacute;ditos ya fueron
+                    acreditados en tu cuenta.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% elif payment.status == "failed" %}
+
+        <div class="payment-state-card failed">
+
+            <div class="payment-state-icon">
+                &#10005;
+            </div>
+
+            <div>
+
+                <strong>
+                    El pago no se complet&oacute;
+                </strong>
+
+                <p>
+                    No se han a&ntilde;adido
+                    cr&eacute;ditos a tu cuenta.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% elif payment.status == "expired" %}
+
+        <div class="payment-state-card expired">
+
+            <div class="payment-state-icon">
+                &#9201;
+            </div>
+
+            <div>
+
+                <strong>
+                    Pago expirado
+                </strong>
+
+                <p>
+                    Esta operaci&oacute;n ya no
+                    puede completarse.
+                </p>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <div class="payment-current-balance">
+
+            <div>
+
+                <span>
+                    Saldo Gingao
+                </span>
+
+                <small>
+                    Cr&eacute;ditos disponibles
+                </small>
+
+            </div>
+
+            <strong>
+                {{ wallet.balance }}
+                cr&eacute;ditos
+            </strong>
+
+        </div>
+
+
+        {# GINGAO_V50D2_PAYMENT_ACTIONS #}
+
+        {% if payment.status == "pending" or payment.status == "processing" %}
+
+            {% if payment.payment_method == "card" and payment.checkout_url %}
+
+                <div class="payment-live-action">
+
+                    <a
+                        href="{{ payment.checkout_url }}"
+                        class="checkout-primary-action"
+                        rel="noopener noreferrer"
+                    >
+                        Continuar al pago
+                        <span aria-hidden="true">
+                            &#8594;
+                        </span>
+                    </a>
+
+                    <p class="payment-live-help">
+                        Ser&aacute;s redirigido al proveedor seguro
+                        para completar el pago.
+                    </p>
+
+                </div>
+
+            {% elif payment.payment_method == "usdt" and payment.metadata.pay_address %}
+
+                <div class="payment-crypto-instructions">
+
+                    <div class="payment-info-row">
+                        <span>
+                            Cantidad exacta
+                        </span>
+
+                        <strong>
+                            {{ payment.metadata.pay_amount }}
+                            {{ payment.metadata.pay_currency|upper }}
+                        </strong>
+                    </div>
+
+                    <div class="payment-info-row">
+                        <span>
+                            Red / moneda
+                        </span>
+
+                        <strong>
+                            {{ payment.metadata.pay_currency|upper }}
+                        </strong>
+                    </div>
+
+                    {# GINGAO_V50D4_USDT_QR #}
+
+                    <div class="payment-qr-box">
+
+                        <div class="payment-qr-image-wrap">
+
+                            <img
+                                src="{% url 'payment_qr' payment.id %}"
+                                alt="QR de la direcci&oacute;n USDT"
+                                class="payment-qr-image"
+                                loading="lazy"
+                            >
+
+                        </div>
+
+                        <div class="payment-qr-copy">
+
+                            <strong>
+                                Escanear direcci&oacute;n
+                            </strong>
+
+                            <p>
+                                El QR contiene &uacute;nicamente
+                                la direcci&oacute;n de destino.
+                                Verifica tambi&eacute;n la red y
+                                env&iacute;a exactamente la cantidad
+                                indicada arriba.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="payment-crypto-address">
+
+                        <span>
+                            Direcci&oacute;n de pago
+                        </span>
+
+                        <code>
+                            {{ payment.metadata.pay_address }}
+                        </code>
+
+                    </div>
+
+                    <p class="payment-live-help">
+                        Env&iacute;a exactamente la cantidad indicada
+                        a esta direcci&oacute;n. Los cr&eacute;ditos
+                        se acreditar&aacute;n solo despu&eacute;s
+                        de la confirmaci&oacute;n del proveedor.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        {% endif %}
+
+
+        <div class="checkout-footer-actions">
+
+            <a
+                href="{% url 'billing' %}"
+                class="checkout-secondary-action"
+            >
+                Ver otros planes
+            </a>
+
+            <a
+                href="{% url 'home' %}"
+                class="checkout-primary-action"
+            >
+                Volver al inicio
+                <span aria-hidden="true">
+                    &#8594;
+                </span>
+            </a>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script
+    src="{% static 'js/billing_premium.js' %}"
+    defer
+></script>
+
+{% endblock %}

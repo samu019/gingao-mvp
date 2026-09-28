@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% load gingao_tags %}
+
+{% block title %}
+Mis proyectos ? Gingao
+{% endblock %}
+
+{% block content %}
+
+<header class="topbar">
+
+    <div>
+        <span class="eyebrow">
+            BIBLIOTECA
+        </span>
+
+        <h1>Mis proyectos</h1>
+
+        <p>
+            Todas tus historias y v&iacute;deos
+            en un mismo lugar.
+        </p>
+    </div>
+
+    <a href="{% url 'create_video' %}"
+       class="primary-button">
+        + Nuevo proyecto
+    </a>
+
+</header>
+
+
+{% if projects %}
+
+<div class="project-grid large">
+
+    {% for project in projects %}
+
+        <article class="project-card-premium">
+
+            <a
+                href="{% url 'project_workspace' project.id %}"
+                class="project-card-cover"
+            >
+
+                {% with cover=project|project_cover %}
+
+                    {% if cover %}
+
+                        <div
+                            class="project-cover-backdrop"
+                            style="background-image:url('{{ cover }}')"
+                        ></div>
+
+                        <img
+                            src="{{ cover }}"
+                            alt="{{ project.title }}"
+                            class="project-cover-media"
+                            loading="lazy"
+                        >
+
+                    {% else %}
+
+                        <div class="project-cover-fallback">
+
+                            <span class="project-cover-glow"></span>
+
+                            <strong>
+                                GINGAO
+                            </strong>
+
+                            <small>
+                                AI VIDEO PROJECT
+                            </small>
+
+                        </div>
+
+                    {% endif %}
+
+                {% endwith %}
+
+
+                <div class="project-cover-overlay">
+
+                    <span class="project-stage-badge">
+                        {{ project|project_stage_label }}
+                    </span>
+
+
+                    <span class="project-duration-badge">
+                        {{ project.target_duration_seconds }} s
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <div class="project-card-body">
+
+                <div class="project-card-title-row">
+
+                    <div>
+
+                        <h3>
+                            {{ project.title }}
+                        </h3>
+
+                        <p>
+                            Actualizado &middot;
+                            {{ project.updated_at|date:"d/m/Y H:i" }}
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="{% url 'project_workspace' project.id %}"
+                        class="project-open-circle"
+                        aria-label="Abrir proyecto"
+                    >
+                        &nearr;
+                    </a>
+
+                </div>
+
+
+                <div class="project-progress-row">
+
+                    <div class="project-progress-head">
+
+                        <span>
+                            Progreso
+                        </span>
+
+                        <strong>
+                            {{ project|project_progress }}%
+                        </strong>
+
+                    </div>
+
+
+                    <div class="project-progress-track">
+
+                        <span
+                            class="project-progress-fill"
+                            style="width:{{ project|project_progress }}%"
+                        ></span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="project-stage-flow"
+                    data-stage="{{ project|project_stage_number }}"
+                >
+
+                    <span class="{% if project|project_stage_number >= 1 %}done{% endif %}">
+                        1
+                    </span>
+
+                    <i class="{% if project|project_stage_number >= 2 %}done{% endif %}"></i>
+
+                    <span class="{% if project|project_stage_number >= 2 %}done{% endif %}">
+                        2
+                    </span>
+
+                    <i class="{% if project|project_stage_number >= 3 %}done{% endif %}"></i>
+
+                    <span class="{% if project|project_stage_number >= 3 %}done{% endif %}">
+                        3
+                    </span>
+
+                    <i class="{% if project|project_stage_number >= 4 %}done{% endif %}"></i>
+
+                    <span class="{% if project|project_stage_number >= 4 %}done{% endif %}">
+                        4
+                    </span>
+
+                </div>
+
+
+                <div class="project-card-actions">
+
+                    <a
+                        href="{% url 'project_workspace' project.id %}"
+                        class="project-continue-button"
+                    >
+
+                        <span>
+                            Continuar proyecto
+                        </span>
+
+                        <b>
+                            &rarr;
+                        </b>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </article>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+
+    <div class="empty-icon premium-empty-icon">
+        &#127916;
+    </div>
+
+    <h3>
+        A&uacute;n no hay proyectos
+    </h3>
+
+    <p>
+        Tu primera historia puede empezar ahora.
+    </p>
+
+    <a href="{% url 'create_video' %}"
+       class="primary-button">
+        Crear proyecto
+    </a>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

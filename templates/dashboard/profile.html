@@ -1,0 +1,505 @@
+{% extends "base.html" %}
+
+{% block title %}
+Perfil &middot; Gingao
+{% endblock %}
+
+{% block content %}
+
+<section class="profile-premium-page">
+
+    <div class="profile-navigation-row">
+
+        <button
+            type="button"
+            class="profile-back-card"
+            onclick="history.back()"
+            aria-label="Volver a la p?gina anterior"
+        >
+
+            <span class="profile-back-icon">
+                &larr;
+            </span>
+
+            <span class="profile-back-text">
+
+                <small>
+                    VOLVER
+                </small>
+
+                <strong>
+                    Atr&aacute;s
+                </strong>
+
+            </span>
+
+        </button>
+
+
+        <a
+            href="{% url 'home' %}"
+            class="profile-home-card"
+            aria-label="Ir al inicio"
+        >
+
+            <span class="profile-home-icon">
+                &#8962;
+            </span>
+
+            <span class="profile-home-text">
+
+                <small>
+                    GINGAO
+                </small>
+
+                <strong>
+                    Inicio
+                </strong>
+
+            </span>
+
+        </a>
+
+    </div>
+
+
+    <header class="profile-premium-header">
+
+        <div>
+
+            <span class="eyebrow">
+                CUENTA
+            </span>
+
+            <h1>
+                Mi perfil
+            </h1>
+
+            <p>
+                Gestiona tu cuenta, cr&eacute;ditos
+                y actividad en Gingao.
+            </p>
+
+        </div>
+
+
+        <a
+            href="{% url 'billing' %}"
+            class="profile-buy-button"
+        >
+            <span>+</span>
+            Comprar cr&eacute;ditos
+        </a>
+
+    </header>
+
+
+    <div class="profile-premium-grid">
+
+
+        <!-- ==========================
+             USER CARD
+             ========================== -->
+
+        <article class="profile-user-card">
+
+            <div class="profile-user-hero">
+
+                <div class="profile-avatar-premium">
+                    {{ request.user.username|slice:":1"|upper }}
+                </div>
+
+                <div class="profile-user-identity">
+
+                    <span>
+                        USUARIO
+                    </span>
+
+                    <h2>
+                        {{ request.user.username }}
+                    </h2>
+
+                    <p>
+                        {{ request.user.email|default:"Sin correo configurado" }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="profile-account-status">
+
+                <div>
+
+                    <span>
+                        Plan actual
+                    </span>
+
+                    <strong class="profile-plan-badge">
+                        FREE
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Cr&eacute;ditos
+                    </span>
+
+                    <strong class="profile-credit-number">
+                        {% if wallet %}
+                            {{ wallet.balance }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Miembro desde
+                    </span>
+
+                    <strong>
+                        {{ request.user.date_joined|date:"d/m/Y" }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="profile-user-actions">
+
+                <a
+                    href="{% url 'billing' %}"
+                    class="profile-primary-action"
+                >
+                    Ver planes
+                    <b>&rarr;</b>
+                </a>
+
+                <a
+                    href="{% url 'projects' %}"
+                    class="profile-secondary-action"
+                >
+                    Mis proyectos
+                </a>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- ==========================
+             CREDIT / ACTIVITY PANEL
+             ========================== -->
+
+        <article class="profile-activity-card">
+
+            <div class="profile-section-heading">
+
+                <div>
+
+                    <span class="eyebrow">
+                        ACTIVIDAD
+                    </span>
+
+                    <h2>
+                        &Uacute;ltimos movimientos
+                    </h2>
+
+                    <p>
+                        Historial reciente de tus cr&eacute;ditos.
+                    </p>
+
+                </div>
+
+
+                <div class="profile-balance-pill">
+
+                    <small>
+                        SALDO
+                    </small>
+
+                    <strong>
+                        {% if wallet %}
+                            {{ wallet.balance }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            {% if transactions %}
+
+                <div class="profile-transaction-list">
+
+                    {% for transaction in transactions|slice:":8" %}
+
+                        <div class="profile-transaction-row">
+
+                            <span
+                                class="profile-transaction-icon
+                                {% if transaction.amount < 0 %}
+                                    negative
+                                {% else %}
+                                    positive
+                                {% endif %}"
+                            >
+                                {% if transaction.amount < 0 %}
+                                    &minus;
+                                {% else %}
+                                    +
+                                {% endif %}
+                            </span>
+
+
+                            <div class="profile-transaction-info">
+
+                                <strong>
+                                    {% if transaction.description %}
+                                        {{ transaction.description }}
+                                    {% else %}
+                                        Movimiento de cr&eacute;ditos
+                                    {% endif %}
+                                </strong>
+
+                                <span>
+                                    {{ transaction.created_at|date:"d/m/Y H:i" }}
+                                </span>
+
+                            </div>
+
+
+                            <strong
+                                class="profile-transaction-amount
+                                {% if transaction.amount < 0 %}
+                                    negative
+                                {% else %}
+                                    positive
+                                {% endif %}"
+                            >
+                                {% if transaction.amount > 0 %}+{% endif %}
+                                {{ transaction.amount }}
+                            </strong>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="profile-empty-activity">
+
+                    <div class="profile-empty-visual">
+
+                        <span></span>
+
+                        <strong>
+                            G
+                        </strong>
+
+                    </div>
+
+                    <h3>
+                        Tu historial est&aacute; limpio
+                    </h3>
+
+                    <p>
+                        Las compras, reservas y devoluciones
+                        de cr&eacute;ditos aparecer&aacute;n aqu&iacute;.
+                    </p>
+
+                    <a href="{% url 'billing' %}">
+                        Explorar planes &rarr;
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </article>
+
+    </div>
+
+
+
+    <!-- ==========================
+         QUICK ACCESS
+         ========================== -->
+
+    <section class="profile-quick-section">
+
+        <div class="profile-quick-heading">
+
+            <div>
+
+                <span class="eyebrow">
+                    GINGAO
+                </span>
+
+                <h2>
+                    Accesos r&aacute;pidos
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="profile-quick-grid">
+
+
+            <a
+                href="{% url 'billing' %}"
+                class="profile-quick-card premium-purple"
+            >
+
+                <span class="profile-quick-icon">
+                    C
+                </span>
+
+                <div>
+
+                    <small>
+                        CR&Eacute;DITOS
+                    </small>
+
+                    <strong>
+                        Planes y saldo
+                    </strong>
+
+                    <p>
+                        Compra cr&eacute;ditos y revisa
+                        las opciones disponibles.
+                    </p>
+
+                </div>
+
+                <b>
+                    &nearr;
+                </b>
+
+            </a>
+
+
+            <a
+                href="{% url 'projects' %}"
+                class="profile-quick-card premium-blue"
+            >
+
+                <span class="profile-quick-icon">
+                    P
+                </span>
+
+                <div>
+
+                    <small>
+                        PROYECTOS
+                    </small>
+
+                    <strong>
+                        Mi biblioteca
+                    </strong>
+
+                    <p>
+                        Contin&uacute;a tus historias
+                        y producciones guardadas.
+                    </p>
+
+                </div>
+
+                <b>
+                    &nearr;
+                </b>
+
+            </a>
+
+
+            <a
+                href="{% url 'assets' %}"
+                class="profile-quick-card premium-orange"
+            >
+
+                <span class="profile-quick-icon">
+                    A
+                </span>
+
+                <div>
+
+                    <small>
+                        ACTIVOS
+                    </small>
+
+                    <strong>
+                        Biblioteca multimedia
+                    </strong>
+
+                    <p>
+                        Accede a im&aacute;genes, v&iacute;deos
+                        y otros recursos generados.
+                    </p>
+
+                </div>
+
+                <b>
+                    &nearr;
+                </b>
+
+            </a>
+
+
+            <a
+                href="{% url 'system_status' %}"
+                class="profile-quick-card premium-dark"
+            >
+
+                <span class="profile-quick-icon">
+                    S
+                </span>
+
+                <div>
+
+                    <small>
+                        SISTEMA
+                    </small>
+
+                    <strong>
+                        Estado de Gingao
+                    </strong>
+
+                    <p>
+                        Proveedores, configuraci&oacute;n
+                        y preparaci&oacute;n del sistema.
+                    </p>
+
+                </div>
+
+                <b>
+                    &nearr;
+                </b>
+
+            </a>
+
+
+        </div>
+
+    </section>
+
+</section>
+
+{% endblock %}

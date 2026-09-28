@@ -1,0 +1,607 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}Gingao{% endblock %}
+    </title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/gingao.css' %}">
+</head>
+
+<body>
+
+<button
+    type="button"
+    class="gingao-sidebar-toggle"
+    id="gingaoSidebarToggle"
+    aria-label="Abrir men?"
+    aria-expanded="false"
+    aria-controls="gingaoSidebar"
+>
+    <span class="gingao-sidebar-toggle-lines">
+        <span></span>
+        <span></span>
+        <span></span>
+    </span>
+
+    <span class="gingao-sidebar-toggle-text">
+        Men&uacute;
+    </span>
+</button>
+
+
+<div
+    class="gingao-sidebar-backdrop"
+    id="gingaoSidebarBackdrop"
+></div>
+
+
+
+<div class="app-shell">
+
+    <aside class="gingao-premium-sidebar sidebar" id="gingaoSidebar">
+
+        
+
+
+        
+<nav class="nav">
+
+    <a
+        href="{% url 'home' %}"
+        class="nav-link gingao-nav-card gingao-nav-home"
+    >
+<span class="gingao-nav-icon">
+    
+<svg class="gingao-nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M3.5 10.5 12 3.8l8.5 6.7"/>
+    <path d="M5.7 9.6v10.1h12.6V9.6"/>
+    <path d="M9.5 19.7v-6h5v6"/>
+</svg>
+
+</span>
+
+<span class="gingao-nav-label">
+    Inicio
+</span>
+</a>
+
+
+    <a
+        href="{% url 'projects' %}"
+        class="nav-link gingao-nav-card gingao-nav-projects"
+    >
+<span class="gingao-nav-icon">
+    
+<svg class="gingao-nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M3.5 7.2h6l1.8 2h9.2v10.2h-17z"/>
+    <path d="M3.5 7.2V5.1h6l1.5 2.1"/>
+</svg>
+
+</span>
+
+<span class="gingao-nav-label">
+    Mis proyectos
+</span>
+</a>
+
+
+    <a
+        href="{% url 'jobs' %}"
+        class="nav-link gingao-nav-card gingao-nav-jobs"
+    >
+<span class="gingao-nav-icon">
+    
+<svg class="gingao-nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 7.5h16v11H4z"/>
+    <path d="M9 7.5V5.4h6v2.1"/>
+    <path d="M4 11.5h16"/>
+    <path d="M10.5 11.5v1.8h3v-1.8"/>
+</svg>
+
+</span>
+
+<span class="gingao-nav-label">
+    Trabajos
+</span>
+</a>
+
+
+    <a
+        href="{% url 'assets' %}"
+        class="nav-link gingao-nav-card gingao-nav-assets"
+    >
+<span class="gingao-nav-icon">
+    
+<svg class="gingao-nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+    <rect x="4" y="4" width="16" height="16" rx="2.5"/>
+    <circle cx="9" cy="9" r="1.6"/>
+    <path d="m6.5 17 4.1-4.3 2.8 2.7 2.2-2.1 2.3 3.7"/>
+</svg>
+
+</span>
+
+<span class="gingao-nav-label">
+    Mis activos
+</span>
+</a>
+
+</nav>
+
+
+        <div class="sidebar-bottom">
+
+            {% if wallet %}
+
+                <div class="credit-card">
+
+                    <div>
+                        <span>Cr&eacute;ditos</span>
+
+                        <strong>
+                            {% if wallet.unlimited %}
+                                ?
+                            {% else %}
+                                {{ wallet.balance }}
+                            {% endif %}
+                        </strong>
+                    </div>
+
+                    <span class="coin">&#9670;</span>
+
+                </div>
+
+            {% endif %}
+
+            
+
+<div class="gingao-lighting-card">
+
+    <div class="gingao-lighting-info">
+
+        <span class="gingao-lighting-title">
+            Ambiente
+        </span>
+
+        <span
+            class="gingao-lighting-status"
+            id="gingaoLightingStatus"
+        >
+            D&#237;a
+        </span>
+
+    </div>
+
+
+    <button
+        type="button"
+        class="gingao-lighting-toggle"
+        id="gingaoLightingToggle"
+        aria-label="Cambiar ambiente de la p?gina"
+        aria-pressed="false"
+    >
+
+        <span class="gingao-lighting-track">
+
+            <span
+                class="gingao-lighting-knob"
+                id="gingaoLightingKnob"
+            >
+
+                <svg
+                    class="gingao-lighting-sun"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <circle cx="12" cy="12" r="3.6"/>
+                    <path d="M12 2.5v2"/>
+                    <path d="M12 19.5v2"/>
+                    <path d="M4.2 4.2l1.5 1.5"/>
+                    <path d="M18.3 18.3l1.5 1.5"/>
+                    <path d="M2.5 12h2"/>
+                    <path d="M19.5 12h2"/>
+                    <path d="M4.2 19.8l1.5-1.5"/>
+                    <path d="M18.3 5.7l1.5-1.5"/>
+                </svg>
+
+
+                <svg
+                    class="gingao-lighting-moon"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M20 15.2A8.3 8.3 0 0 1 8.8 4
+                           8.4 4.9 8.2 5.9 8.2 7
+                           c0 5 4 9 9 9
+                           1 0 2-.2 2.8-.8Z"
+                    />
+                </svg>
+
+            </span>
+
+        </span>
+
+    </button>
+
+</div>
+
+<a href="{% url 'profile' %}"
+               class="gingao-user-premium-card profile-mini">
+
+                <div class="avatar">
+                    {{ request.user.username|slice:":1"|upper }}
+                </div>
+
+                <div class="profile-mini-text">
+                    <strong>
+                        {{ request.user.username }}
+                    </strong>
+
+                    <span>
+                        {{ request.user.plan_code|upper }}
+                    </span>
+                </div>
+
+            </a>
+
+            <a href="{% url 'logout' %}"
+               class="logout-link gingao-bottom-logout">
+                <span class="gingao-nav-icon">&#128682;</span><span class="gingao-nav-label">Cerrar sesi&oacute;n</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        {% if messages %}
+
+            <div class="message-stack">
+
+                {% for message in messages %}
+
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+</div>
+
+
+<script
+    src="{% static 'js/gingao_premium.js' %}"
+    defer
+></script>
+
+
+
+<script>
+/* GINGAO_SIDEBAR_DRAWER_V24 */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const sidebar =
+            document.getElementById(
+                "gingaoSidebar"
+            );
+
+        const toggle =
+            document.getElementById(
+                "gingaoSidebarToggle"
+            );
+
+        const backdrop =
+            document.getElementById(
+                "gingaoSidebarBackdrop"
+            );
+
+
+        if (
+            !sidebar
+            || !toggle
+            || !backdrop
+        ) {
+            return;
+        }
+
+
+        function isDrawerMode() {
+
+            return window.matchMedia(
+                "(max-width: 980px)"
+            ).matches;
+
+        }
+
+
+        function openSidebar() {
+
+            if (!isDrawerMode()) {
+                return;
+            }
+
+            document.body.classList.add(
+                "gingao-sidebar-open"
+            );
+
+            toggle.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+        }
+
+
+        function closeSidebar() {
+
+            document.body.classList.remove(
+                "gingao-sidebar-open"
+            );
+
+            toggle.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+        }
+
+
+        function toggleSidebar() {
+
+            if (
+                document.body.classList.contains(
+                    "gingao-sidebar-open"
+                )
+            ) {
+
+                closeSidebar();
+
+            } else {
+
+                openSidebar();
+
+            }
+
+        }
+
+
+        toggle.addEventListener(
+            "click",
+            toggleSidebar
+        );
+
+
+        backdrop.addEventListener(
+            "click",
+            closeSidebar
+        );
+
+
+        sidebar.addEventListener(
+            "click",
+            function (event) {
+
+                const link =
+                    event.target.closest("a");
+
+                if (
+                    link
+                    && isDrawerMode()
+                ) {
+
+                    closeSidebar();
+
+                }
+
+            }
+        );
+
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    closeSidebar();
+
+                }
+
+            }
+        );
+
+
+        window.addEventListener(
+            "resize",
+            function () {
+
+                if (!isDrawerMode()) {
+
+                    closeSidebar();
+
+                }
+
+            }
+        );
+
+
+        console.log(
+            "[GINGAO V24] Responsive sidebar ready"
+        );
+
+    }
+);
+</script>
+
+
+
+
+<script>
+/* GINGAO_TRUE_RESPONSIVE_V25 */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        function syncResponsiveMode() {
+
+            const narrow =
+                window.matchMedia(
+                    "(max-width: 980px)"
+                ).matches;
+
+            document.body.classList.toggle(
+                "gingao-narrow-layout",
+                narrow
+            );
+
+        }
+
+        syncResponsiveMode();
+
+        window.addEventListener(
+            "resize",
+            syncResponsiveMode
+        );
+
+    }
+);
+</script>
+
+
+
+
+<script>
+/* GINGAO_LIGHTING_RUNTIME_V26 */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const toggle =
+            document.getElementById(
+                "gingaoLightingToggle"
+            );
+
+        const status =
+            document.getElementById(
+                "gingaoLightingStatus"
+            );
+
+        if (!toggle) {
+            return;
+        }
+
+
+        const STORAGE_KEY =
+            "gingao-lighting-mode";
+
+
+        function applyMode(mode) {
+
+            const night =
+                mode === "night";
+
+            document.body.classList.toggle(
+                "gingao-night-ambient",
+                night
+            );
+
+            toggle.setAttribute(
+                "aria-pressed",
+                night
+                    ? "true"
+                    : "false"
+            );
+
+            if (status) {
+
+                status.textContent =
+                    night
+                        ? "Noche"
+                        : "D\u00eda";
+
+            }
+
+        }
+
+
+        let savedMode =
+            localStorage.getItem(
+                STORAGE_KEY
+            );
+
+
+        if (
+            savedMode !== "day"
+            &&
+            savedMode !== "night"
+        ) {
+
+            savedMode =
+                "day";
+
+        }
+
+
+        applyMode(
+            savedMode
+        );
+
+
+        toggle.addEventListener(
+            "click",
+            function () {
+
+                const night =
+                    !document.body.classList.contains(
+                        "gingao-night-ambient"
+                    );
+
+                const mode =
+                    night
+                        ? "night"
+                        : "day";
+
+                localStorage.setItem(
+                    STORAGE_KEY,
+                    mode
+                );
+
+                applyMode(
+                    mode
+                );
+
+            }
+        );
+
+    }
+);
+</script>
+
+
+</body>
+</html>

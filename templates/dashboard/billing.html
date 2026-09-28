@@ -1,0 +1,470 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Cr&eacute;ditos y planes | Gingao
+{% endblock %}
+
+{% block content %}
+
+<div class="billing-back-nav">
+
+    <a
+        href="{% url 'home' %}"
+        class="premium-back-link billing-back-link"
+    >
+
+        <span
+            class="premium-back-icon"
+            aria-hidden="true"
+        >
+            &#8592;
+        </span>
+
+        <span class="premium-back-text">
+            Volver atr&aacute;s
+        </span>
+
+    </a>
+
+</div>
+
+<header class="topbar billing-premium-topbar">
+
+    <div>
+
+        <span class="eyebrow">
+            GINGAO CREDITS
+        </span>
+
+        <h1>
+            Cr&eacute;ditos y planes
+        </h1>
+
+        <p>
+            Gestiona tu saldo y capacidad
+            de generaci&oacute;n.
+        </p>
+
+    </div>
+
+
+    <div class="billing-balance">
+
+        <span>
+            Saldo actual
+        </span>
+
+        <strong>
+            {{ wallet.balance }}
+        </strong>
+
+        <small>
+            cr&eacute;ditos
+        </small>
+
+    </div>
+
+</header>
+
+
+<section class="pricing-section billing-plans-premium">
+
+    <div class="section-heading billing-plans-heading">
+
+        <div>
+
+            <span class="eyebrow">
+                PLANES
+            </span>
+
+            <h2 class="billing-section-title">
+                Comprar cr&eacute;ditos
+            </h2>
+
+            <p class="billing-section-copy">
+                Elige el paquete que mejor se adapte
+                a tu ritmo de creaci&oacute;n.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="pricing-grid">
+
+        {% for plan in plans %}
+
+        <article
+            class="
+                pricing-card
+                {% if plan.highlighted %}
+                    highlighted
+                {% endif %}
+            "
+            data-plan="{{ plan.code }}"
+        >
+
+            {% if plan.badge %}
+
+            <span class="pricing-popular">
+
+                <span
+                    class="pricing-popular-icon"
+                    aria-hidden="true"
+                >
+                    &#10024;
+                </span>
+
+                {{ plan.badge }}
+
+            </span>
+
+            {% endif %}
+
+
+            <div class="pricing-card-heading">
+
+                <h3>
+
+                    <span
+                        class="pricing-plan-emoji"
+                        aria-hidden="true"
+                    >
+                        {% if plan.code == "starter" %}
+                            &#127793;
+                        {% elif plan.code == "creator" %}
+                            &#127916;
+                        {% elif plan.code == "plus" %}
+                            &#9889;
+                        {% elif plan.code == "pro" %}
+                            &#128081;
+                        {% elif plan.code == "studio" %}
+                            &#127909;
+                        {% elif plan.code == "business" %}
+                            &#128640;
+                        {% endif %}
+                    </span>
+
+                    <span class="pricing-plan-name">
+                        {{ plan.name }}
+                    </span>
+
+                </h3>
+
+            </div>
+
+
+            <div class="pricing-price">
+
+                <strong>
+                    ${{ plan.price_usd|floatformat:2 }}
+                </strong>
+
+                <span>
+                    pago &uacute;nico
+                </span>
+
+            </div>
+
+
+            <div class="pricing-divider"></div>
+
+
+            <div class="pricing-credits">
+
+                <strong class="pricing-credit-value">
+                    {{ plan.credits }}
+                </strong>
+
+                <span>
+                    cr&eacute;ditos
+                </span>
+
+            </div>
+
+
+            <p class="pricing-description">
+                {{ plan.description }}
+            </p>
+
+
+            <div class="pricing-ratio">
+
+                <strong>
+                    {{ plan.credits_per_usd }}
+                </strong>
+
+                <span>
+                    cr&eacute;ditos / USDT
+                </span>
+
+            </div>
+
+
+            <div class="pricing-commercial-meta">
+
+                {% if plan.code == "starter" %}
+
+                    <span class="pricing-commercial-label">
+                        Para empezar
+                    </span>
+
+                    <strong>
+                        Entrada accesible
+                    </strong>
+
+                {% elif plan.code == "creator" %}
+
+                    <span class="pricing-commercial-label">
+                        Recomendado
+                    </span>
+
+                    <strong>
+                        Mejor equilibrio
+                    </strong>
+
+                {% elif plan.code == "plus" %}
+
+                    <span class="pricing-commercial-label">
+                        M&aacute;s capacidad
+                    </span>
+
+                    <strong>
+                        Para crecer
+                    </strong>
+
+                {% elif plan.code == "pro" %}
+
+                    <span class="pricing-commercial-label">
+                        Producci&oacute;n
+                    </span>
+
+                    <strong>
+                        Alto volumen
+                    </strong>
+
+                {% elif plan.code == "studio" %}
+
+                    <span class="pricing-commercial-label">
+                        Equipos
+                    </span>
+
+                    <strong>
+                        Uso intensivo
+                    </strong>
+
+                {% elif plan.code == "business" %}
+
+                    <span class="pricing-commercial-label">
+                        Mayor rendimiento
+                    </span>
+
+                    <strong>
+                        Mejor coste por cr&eacute;dito
+                    </strong>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="payment-method-buttons">
+
+                <form
+                    method="post"
+                    action="{% url 'payment_checkout' plan.code 'card' %}"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="
+                            payment-plan-button
+                            payment-card-button
+                            {% if plan.highlighted %}
+                                primary-button
+                            {% else %}
+                                secondary-button
+                            {% endif %}
+                            full
+                        "
+                    >
+
+                        <span
+                            class="payment-button-emoji"
+                            aria-hidden="true"
+                        >
+                            &#128179;
+                        </span>
+
+                        <span>
+                            Pagar con tarjeta
+                        </span>
+
+                    </button>
+
+                </form>
+
+
+                <form
+                    method="post"
+                    action="{% url 'payment_checkout' plan.code 'usdt' %}"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="
+                            payment-plan-button
+                            payment-usdt-button
+                            secondary-button
+                            full
+                        "
+                    >
+
+                        <span
+                            class="payment-button-emoji"
+                            aria-hidden="true"
+                        >
+                            &#128181;
+                        </span>
+
+                        <span>
+                            Pagar con USDT
+                        </span>
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<section class="workspace-panel billing-history">
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="eyebrow">
+                LEDGER
+            </span>
+
+            <h2>
+                Movimientos de cr&eacute;ditos
+            </h2>
+
+            <p>
+                Historial de entradas,
+                reservas y devoluciones.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if history %}
+
+    <div class="credit-history-list">
+
+        {% for row in history %}
+
+        <div class="credit-history-row">
+
+            <div>
+
+                <strong>
+                    {{ row.operation }}
+                </strong>
+
+                {% if row.description %}
+
+                <p>
+                    {{ row.description }}
+                </p>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="credit-history-meta">
+
+                {% if row.amount != None %}
+
+                <strong
+                    class="
+                        {% if row.amount >= 0 %}
+                            positive
+                        {% else %}
+                            negative
+                        {% endif %}
+                    "
+                >
+
+                    {% if row.amount >= 0 %}
+                        +
+                    {% endif %}
+
+                    {{ row.amount }}
+
+                </strong>
+
+                {% endif %}
+
+
+                {% if row.created %}
+
+                <span>
+                    {{ row.created }}
+                </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+
+        <strong>
+            A&uacute;n no hay movimientos.
+        </strong>
+
+        <p>
+            Las compras, reservas y devoluciones
+            aparecer&aacute;n aqu&iacute;.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+
+<script
+    src="{% static 'js/billing_premium.js' %}"
+    defer
+></script>
+
+{% endblock %}

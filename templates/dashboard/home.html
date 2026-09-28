@@ -1,0 +1,971 @@
+{% extends "base.html" %}
+{% load gingao_tags %}
+
+{% block title %}
+Inicio ? Gingao
+{% endblock %}
+
+
+{% block content %}
+
+<header class="topbar">
+
+    <div>
+        <span class="eyebrow">
+            ESTUDIO DE V&Iacute;DEO IA
+        </span>
+
+        <h1>
+            &iquest;Qu&eacute; vamos a crear hoy?
+        </h1>
+
+        <p>
+            De una idea a una historia completa,
+            sin salir de Gingao.
+        </p>
+    </div>
+
+    <a href="{% url 'create_video' %}"
+       class="primary-button">
+        + Nuevo v&iacute;deo
+    </a>
+
+</header>
+
+
+<section class="stats-grid gingao-home-kpi-grid">
+
+    <article class="stat-card gingao-home-kpi-card kpi-projects">
+
+        <div class="gingao-home-kpi-top">
+
+            <span class="gingao-home-kpi-icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M3.5 7.2h6l1.8 2h9.2v10.2h-17z"/>
+                    <path d="M3.5 7.2V5.1h6l1.5 2.1"/>
+                </svg>
+            </span>
+
+            <span class="gingao-home-kpi-label">
+                Proyectos
+            </span>
+
+        </div>
+
+        <strong class="gingao-home-kpi-value">
+            {{ project_count }}
+        </strong>
+
+        <span class="gingao-home-kpi-caption">
+            Proyectos creados
+        </span>
+
+    </article>
+
+
+    <article class="stat-card gingao-home-kpi-card kpi-assets">
+
+        <div class="gingao-home-kpi-top">
+
+            <span class="gingao-home-kpi-icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <rect
+                        x="4"
+                        y="4"
+                        width="16"
+                        height="16"
+                        rx="2.5"
+                    />
+                    <circle
+                        cx="9"
+                        cy="9"
+                        r="1.6"
+                    />
+                    <path
+                        d="m6.5 17 4.1-4.3 2.8 2.7 2.2-2.1 2.3 3.7"
+                    />
+                </svg>
+            </span>
+
+            <span class="gingao-home-kpi-label">
+                Activos
+            </span>
+
+        </div>
+
+        <strong class="gingao-home-kpi-value">
+            {{ asset_count }}
+        </strong>
+
+        <span class="gingao-home-kpi-caption">
+            Recursos disponibles
+        </span>
+
+    </article>
+
+
+    <article class="stat-card gingao-home-kpi-card kpi-generations">
+
+        <div class="gingao-home-kpi-top">
+
+            <span class="gingao-home-kpi-icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M12 2.8 13.8 8l5.2 1.8-5.2 1.8L12 17l-1.8-5.4L5 9.8 10.2 8z"/>
+                    <path d="m18.2 15 .8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>
+                </svg>
+            </span>
+
+            <span class="gingao-home-kpi-label">
+                Generaciones
+            </span>
+
+        </div>
+
+        <strong class="gingao-home-kpi-value">
+            {{ generation_count }}
+        </strong>
+
+        <span class="gingao-home-kpi-caption">
+            Contenido generado
+        </span>
+
+    </article>
+
+
+    <article class="stat-card gingao-home-kpi-card kpi-credits">
+
+        <div class="gingao-home-kpi-top">
+
+            <span class="gingao-home-kpi-icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M12 3 19 8.5 12 14 5 8.5z"/>
+                    <path d="m5 12 7 5.5 7-5.5"/>
+                    <path d="m5 15.5 7 5.5 7-5.5"/>
+                </svg>
+            </span>
+
+            <span class="gingao-home-kpi-label">
+                Cr&eacute;ditos
+            </span>
+
+        </div>
+
+        <strong class="gingao-home-kpi-value">
+            {% if wallet.unlimited %}
+                &infin;
+            {% else %}
+                {{ wallet.balance }}
+            {% endif %}
+        </strong>
+
+        <span class="gingao-home-kpi-caption">
+            Saldo disponible
+        </span>
+
+    </article>
+
+</section>
+
+
+
+<section class="creative-catalog">
+
+    <div class="catalog-header">
+
+        <div>
+
+            <span class="eyebrow">
+                EXPLORA GINGAO
+            </span>
+
+            <h2>
+                Encuentra tu pr&oacute;xima idea
+            </h2>
+
+            <p>
+                Elige un formato visual y Gingao
+                te acompa&ntilde;a desde el concepto
+                hasta el v&iacute;deo final.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="catalog-search-row">
+
+        <label class="catalog-search-bar">
+
+            <span class="catalog-search-icon">
+                &#9906;
+            </span>
+
+            <input
+                type="search"
+                id="catalog-search"
+                placeholder="Buscar ideas, estilos o formatos..."
+                autocomplete="off"
+            >
+
+        </label>
+
+        <span
+            class="catalog-results-count"
+            id="catalog-results-count"
+        >
+            12 formatos
+        </span>
+
+    </div>
+
+
+    <div
+        class="catalog-filters"
+        role="tablist"
+        aria-label="Filtros de formatos"
+    >
+
+        <button
+            type="button"
+            class="catalog-filter active"
+            data-filter="all"
+        >
+            Todos
+        </button>
+
+        <button
+            type="button"
+            class="catalog-filter"
+            data-filter="viral"
+        >
+            Viral
+        </button>
+
+        <button
+            type="button"
+            class="catalog-filter"
+            data-filter="drama"
+        >
+            Drama
+        </button>
+
+        <button
+            type="button"
+            class="catalog-filter"
+            data-filter="kids"
+        >
+            Infantil
+        </button>
+
+        <button
+            type="button"
+            class="catalog-filter"
+            data-filter="animation"
+        >
+            Animaci&oacute;n IA
+        </button>
+
+        <button
+            type="button"
+            class="catalog-filter"
+            data-filter="asmr"
+        >
+            ASMR
+        </button>
+
+        <button
+            type="button"
+            class="catalog-filter"
+            data-filter="creative"
+        >
+            Creativo
+        </button>
+
+    </div>
+
+
+    <div class="catalog-grid">
+
+        <a
+            href="{% url 'create_video' %}?template=fruit_story"
+            class="catalog-card"
+            data-category="viral animation"
+        >
+
+            <div class="catalog-cover">
+
+                <img
+                    src="/static/images/template_covers/fruit_story.webp"
+                    alt="Historia de frutas"
+                    loading="lazy"
+                >
+
+                <span class="catalog-category">
+                    VIRAL
+                </span>
+
+            </div>
+
+            <div class="catalog-card-body">
+
+                <h3>
+                    Historia de frutas
+                </h3>
+
+                <p>
+                    Personajes 3D, humor,
+                    acci&oacute;n y finales inesperados.
+                </p>
+
+                <span class="catalog-action">
+                    Crear historia
+                    <b>&rarr;</b>
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'create_video' %}?template=short_drama"
+            class="catalog-card"
+            data-category="drama"
+        >
+
+            <div class="catalog-cover">
+
+                <img
+                    src="/static/images/template_covers/short_drama.webp"
+                    alt="Drama corto"
+                    loading="lazy"
+                >
+
+                <span class="catalog-category">
+                    DRAMA
+                </span>
+
+            </div>
+
+            <div class="catalog-card-body">
+
+                <h3>
+                    Drama cinematogr&aacute;fico
+                </h3>
+
+                <p>
+                    Historias emocionales con
+                    est&eacute;tica de cine y series.
+                </p>
+
+                <span class="catalog-action">
+                    Crear drama
+                    <b>&rarr;</b>
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'create_video' %}?template=kids_story"
+            class="catalog-card"
+            data-category="kids animation"
+        >
+
+            <div class="catalog-cover">
+
+                <img
+                    src="/static/images/template_covers/kids_story.webp"
+                    alt="Historia infantil"
+                    loading="lazy"
+                >
+
+                <span class="catalog-category">
+                    FAMILIAR
+                </span>
+
+            </div>
+
+            <div class="catalog-card-body">
+
+                <h3>
+                    Historia infantil
+                </h3>
+
+                <p>
+                    Aventuras familiares con
+                    personajes 3D y mundos m&aacute;gicos.
+                </p>
+
+                <span class="catalog-action">
+                    Crear aventura
+                    <b>&rarr;</b>
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'create_video' %}?template=free_create"
+            class="catalog-card"
+            data-category="creative animation"
+        >
+
+            <div class="catalog-cover">
+
+                <img
+                    src="/static/images/template_covers/free_create.webp"
+                    alt="Crear desde cero"
+                    loading="lazy"
+                >
+
+                <span class="catalog-category">
+                    CREATIVO
+                </span>
+
+            </div>
+
+            <div class="catalog-card-body">
+
+                <h3>
+                    Crear desde cero
+                </h3>
+
+                <p>
+                    Describe tu visi&oacute;n y deja
+                    que Gingao construya el concepto.
+                </p>
+
+                <span class="catalog-action">
+                    Empezar
+                    <b>&rarr;</b>
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'create_video' %}?template=short_drama"
+            class="catalog-card"
+            data-category="drama viral"
+        >
+
+            <div class="catalog-cover">
+
+                <img
+                    src="/static/images/template_covers/romance.webp"
+                    alt="Romance personalizado"
+                    loading="lazy"
+                >
+
+                <span class="catalog-category">
+                    ROMANCE
+                </span>
+
+            </div>
+
+            <div class="catalog-card-body">
+
+                <h3>
+                    Romance personalizado
+                </h3>
+
+                <p>
+                    Encuentros, conflictos y
+                    momentos rom&aacute;nticos de alto impacto.
+                </p>
+
+                <span class="catalog-action">
+                    Crear romance
+                    <b>&rarr;</b>
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'create_video' %}?template=free_create"
+            class="catalog-card"
+            data-category="animation creative"
+        >
+
+            <div class="catalog-cover">
+
+                <img
+                    src="/static/images/template_covers/ai_animation.webp"
+                    alt="Animaci?n con IA"
+                    loading="lazy"
+                >
+
+                <span class="catalog-category">
+                    ANIMACI&Oacute;N IA
+                </span>
+
+            </div>
+
+            <div class="catalog-card-body">
+
+                <h3>
+                    Animaci&oacute;n con IA
+                </h3>
+
+                <p>
+                    Transforma una idea en una
+                    secuencia visual estilizada y din&aacute;mica.
+                </p>
+
+                <span class="catalog-action">
+                    Crear animaci&oacute;n
+                    <b>&rarr;</b>
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'create_video' %}?template=free_create"
+            class="catalog-card"
+            data-category="asmr creative"
+        >
+
+            <div class="catalog-cover">
+
+                <img
+                    src="/static/images/template_covers/asmr.webp"
+                    alt="ASMR visual con IA"
+                    loading="lazy"
+                >
+
+                <span class="catalog-category">
+                    ASMR
+                </span>
+
+            </div>
+
+            <div class="catalog-card-body">
+
+                <h3>
+                    ASMR visual con IA
+                </h3>
+
+                <p>
+                    Texturas, cortes y movimientos
+                    hipn&oacute;ticos para contenido corto.
+                </p>
+
+                <span class="catalog-action">
+                    Crear ASMR
+                    <b>&rarr;</b>
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'create_video' %}?template=free_create"
+            class="catalog-card"
+            data-category="viral creative"
+        >
+
+            <div class="catalog-cover">
+
+                <img
+                    src="/static/images/template_covers/viral_story.webp"
+                    alt="Historia viral"
+                    loading="lazy"
+                >
+
+                <span class="catalog-category">
+                    TENDENCIA
+                </span>
+
+            </div>
+
+            <div class="catalog-card-body">
+
+                <h3>
+                    Historia viral
+                </h3>
+
+                <p>
+                    Una estructura r&aacute;pida,
+                    visual y pensada para Shorts y Reels.
+                </p>
+
+                <span class="catalog-action">
+                    Crear v&iacute;deo
+                    <b>&rarr;</b>
+                </span>
+
+            </div>
+
+        </a>
+
+    
+
+        <a
+            href="{% url 'create_video' %}?template=free_create"
+            class="catalog-card"
+            data-category="viral animation creative"
+        >
+
+            <div class="catalog-cover">
+
+                <img
+                    src="/static/images/template_covers/cinematic_pets.webp"
+                    alt="Mascotas cinematogr?ficas"
+                    loading="lazy"
+                >
+
+                <span class="catalog-category">
+                    MASCOTAS
+                </span>
+
+            </div>
+
+            <div class="catalog-card-body">
+
+                <h3>
+                    Mascotas cinematogr&aacute;ficas
+                </h3>
+
+                <p>
+                    Aventuras expresivas con animales,
+                    humor y narrativa visual.
+                </p>
+
+                <span class="catalog-action">
+                    Crear historia
+                    <b>&rarr;</b>
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'create_video' %}?template=short_drama"
+            class="catalog-card"
+            data-category="drama viral"
+        >
+
+            <div class="catalog-cover">
+
+                <img
+                    src="/static/images/template_covers/short_suspense.webp"
+                    alt="Suspenso corto"
+                    loading="lazy"
+                >
+
+                <span class="catalog-category">
+                    SUSPENSO
+                </span>
+
+            </div>
+
+            <div class="catalog-card-body">
+
+                <h3>
+                    Suspenso corto
+                </h3>
+
+                <p>
+                    Tensiones, giros y escenas
+                    pensadas para mantener la atenci&oacute;n.
+                </p>
+
+                <span class="catalog-action">
+                    Crear suspenso
+                    <b>&rarr;</b>
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'create_video' %}?template=free_create"
+            class="catalog-card"
+            data-category="viral creative"
+        >
+
+            <div class="catalog-cover">
+
+                <img
+                    src="/static/images/template_covers/viral_product.webp"
+                    alt="Producto viral"
+                    loading="lazy"
+                >
+
+                <span class="catalog-category">
+                    PRODUCTO
+                </span>
+
+            </div>
+
+            <div class="catalog-card-body">
+
+                <h3>
+                    Producto viral
+                </h3>
+
+                <p>
+                    Convierte un producto o servicio
+                    en una pieza visual llamativa.
+                </p>
+
+                <span class="catalog-action">
+                    Crear anuncio
+                    <b>&rarr;</b>
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'create_video' %}?template=kids_story"
+            class="catalog-card"
+            data-category="animation creative kids"
+        >
+
+            <div class="catalog-cover">
+
+                <img
+                    src="/static/images/template_covers/cinematic_fantasy.webp"
+                    alt="Fantas?a cinematogr?fica"
+                    loading="lazy"
+                >
+
+                <span class="catalog-category">
+                    FANTAS&Iacute;A
+                </span>
+
+            </div>
+
+            <div class="catalog-card-body">
+
+                <h3>
+                    Fantas&iacute;a cinematogr&aacute;fica
+                </h3>
+
+                <p>
+                    Mundos imaginarios, criaturas
+                    y aventuras con acabado premium.
+                </p>
+
+                <span class="catalog-action">
+                    Crear fantas&iacute;a
+                    <b>&rarr;</b>
+                </span>
+
+            </div>
+
+        </a>
+
+</div>
+
+</section>
+
+
+<section class="recent-section">
+
+    <div class="section-heading">
+
+        <div>
+            <h2>Proyectos recientes</h2>
+
+            <p>
+                Contin&uacute;a justo donde lo dejaste.
+            </p>
+        </div>
+
+        <a href="{% url 'projects' %}"
+           class="secondary-button">
+            Ver todos
+        </a>
+
+    </div>
+
+
+    {% if recent_projects %}
+
+        <div class="project-grid">
+
+            {% for project in recent_projects %}
+
+                {% with cover=project|project_cover %}
+
+                <a class="project-card project-card-v3"
+                   href="{% url 'project_workspace' project.id %}">
+
+                    <div class="project-preview project-preview-v3">
+
+                        {% if cover %}
+
+                            <img
+                                src="{{ cover }}"
+                                alt="{{ project.title }}"
+                                class="project-cover-image"
+                                loading="lazy"
+                            >
+
+                        {% else %}
+
+                            <div
+                                class="project-cover-fallback-v3"
+                                data-project-title="{{ project.title }}"
+                            >
+                                <div class="project-fallback-emojis"></div>
+
+                                <span class="project-cover-brand">
+                                    GINGAO
+                                </span>
+                            </div>
+
+                        {% endif %}
+
+                        <div class="project-cover-overlay">
+
+                            <span class="project-stage-chip">
+                                {{ project.get_status_display }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="project-card-body project-card-body-v3">
+
+                        <div class="project-card-heading">
+
+                            <h3>
+                                {{ project.title }}
+                            </h3>
+
+                            <span class="project-duration-chip">
+                                {{ project.target_duration_seconds }} s
+                            </span>
+
+                        </div>
+
+
+                        <p class="project-updated">
+                            Actualizado
+                            &middot;
+                            {{ project.updated_at|date:"d/m/Y H:i" }}
+                        </p>
+
+
+                        <div class="project-progress-block">
+
+                            <div class="project-progress-meta">
+
+                                <span>
+                                    {% if project.status == "final" or project.status == "completed" %}
+                                        LISTO
+                                    {% elif project.status == "video" %}
+                                        V&Iacute;DEO
+                                    {% elif project.status == "images" %}
+                                        IM&Aacute;GENES
+                                    {% elif project.status == "script" %}
+                                        GUI&Oacute;N
+                                    {% else %}
+                                        PROGRESO
+                                    {% endif %}
+                                </span>
+
+                                <strong>
+                                    {% if project.status == "final" or project.status == "completed" %}
+                                        100%
+                                    {% elif project.status == "video" %}
+                                        75%
+                                    {% elif project.status == "images" %}
+                                        50%
+                                    {% elif project.status == "script" %}
+                                        25%
+                                    {% else %}
+                                        15%
+                                    {% endif %}
+                                </strong>
+
+                            </div>
+
+                            <div class="project-progress-track">
+
+                                <span
+                                    class="project-progress-fill status-{{ project.status }}"
+                                ></span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+                {% endwith %}
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon premium-empty-icon">
+                &#10024;
+            </div>
+
+            <h3>
+                Todav&iacute;a no tienes proyectos
+            </h3>
+
+            <p>
+                Crea el primero y aparecer&aacute; aqu&iacute;.
+            </p>
+
+            <a href="{% url 'create_video' %}"
+               class="primary-button">
+                Crear primer v&iacute;deo
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

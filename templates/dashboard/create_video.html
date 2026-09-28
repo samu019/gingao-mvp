@@ -1,0 +1,1638 @@
+{% extends "base.html" %}
+
+{% block title %}
+Crear v&iacute;deo &middot; Gingao
+{% endblock %}
+
+{% block content %}
+
+<section class="creator-premium-page">
+
+    <div class="creator-topbar">
+
+        <a
+            href="{% url 'home' %}"
+            class="creator-home-card"
+            aria-label="Volver al inicio"
+        >
+
+            <span class="creator-home-icon">
+                &#8962;
+            </span>
+
+            <span class="creator-home-text">
+
+                <small>
+                    VOLVER
+                </small>
+
+                <strong>
+                    Inicio
+                </strong>
+
+            </span>
+
+            <span class="creator-home-arrow">
+                &larr;
+            </span>
+
+        </a>
+
+
+        <div class="creator-stepper">
+
+            <div class="creator-step active">
+                <span>1</span>
+                <strong>Gui&oacute;n</strong>
+            </div>
+
+            <div class="creator-step-line"></div>
+
+            <div class="creator-step">
+                <span>2</span>
+                <strong>Im&aacute;genes</strong>
+            </div>
+
+            <div class="creator-step-line"></div>
+
+            <div class="creator-step">
+                <span>3</span>
+                <strong>V&iacute;deo</strong>
+            </div>
+
+            <div class="creator-step-line"></div>
+
+            <div class="creator-step">
+                <span>4</span>
+                <strong>Corte final</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="creator-premium-layout">
+
+        <section class="creator-premium-main">
+
+            <div class="creator-premium-heading">
+
+                <span class="eyebrow">
+                    PASO 1 &middot; GUI&Oacute;N
+                </span>
+
+                <h1>
+                    Convierte una idea
+                    en una historia
+                </h1>
+
+                <p>
+                    Describe lo que quieres crear.
+                    Gingao preparar&aacute; personajes,
+                    escenas y estructura para continuar
+                    con im&aacute;genes y v&iacute;deo.
+                </p>
+
+            </div>
+
+
+            <form
+                method="post"
+                class="creator-premium-form"
+                id="creator-project-form"
+            >
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="template_code"
+                    value="{{ template_code }}"
+                >
+
+
+                <div class="creator-field">
+
+                    <div class="creator-field-head">
+
+                        <label for="project-title">
+                            Nombre del proyecto
+                        </label>
+
+                        <span>
+                            Identifica tu historia
+                        </span>
+
+                    </div>
+
+                    <input
+                        id="project-title"
+                        type="text"
+                        name="title"
+                        placeholder="Ej. La fresa y el plátano"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="creator-field">
+
+                    <div class="creator-field-head">
+
+                        <label for="project-idea">
+                            Idea de la historia
+                        </label>
+
+                        <span id="idea-counter">
+                            0 caracteres
+                        </span>
+
+                    </div>
+
+                    <textarea
+                        id="project-idea"
+                        name="idea"
+                        rows="8"
+                        placeholder="Ej. Una fresa huye de una licuadora y pide ayuda a un plátano. El plátano intenta salvarla, pero el final es inesperado..."
+                        required
+                    ></textarea>
+
+                    <div class="creator-tip">
+                        <span class="creator-tip-dot"></span>
+
+                        <p>
+                            Consejo: indica personajes,
+                            lugar, conflicto y tipo de final
+                            para obtener escenas m&aacute;s precisas.
+                        </p>
+                    </div>
+
+
+                    <div class="creator-quality-panel">
+
+                        <div class="creator-quality-top">
+
+                            
+                            <div class="creator-quality-heading">
+
+                                <span class="creator-quality-icon">
+                                    &#10024;
+                                </span>
+
+                                <div>
+
+                                    <span class="creator-quality-label">
+                                        Calidad de la idea
+                                    </span>
+
+                                    <strong id="idea-quality-text">
+                                        B&aacute;sica
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <span
+                                class="creator-quality-score"
+                                id="idea-quality-score"
+                            >
+                                20%
+                            </span>
+
+                        </div>
+
+
+                        <div class="creator-quality-track">
+
+                            <span
+                                id="idea-quality-bar"
+                                class="creator-quality-bar"
+                            ></span>
+
+                        </div>
+
+
+                        <p id="idea-quality-hint">
+                            A&ntilde;ade personajes, lugar,
+                            conflicto y tipo de final.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                
+<!-- GINGAO_PRODUCTION_OPTIONS_UI_V37 -->
+
+<div class="gingao-production-options-v37">
+
+    <div class="creator-field-head">
+
+        <span class="creator-field-label">
+            Formato del v&iacute;deo
+        </span>
+
+        <span>
+            Elige la proporci&oacute;n final
+        </span>
+
+    </div>
+
+
+    <div class="gingao-option-grid-v37">
+
+        <label class="gingao-option-card-v37">
+
+            <input
+                type="radio"
+                name="aspect_ratio"
+                value="9:16"
+                checked
+            >
+
+            <span class="gingao-format-icon vertical"></span>
+
+            <strong>9:16</strong>
+
+            <small>
+                TikTok &middot;
+                Reels &middot;
+                Shorts
+            </small>
+
+        </label>
+
+
+        <label class="gingao-option-card-v37">
+
+            <input
+                type="radio"
+                name="aspect_ratio"
+                value="16:9"
+            >
+
+            <span class="gingao-format-icon horizontal"></span>
+
+            <strong>16:9</strong>
+
+            <small>
+                YouTube &middot;
+                Pantalla
+            </small>
+
+        </label>
+
+
+        <label class="gingao-option-card-v37">
+
+            <input
+                type="radio"
+                name="aspect_ratio"
+                value="1:1"
+            >
+
+            <span class="gingao-format-icon square"></span>
+
+            <strong>1:1</strong>
+
+            <small>
+                Publicaci&oacute;n cuadrada
+            </small>
+
+        </label>
+
+
+        <label class="gingao-option-card-v37">
+
+            <input
+                type="radio"
+                name="aspect_ratio"
+                value="4:5"
+            >
+
+            <span class="gingao-format-icon portrait"></span>
+
+            <strong>4:5</strong>
+
+            <small>
+                Feed vertical
+            </small>
+
+        </label>
+
+    </div>
+
+
+    <div class="gingao-options-split-v37">
+
+        <div>
+
+            <div class="creator-field-head">
+
+                <span class="creator-field-label">
+                    Narraci&oacute;n
+                </span>
+
+            </div>
+
+
+            <div class="gingao-option-grid-v37 two">
+
+                <label
+                    class="gingao-option-card-v37 compact"
+                >
+
+                    <input
+                        type="radio"
+                        name="voice_enabled"
+                        value="1"
+                        checked
+                    >
+
+                    <strong>
+                        Con voz
+                    </strong>
+
+                    <small>
+                        Narraci&oacute;n incluida
+                    </small>
+
+                </label>
+
+
+                <label
+                    class="gingao-option-card-v37 compact"
+                >
+
+                    <input
+                        type="radio"
+                        name="voice_enabled"
+                        value="0"
+                    >
+
+                    <strong>
+                        Sin voz
+                    </strong>
+
+                    <small>
+                        Solo contenido visual
+                    </small>
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <div>
+
+            <div class="creator-field-head">
+
+                <span class="creator-field-label">
+                    Calidad
+                </span>
+
+            </div>
+
+
+            <div class="gingao-option-grid-v37 three">
+
+                <label
+                    class="gingao-option-card-v37 compact"
+                >
+
+                    <input
+                        type="radio"
+                        name="quality_tier"
+                        value="fast"
+                    >
+
+                    <strong>
+                        Econ&oacute;mica
+                    </strong>
+
+                    <small>
+                        Ahorra cr&eacute;ditos
+                    </small>
+
+                </label>
+
+
+                <label
+                    class="gingao-option-card-v37 compact"
+                >
+
+                    <input
+                        type="radio"
+                        name="quality_tier"
+                        value="standard"
+                        checked
+                    >
+
+                    <strong>
+                        Est&aacute;ndar
+                    </strong>
+
+                    <small>
+                        Equilibrada
+                    </small>
+
+                </label>
+
+
+                <label
+                    class="gingao-option-card-v37 compact premium"
+                >
+
+                    <input
+                        type="radio"
+                        name="quality_tier"
+                        value="premium"
+                    >
+
+                    <strong>
+                        Premium
+                    </strong>
+
+                    <small>
+                        M&aacute;xima calidad
+                    </small>
+
+                </label>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="creator-duration-section">
+
+                    <div class="creator-field-head">
+
+                        <span class="creator-field-label">
+                            Duraci&oacute;n aproximada
+                        </span>
+
+                        <span>
+                            Puedes cambiarla despu&eacute;s
+                        </span>
+
+                    </div>
+
+
+                    <div class="creator-duration-grid">
+
+                        <label class="creator-duration-card">
+
+                            <input
+                                type="radio"
+                                name="duration"
+                                value="15"
+                            >
+
+                            <span class="creator-duration-number">
+                                15
+                            </span>
+
+                            <span class="creator-duration-unit">
+                                segundos
+                            </span>
+
+                            <small>
+                                Ultra corto
+                            </small>
+
+                        </label>
+
+
+                        <label class="creator-duration-card">
+
+                            <input
+                                type="radio"
+                                name="duration"
+                                value="20"
+                                checked
+                            >
+
+                            <span class="creator-duration-number">
+                                20
+                            </span>
+
+                            <span class="creator-duration-unit">
+                                segundos
+                            </span>
+
+                            <small>
+                                Recomendado
+                            </small>
+
+                        </label>
+
+
+                        <label class="creator-duration-card">
+
+                            <input
+                                type="radio"
+                                name="duration"
+                                value="30"
+                            >
+
+                            <span class="creator-duration-number">
+                                30
+                            </span>
+
+                            <span class="creator-duration-unit">
+                                segundos
+                            </span>
+
+                            <small>
+                                M&aacute;s historia
+                            </small>
+
+                        </label>
+
+
+                        <label class="creator-duration-card">
+
+                            <input
+                                type="radio"
+                                name="duration"
+                                value="60"
+                            >
+
+                            <span class="creator-duration-number">
+                                60
+                            </span>
+
+                            <span class="creator-duration-unit">
+                                segundos
+                            </span>
+
+                            <small>
+                                Historia larga
+                            </small>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <div class="creator-live-summary">
+
+                    <div>
+
+                        <span>
+                            Duraci&oacute;n
+                        </span>
+
+                        <strong id="summary-duration">
+                            20 s
+                        </strong>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Idea
+                        </span>
+
+                        <strong id="summary-length">
+                            0 caracteres
+                        </strong>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Estado
+                        </span>
+
+                        <strong id="summary-quality">
+                            B&aacute;sica
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="creator-cost-card">
+
+                    <div>
+
+                        <span class="creator-cost-label">
+                            Crear el proyecto
+                        </span>
+
+                        <strong>
+                            <span id="gingao-primary-cost-v37">8</span> cr&eacute;ditos
+                        </strong>
+
+                    </div>
+
+                    <p>
+                        Solo se descuentan cr&eacute;ditos
+                        al generar contenido con proveedores
+                        que tengan coste.
+                    </p>
+
+                </div>
+
+
+
+<!-- GINGAO_COST_SUMMARY_V37 -->
+
+<div class="gingao-cost-summary-v37">
+
+    <div>
+
+        <span>
+            Coste estimado
+        </span>
+
+        <strong>
+            <span id="gingao-estimated-cost">
+                8
+            </span>
+            cr&eacute;ditos
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            Tu saldo
+        </span>
+
+        <strong>
+            {{ wallet.balance }}
+            cr&eacute;ditos
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            Configuraci&oacute;n
+        </span>
+
+        <strong id="gingao-config-summary">
+            9:16 &middot;
+            Est&aacute;ndar &middot;
+            Voz
+        </strong>
+
+    </div>
+
+</div>
+
+
+                <button
+                    type="submit"
+                    class="creator-submit-button"
+                    id="creator-submit-button"
+                >
+
+                    <span
+                        class="creator-submit-label"
+                    >
+                        Crear proyecto
+                    </span>
+
+                    <span
+                        class="creator-submit-loading"
+                        hidden
+                    >
+                        <i></i>
+                        Preparando proyecto...
+                    </span>
+
+                    <b
+                        class="creator-submit-arrow"
+                    >
+                        &rarr;
+                    </b>
+
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <aside class="creator-premium-side">
+
+            <div class="creator-flow-card">
+
+                <span class="eyebrow">
+                    FLUJO GINGAO
+                </span>
+
+                <h2>
+                    De la idea al v&iacute;deo
+                </h2>
+
+                <p class="creator-flow-intro">
+                    Un proceso simple para convertir
+                    una idea en una pieza terminada.
+                </p>
+
+
+                <div class="creator-flow-list">
+
+                    <div class="creator-flow-item active">
+
+                        <span class="creator-flow-index">
+                            1
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Gui&oacute;n
+                            </strong>
+
+                            <p>
+                                Gingao organiza la historia
+                                y divide la idea en escenas.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="creator-flow-item">
+
+                        <span class="creator-flow-index">
+                            2
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Im&aacute;genes
+                            </strong>
+
+                            <p>
+                                Creamos personajes
+                                y escenas visualmente consistentes.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="creator-flow-item">
+
+                        <span class="creator-flow-index">
+                            3
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                V&iacute;deo
+                            </strong>
+
+                            <p>
+                                Cada escena se anima
+                                conservando el estilo visual.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="creator-flow-item">
+
+                        <span class="creator-flow-index">
+                            4
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Corte final
+                            </strong>
+
+                            <p>
+                                Gingao une escenas, audio
+                                y estructura final.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="creator-preview-note">
+
+                <span>
+                    GINGAO STUDIO
+                </span>
+
+                <strong>
+                    Tu proyecto queda editable
+                    en cada etapa.
+                </strong>
+
+                <p>
+                    Puedes revisar el gui&oacute;n,
+                    sustituir im&aacute;genes y regenerar
+                    escenas antes del resultado final.
+                </p>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</section>
+
+<script>
+/* GINGAO_CREATOR_PREMIUM_V1 */
+
+(function () {
+
+    function initCreatorPremium() {
+
+        const textarea =
+            document.getElementById(
+                "project-idea"
+            );
+
+        const counter =
+            document.getElementById(
+                "idea-counter"
+            );
+
+        const durationCards =
+            document.querySelectorAll(
+                ".creator-duration-card"
+            );
+
+
+        function updateCounter() {
+
+            if (
+                !textarea
+                || !counter
+            ) {
+                return;
+            }
+
+            const length =
+                textarea.value.length;
+
+            counter.textContent =
+                length === 1
+                ? "1 carácter"
+                : length
+                    + " caracteres";
+
+        }
+
+
+        function autoGrow() {
+
+            if (!textarea) {
+                return;
+            }
+
+            textarea.style.height =
+                "auto";
+
+            textarea.style.height =
+                Math.max(
+                    180,
+                    textarea.scrollHeight
+                )
+                + "px";
+
+        }
+
+
+        durationCards.forEach(
+            function (card) {
+
+                const input =
+                    card.querySelector(
+                        'input[type="radio"]'
+                    );
+
+                if (!input) {
+                    return;
+                }
+
+
+                function sync() {
+
+                    durationCards.forEach(
+                        function (item) {
+
+                            item.classList.remove(
+                                "selected"
+                            );
+
+                        }
+                    );
+
+
+                    if (input.checked) {
+
+                        card.classList.add(
+                            "selected"
+                        );
+
+                    }
+
+                }
+
+
+                input.addEventListener(
+                    "change",
+                    sync
+                );
+
+
+                if (input.checked) {
+                    sync();
+                }
+
+            }
+        );
+
+
+        const qualityText =
+            document.getElementById(
+                "idea-quality-text"
+            );
+
+        const qualityScore =
+            document.getElementById(
+                "idea-quality-score"
+            );
+
+        const qualityBar =
+            document.getElementById(
+                "idea-quality-bar"
+            );
+
+        const qualityHint =
+            document.getElementById(
+                "idea-quality-hint"
+            );
+
+        const summaryDuration =
+            document.getElementById(
+                "summary-duration"
+            );
+
+        const summaryLength =
+            document.getElementById(
+                "summary-length"
+            );
+
+        const summaryQuality =
+            document.getElementById(
+                "summary-quality"
+            );
+
+        const form =
+            document.getElementById(
+                "creator-project-form"
+            );
+
+        const submitButton =
+            document.getElementById(
+                "creator-submit-button"
+            );
+
+
+        function evaluateIdea() {
+
+            if (!textarea) {
+                return;
+            }
+
+            const value =
+                textarea.value.trim();
+
+            const lower =
+                value.toLowerCase();
+
+            let score = 15;
+
+            if (value.length >= 40) {
+                score += 15;
+            }
+
+            if (value.length >= 90) {
+                score += 15;
+            }
+
+            if (value.length >= 160) {
+                score += 10;
+            }
+
+            const usefulWords = [
+                "personaje",
+                "fresa",
+                "plátano",
+                "platano",
+                "hombre",
+                "mujer",
+                "ni?o",
+                "ni?a",
+                "cocina",
+                "calle",
+                "casa",
+                "bosque",
+                "ciudad",
+                "problema",
+                "conflicto",
+                "huye",
+                "salva",
+                "final",
+                "termina",
+                "sorpresa"
+            ];
+
+            let matches = 0;
+
+            usefulWords.forEach(
+                function (word) {
+
+                    if (
+                        lower.includes(word)
+                    ) {
+                        matches += 1;
+                    }
+
+                }
+            );
+
+            score += Math.min(
+                matches * 5,
+                30
+            );
+
+            score = Math.min(
+                Math.max(score, 15),
+                100
+            );
+
+
+            let label = "Básica";
+            let hint =
+                "Añade personajes, lugar, conflicto y tipo de final.";
+
+            if (score >= 75) {
+
+                label = "Excelente";
+
+                hint =
+                    "La idea tiene suficiente contexto para crear escenas más precisas.";
+
+            } else if (score >= 45) {
+
+                label = "Buena";
+
+                hint =
+                    "Va bien. Añade alg?n detalle visual o un final más concreto.";
+
+            }
+
+
+            if (qualityText) {
+                qualityText.textContent =
+                    label;
+            }
+
+            if (qualityScore) {
+                qualityScore.textContent =
+                    score + "%";
+            }
+
+            if (qualityBar) {
+                qualityBar.style.width =
+                    score + "%";
+
+                qualityBar.dataset.level =
+                    label.toLowerCase();
+            }
+
+            if (qualityHint) {
+                qualityHint.textContent =
+                    hint;
+            }
+
+            if (summaryLength) {
+
+                summaryLength.textContent =
+                    value.length === 1
+                    ? "1 carácter"
+                    : value.length
+                        + " caracteres";
+
+            }
+
+            if (summaryQuality) {
+                summaryQuality.textContent =
+                    label;
+            }
+
+        }
+
+
+        function syncDurationSummary() {
+
+            const checked =
+                document.querySelector(
+                    'input[name="duration"]:checked'
+                );
+
+            if (
+                checked
+                && summaryDuration
+            ) {
+
+                summaryDuration.textContent =
+                    checked.value
+                    + " s";
+
+            }
+
+        }
+
+
+        document.querySelectorAll(
+            'input[name="duration"]'
+        ).forEach(
+            function (input) {
+
+                input.addEventListener(
+                    "change",
+                    syncDurationSummary
+                );
+
+            }
+        );
+
+
+        if (form && submitButton) {
+
+            form.addEventListener(
+                "submit",
+                function () {
+
+                    const label =
+                        submitButton.querySelector(
+                            ".creator-submit-label"
+                        );
+
+                    const loading =
+                        submitButton.querySelector(
+                            ".creator-submit-loading"
+                        );
+
+                    const arrow =
+                        submitButton.querySelector(
+                            ".creator-submit-arrow"
+                        );
+
+
+                    submitButton.classList.add(
+                        "is-loading"
+                    );
+
+
+                    if (label) {
+                        label.hidden = true;
+                    }
+
+                    if (arrow) {
+                        arrow.hidden = true;
+                    }
+
+                    if (loading) {
+                        loading.hidden = false;
+                    }
+
+                }
+            );
+
+        }
+
+
+        if (textarea) {
+
+            textarea.addEventListener(
+                "input",
+                function () {
+
+                    updateCounter();
+                    autoGrow();
+                    evaluateIdea();
+
+                }
+            );
+
+            updateCounter();
+            autoGrow();
+            evaluateIdea();
+
+        }
+
+
+        syncDurationSummary();
+
+    }
+
+
+    if (
+        document.readyState === "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            initCreatorPremium,
+            {
+                once: true
+            }
+        );
+
+    } else {
+
+        initCreatorPremium();
+
+    }
+
+})();
+</script>
+
+
+
+
+<script>
+/* GINGAO_FLEXIBLE_STORY_IDEA_V36 */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const textareas =
+            Array.from(
+                document.querySelectorAll(
+                    "textarea"
+                )
+            );
+
+
+        if (!textareas.length) {
+            return;
+        }
+
+
+        /*
+         * En Crear video, el primer textarea
+         * corresponde a Idea de la historia.
+         */
+
+        const textarea =
+            textareas[0];
+
+
+        textarea.classList.add(
+            "gingao-story-idea-flex-v36"
+        );
+
+
+        function resizeStoryIdea() {
+
+            textarea.style.height =
+                "auto";
+
+
+            const minHeight = 150;
+            const maxHeight = 360;
+
+
+            const desired =
+                Math.min(
+                    Math.max(
+                        textarea.scrollHeight,
+                        minHeight
+                    ),
+                    maxHeight
+                );
+
+
+            textarea.style.height =
+                desired + "px";
+
+
+            textarea.style.overflowY =
+                textarea.scrollHeight
+                > maxHeight
+                ? "auto"
+                : "hidden";
+        }
+
+
+        textarea.addEventListener(
+            "input",
+            resizeStoryIdea
+        );
+
+
+        window.addEventListener(
+            "resize",
+            resizeStoryIdea
+        );
+
+
+        resizeStoryIdea();
+
+
+        console.info(
+            "[GINGAO V36] Story idea autosize ready."
+        );
+    }
+);
+</script>
+
+
+
+
+
+<script>
+/* GINGAO_PRODUCTION_OPTIONS_RUNTIME_V37 */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const form =
+            document.getElementById(
+                "creator-project-form"
+            );
+
+        if (!form) {
+            return;
+        }
+
+
+        const costNode =
+            document.getElementById(
+                "gingao-estimated-cost"
+            );
+
+        const summaryNode =
+            document.getElementById(
+                "gingao-config-summary"
+            );
+
+
+        function checkedValue(
+            name,
+            fallback
+        ) {
+
+            const node =
+                form.querySelector(
+                    'input[name="'
+                    + name
+                    + '"]:checked'
+                );
+
+            return node
+                ? node.value
+                : fallback;
+        }
+
+
+        function calculateCost() {
+
+            const duration =
+                parseInt(
+                    checkedValue(
+                        "duration",
+                        "20"
+                    ),
+                    10
+                );
+
+
+            const quality =
+                checkedValue(
+                    "quality_tier",
+                    "standard"
+                );
+
+
+            const voice =
+                checkedValue(
+                    "voice_enabled",
+                    "1"
+                ) === "1";
+
+
+            const ratio =
+                checkedValue(
+                    "aspect_ratio",
+                    "9:16"
+                );
+
+
+            const blocks =
+                Math.max(
+                    1,
+                    Math.ceil(
+                        duration / 15
+                    )
+                );
+
+
+            const base =
+                blocks * 2;
+
+
+            const multiplier = {
+                fast: 1,
+                standard: 1.5,
+                premium: 2.25
+            }[quality] || 1.5;
+
+
+            const visual =
+                Math.ceil(
+                    base
+                    * multiplier
+                );
+
+
+            const voiceCost =
+                voice
+                ? blocks
+                : 0;
+
+
+            const total =
+                visual
+                + voiceCost;
+
+
+            if (costNode) {
+
+                costNode.textContent =
+                    total;
+            }
+
+
+            if (summaryNode) {
+
+                const qualityLabel = {
+                    fast: "R\u00e1pida",
+                    standard: "Est\u00e1ndar",
+                    premium: "Premium"
+                }[quality];
+
+                summaryNode.textContent =
+                    ratio
+                    + " \u00b7 "
+                    + qualityLabel
+                    + " \u00b7 "
+                    + (
+                        voice
+                        ? "Voz"
+                        : "Sin voz"
+                    );
+            }
+        }
+
+
+        form.querySelectorAll(
+            'input[type="radio"]'
+        ).forEach(
+            function (input) {
+
+                input.addEventListener(
+                    "change",
+                    calculateCost
+                );
+            }
+        );
+
+
+        calculateCost();
+    }
+);
+</script>
+
+
+
+
+
+<script>
+/* GINGAO_LEGACY_COST_SYNC_V37_5 */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const dynamicCost =
+            document.getElementById(
+                "gingao-estimated-cost"
+            );
+
+        const primaryCost =
+            document.getElementById(
+                "gingao-primary-cost-v37"
+            );
+
+        if (
+            !dynamicCost
+            || !primaryCost
+        ) {
+            return;
+        }
+
+
+        function syncPrimaryCost() {
+
+            primaryCost.textContent =
+                dynamicCost.textContent;
+        }
+
+
+        syncPrimaryCost();
+
+
+        const form =
+            document.getElementById(
+                "creator-project-form"
+            );
+
+        if (form) {
+
+            form.addEventListener(
+                "change",
+                function () {
+
+                    window.setTimeout(
+                        syncPrimaryCost,
+                        0
+                    );
+                }
+            );
+        }
+
+
+        const observer =
+            new MutationObserver(
+                syncPrimaryCost
+            );
+
+
+        observer.observe(
+            dynamicCost,
+            {
+                childList: true,
+                characterData: true,
+                subtree: true
+            }
+        );
+    }
+);
+</script>
+
+
+{% endblock %}

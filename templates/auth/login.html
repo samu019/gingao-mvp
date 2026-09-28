@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Entrar ? Gingao</title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/gingao.css' %}">
+</head>
+
+<body class="auth-body">
+
+<div class="auth-wrapper">
+
+    <div class="auth-brand">
+
+        <div class="brand-mark big">
+            G
+        </div>
+
+        <h1>GINGAO</h1>
+
+        <p>
+            Convierte una idea en un v&iacute;deo
+            con inteligencia artificial.
+        </p>
+
+    </div>
+
+
+    <div class="auth-card">
+
+        <span class="eyebrow">
+            BIENVENIDO
+        </span>
+
+        <h2>Inicia sesi&oacute;n</h2>
+
+        <p class="muted">
+            Contin&uacute;a creando tus historias.
+        </p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message error">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post"
+              class="form-stack">
+
+            {% csrf_token %}
+
+            <label>
+                Usuario
+                <input type="text"
+                       name="username"
+                       autocomplete="username"
+                       required>
+            </label>
+
+            <label>
+                Contrase&ntilde;a
+                <input type="password"
+                       name="password"
+                       autocomplete="current-password"
+                       required>
+            </label>
+
+            <button class="primary-button full"
+                    type="submit">
+                Entrar
+            </button>
+
+        </form>
+
+        <p class="auth-switch">
+            &iquest;No tienes cuenta?
+            <a href="{% url 'register' %}">
+                Crear cuenta
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>

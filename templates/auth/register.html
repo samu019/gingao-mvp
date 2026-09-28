@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Crear cuenta ? Gingao</title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/gingao.css' %}">
+</head>
+
+<body class="auth-body">
+
+<div class="auth-wrapper">
+
+    <div class="auth-brand">
+
+        <div class="brand-mark big">
+            G
+        </div>
+
+        <h1>GINGAO</h1>
+
+        <p>
+            Empieza con 100 cr&eacute;ditos
+            gratuitos de prueba.
+        </p>
+
+    </div>
+
+
+    <div class="auth-card">
+
+        <span class="eyebrow">
+            NUEVA CUENTA
+        </span>
+
+        <h2>Crear cuenta</h2>
+
+        <p class="muted">
+            Tus primeros proyectos empiezan aqu&iacute;.
+        </p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message error">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post"
+              class="form-stack">
+
+            {% csrf_token %}
+
+            <label>
+                Usuario
+                <input type="text"
+                       name="username"
+                       required>
+            </label>
+
+            <label>
+                Email
+                <input type="email"
+                       name="email">
+            </label>
+
+            <label>
+                Contrase&ntilde;a
+                <input type="password"
+                       name="password"
+                       required>
+            </label>
+
+            <button class="primary-button full"
+                    type="submit">
+                Crear cuenta
+            </button>
+
+        </form>
+
+        <p class="auth-switch">
+            &iquest;Ya tienes cuenta?
+            <a href="{% url 'login' %}">
+                Entrar
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>

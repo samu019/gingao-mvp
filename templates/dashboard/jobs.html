@@ -1,0 +1,594 @@
+{% extends "base.html" %}
+
+{% block title %}
+Trabajos ? Gingao
+{% endblock %}
+
+{% block content %}
+
+<header class="jobs-hero">
+
+    <div>
+
+        <span class="eyebrow">
+            GINGAO JOB ENGINE
+        </span>
+
+        <h1>
+            Trabajos de generaci&oacute;n
+        </h1>
+
+        <p>
+            Sigue el estado de tus im&aacute;genes,
+            v&iacute;deos, audio y exportaciones.
+        </p>
+
+    </div>
+
+    <div class="jobs-live-pill">
+        <span></span>
+        Sistema activo
+    </div>
+
+</header>
+
+
+<section class="jobs-stats-grid">
+
+    <article class="job-stat-card queued">
+
+        <span>
+            En cola
+        </span>
+
+        <strong>
+            {{ stats.queued }}
+        </strong>
+
+        <div class="job-stat-glow"></div>
+
+    </article>
+
+
+    <article class="job-stat-card processing">
+
+        <span>
+            Procesando
+        </span>
+
+        <strong>
+            {{ stats.processing }}
+        </strong>
+
+        <div class="job-stat-glow"></div>
+
+    </article>
+
+
+    <article class="job-stat-card completed">
+
+        <span>
+            Completados
+        </span>
+
+        <strong>
+            {{ stats.completed }}
+        </strong>
+
+        <div class="job-stat-glow"></div>
+
+    </article>
+
+
+    <article class="job-stat-card failed">
+
+        <span>
+            Fallidos
+        </span>
+
+        <strong>
+            {{ stats.failed }}
+        </strong>
+
+        <div class="job-stat-glow"></div>
+
+    </article>
+
+</section>
+
+
+<section class="jobs-panel">
+
+    <div class="jobs-panel-head">
+
+        <div>
+
+            <span class="eyebrow">
+                ACTIVITY
+            </span>
+
+            <h2>
+                Actividad reciente
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    {% if jobs %}
+
+    <div class="jobs-grid">
+
+        {% for job in jobs %}
+
+        <article
+            class="job-card {{ job.status }}"
+            data-job-id="{{ job.id }}"
+            data-job-status="{{ job.status }}"
+            data-status-url="{% url 'job_status' job.id %}"
+        >
+
+            <div class="job-card-top">
+
+                <div class="job-type-icon">
+
+                    {% if job.job_type == "image" %}
+                        IMG
+                    {% elif job.job_type == "video" %}
+                        VID
+                    {% elif job.job_type == "audio" %}
+                        AUD
+                    {% else %}
+                        FIN
+                    {% endif %}
+
+                </div>
+
+                <span
+                    class="job-status-badge {{ job.status }}"
+                    data-job-status-badge
+                >
+                    {{ job.status|upper }}
+                </span>
+
+            </div>
+
+
+            <div class="job-card-content">
+
+                <span class="job-card-label">
+                    {{ job.get_job_type_display }}
+                </span>
+
+                <h3>
+                    {{ job.project.title }}
+                </h3>
+
+                {% if job.scene %}
+
+                <p>
+                    Escena {{ job.scene.position }}
+                </p>
+
+                {% else %}
+
+                <p>
+                    Proyecto completo
+                </p>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="job-card-meta">
+
+                <div>
+                    <span>Proveedor</span>
+                    <strong>{{ job.provider }}</strong>
+                </div>
+
+                <div>
+                    <span>Intentos</span>
+                    <strong>
+                        {{ job.attempts }}
+                        /
+                        {{ job.max_attempts }}
+                    </strong>
+                </div>
+
+            </div>
+
+
+            {% if job.status == "processing" %}
+
+            <div class="job-progress-bar">
+                <div></div>
+            </div>
+
+            {% endif %}
+
+
+            {% if job.error_message %}
+
+            <div class="job-error-box">
+                {{ job.error_message }}
+            </div>
+
+            {% endif %}
+
+
+            <div class="job-card-footer">
+
+                <small>
+                    {{ job.created_at|date:"d/m/Y H:i" }}
+                </small>
+
+                {% if job.status == "failed" and job.attempts < job.max_attempts %}
+
+                <form
+                    method="post"
+                    action="{% url 'retry_job' job.id %}"
+                >
+                    {% csrf_token %}
+
+                    <button
+                        class="job-retry-button"
+                        type="submit"
+                    >
+                        Reintentar
+                    </button>
+                </form>
+
+                {% endif %}
+
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="jobs-empty-state">
+
+        <div class="jobs-empty-orb"></div>
+
+        <h3>
+            A&uacute;n no hay trabajos
+        </h3>
+
+        <p>
+            Cuando Gingao genere contenido,
+            aparecer&aacute; aqu&iacute;.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+<script>
+/* GINGAO_JOB_POLLING_V46D */
+
+(function () {
+
+    const STATUS_LABELS = {
+        queued: "EN COLA",
+        processing: "PROCESANDO",
+        completed: "COMPLETADO",
+        failed: "ERROR"
+    };
+
+
+    function activeCards() {
+
+        return Array.from(
+            document.querySelectorAll(
+                ".job-card[data-status-url]"
+            )
+        ).filter(function (card) {
+
+            const status =
+                card.dataset.jobStatus;
+
+            return (
+                status === "queued"
+                || status === "processing"
+            );
+        });
+    }
+
+
+    function updateBadge(
+        card,
+        status
+    ) {
+
+        const badge =
+            card.querySelector(
+                "[data-job-status-badge]"
+            );
+
+        if (!badge) {
+            return;
+        }
+
+
+        badge.classList.remove(
+            "queued",
+            "processing",
+            "completed",
+            "failed"
+        );
+
+        badge.classList.add(
+            status
+        );
+
+        badge.textContent =
+            STATUS_LABELS[status]
+            || String(status).toUpperCase();
+    }
+
+
+    function updateCardClass(
+        card,
+        status
+    ) {
+
+        card.classList.remove(
+            "queued",
+            "processing",
+            "completed",
+            "failed"
+        );
+
+        card.classList.add(
+            status
+        );
+
+        card.dataset.jobStatus =
+            status;
+    }
+
+
+    function ensureProgressBar(
+        card,
+        status
+    ) {
+
+        let bar =
+            card.querySelector(
+                ".job-progress-bar"
+            );
+
+
+        if (
+            status === "processing"
+            && !bar
+        ) {
+
+            bar =
+                document.createElement(
+                    "div"
+                );
+
+            bar.className =
+                "job-progress-bar";
+
+            const inner =
+                document.createElement(
+                    "div"
+                );
+
+            bar.appendChild(
+                inner
+            );
+
+
+            const footer =
+                card.querySelector(
+                    ".job-card-footer"
+                );
+
+
+            if (footer) {
+
+                card.insertBefore(
+                    bar,
+                    footer
+                );
+
+            } else {
+
+                card.appendChild(
+                    bar
+                );
+            }
+        }
+
+
+        if (
+            status !== "processing"
+            && bar
+        ) {
+
+            bar.remove();
+        }
+    }
+
+
+    function applyJobState(
+        card,
+        data
+    ) {
+
+        const oldStatus =
+            card.dataset.jobStatus;
+
+        const newStatus =
+            data.status;
+
+
+        if (!newStatus) {
+            return;
+        }
+
+
+        updateCardClass(
+            card,
+            newStatus
+        );
+
+        updateBadge(
+            card,
+            newStatus
+        );
+
+        ensureProgressBar(
+            card,
+            newStatus
+        );
+
+
+        /*
+         * When a job finishes we reload once.
+         *
+         * Django then renders the complete
+         * server-side state:
+         * - result URL
+         * - error message
+         * - retry button
+         * - updated counters
+         */
+        if (
+            data.terminal
+            && oldStatus !== newStatus
+        ) {
+
+            window.location.reload();
+        }
+    }
+
+
+    async function pollCard(
+        card
+    ) {
+
+        const url =
+            card.dataset.statusUrl;
+
+        if (!url) {
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        method: "GET",
+                        credentials:
+                            "same-origin",
+
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        },
+
+                        cache:
+                            "no-store"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "HTTP "
+                    + response.status
+                );
+            }
+
+
+            const data =
+                await response.json();
+
+
+            applyJobState(
+                card,
+                data
+            );
+
+
+        } catch (error) {
+
+            /*
+             * A temporary polling failure
+             * must never break the page.
+             */
+            console.warn(
+                "Gingao job polling:",
+                error
+            );
+        }
+    }
+
+
+    async function pollJobs() {
+
+        const cards =
+            activeCards();
+
+
+        if (!cards.length) {
+
+            if (window.gingaoJobPollTimer) {
+
+                clearInterval(
+                    window.gingaoJobPollTimer
+                );
+
+                window.gingaoJobPollTimer =
+                    null;
+            }
+
+            return;
+        }
+
+
+        await Promise.all(
+            cards.map(
+                pollCard
+            )
+        );
+    }
+
+
+    /*
+     * Immediate first refresh.
+     */
+    pollJobs();
+
+
+    /*
+     * Poll every 2.5 seconds only while
+     * queued/processing jobs remain.
+     */
+    window.gingaoJobPollTimer =
+        setInterval(
+            pollJobs,
+            2500
+        );
+
+})();
+</script>
+
+{% endblock %}

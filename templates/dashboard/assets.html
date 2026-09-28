@@ -1,0 +1,715 @@
+{% extends "base.html" %}
+{% load gingao_tags %}
+
+{% block title %}
+Mis activos &middot; Gingao
+
+
+
+
+
+
+
+
+
+{% endblock %}
+
+{% block content %}
+
+<section class="asset-library-v2">
+
+    <header class="asset-library-header">
+
+        <div>
+
+            <span class="eyebrow">
+                BIBLIOTECA CREATIVA
+            </span>
+
+            <h1>
+                Mis activos
+            </h1>
+
+            <p>
+                Im&aacute;genes, v&iacute;deos y audio
+                disponibles para tus proyectos.
+            </p>
+
+        </div>
+
+
+        <div class="asset-library-summary">
+
+            <strong>
+                {{ assets|length }}
+            </strong>
+
+            <span>
+                activos
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <div class="asset-library-toolbar">
+
+        <label class="asset-search">
+
+            <span>
+                &#9906;
+            </span>
+
+            <input
+                type="search"
+                id="asset-search-input"
+                placeholder="Buscar activos..."
+                autocomplete="off"
+            >
+
+        </label>
+
+
+        <span
+            class="asset-results-count"
+            id="asset-results-count"
+        >
+            {{ assets|length }} activos
+        </span>
+
+    </div>
+
+
+    <div
+        class="asset-filter-row"
+        role="tablist"
+        aria-label="Filtrar activos"
+    >
+
+        <button
+            type="button"
+            class="asset-filter-button active"
+            data-asset-filter="all"
+        >
+            Todos
+        </button>
+
+        <button
+            type="button"
+            class="asset-filter-button"
+            data-asset-filter="image"
+        >
+            Im&aacute;genes
+        </button>
+
+        <button
+            type="button"
+            class="asset-filter-button"
+            data-asset-filter="video"
+        >
+            V&iacute;deos
+        </button>
+
+        <button
+            type="button"
+            class="asset-filter-button"
+            data-asset-filter="audio"
+        >
+            Audio
+        </button>
+
+        <button
+            type="button"
+            class="asset-filter-button"
+            data-asset-filter="real"
+        >
+            Reales
+        </button>
+
+        <button
+            type="button"
+            class="asset-filter-button"
+            data-asset-filter="demo"
+        >
+            Demo
+        </button>
+
+    </div>
+
+
+    {% if assets %}
+
+    <div class="asset-grid-v2">
+
+        {% for asset in assets %}
+
+            {% with preview=asset|asset_preview kind=asset|asset_kind mode=asset|asset_preview_mode origin=asset|asset_origin %}
+
+            <article
+                class="asset-card-v2"
+                data-kind="{{ kind }}"
+                data-origin="{{ origin }}"
+                data-search="{{ asset|asset_display_name|lower }}"
+            >
+
+                <div class="asset-card-preview">
+
+                    {% if origin == "demo" %}
+
+                        <div
+                            class="asset-demo-preview
+                                   asset-demo-{{ kind }}"
+                        >
+
+                            <span class="asset-demo-orbit"></span>
+
+                            <div class="asset-demo-center">
+
+                                <strong>
+                                    {% if kind == "video" %}
+                                        VIDEO
+                                    {% elif kind == "image" %}
+                                        IMAGE
+                                    {% elif kind == "audio" %}
+                                        AUDIO
+                                    {% else %}
+                                        ASSET
+                                    {% endif %}
+                                </strong>
+
+                                <small>
+                                    DEMO
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                    {% elif mode == "video" %}
+
+                        <video
+                            src="{{ preview }}"
+                            class="asset-preview-media"
+                            muted
+                            loop
+                            playsinline
+                            preload="metadata"
+                        ></video>
+
+
+                    {% elif mode == "image" %}
+
+                        <img
+                            src="{{ preview }}"
+                            alt="{{ asset|asset_display_name }}"
+                            class="asset-preview-media"
+                            loading="lazy"
+                        >
+
+
+                    {% else %}
+
+                        <div
+                            class="asset-demo-preview
+                                   asset-demo-{{ kind }}"
+                        >
+
+                            <span class="asset-demo-orbit"></span>
+
+                            <div class="asset-demo-center">
+
+                                <strong>
+                                    {% if kind == "audio" %}
+                                        AUDIO
+                                    {% else %}
+                                        ASSET
+                                    {% endif %}
+                                </strong>
+
+                                <small>
+                                    GINGAO
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <div class="asset-preview-top">
+
+                        <span class="asset-type-badge">
+
+                            {% if kind == "video" %}
+                                V&Iacute;DEO
+                            {% elif kind == "image" %}
+                                IMAGEN
+                            {% elif kind == "audio" %}
+                                AUDIO
+                            {% else %}
+                                ACTIVO
+                            {% endif %}
+
+                        </span>
+
+
+                        <span
+                            class="asset-origin-badge
+                                   asset-origin-{{ origin }}"
+                        >
+
+                            {% if origin == "demo" %}
+                                DEMO
+                            {% elif origin == "uploaded" %}
+                                REAL
+                            {% elif origin == "generated" %}
+                                IA
+                            {% else %}
+                                LOCAL
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="asset-card-info">
+
+                    <h3>
+                        {{ asset|asset_display_name }}
+                    </h3>
+
+
+                    <div class="asset-card-meta">
+
+                        <span>
+                            {{ asset.created_at|date:"d/m/Y" }}
+                        </span>
+
+
+                        {% if preview and origin != "demo" %}
+
+                            <a
+                                href="{{ preview }}"
+                                target="_blank"
+                                rel="noopener"
+                                class="asset-view-button"
+                                aria-label="Abrir activo"
+                            >
+                                &nearr;
+                            </a>
+
+                        {% elif origin == "demo" %}
+
+                            <span
+                                class="asset-demo-label"
+                                title="Activo t?cnico de demostraci?n"
+                            >
+                                DEMO
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </article>
+
+            {% endwith %}
+
+        {% endfor %}
+
+    </div>
+
+
+    <div
+        class="asset-no-results"
+        id="asset-no-results"
+        hidden
+    >
+
+        <div class="asset-no-results-icon">
+            G
+        </div>
+
+        <h3>
+            No encontramos activos
+        </h3>
+
+        <p>
+            Prueba otro filtro o una b&uacute;squeda diferente.
+        </p>
+
+    </div>
+
+
+    {% else %}
+
+    <div class="empty-state">
+
+        <div class="premium-empty-icon">
+            G
+        </div>
+
+        <h3>
+            Tu biblioteca est&aacute; vac&iacute;a
+        </h3>
+
+        <p>
+            Tus generaciones aparecer&aacute;n aqu&iacute;.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+
+
+<script>
+/* GINGAO_ASSET_FILTER_CONTROLLER_V2 */
+
+(function () {
+
+    let activeFilter = "all";
+
+
+    function normalizeText(value) {
+
+        return (
+            value || ""
+        )
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        );
+
+    }
+
+
+    function getCards() {
+
+        return Array.from(
+            document.querySelectorAll(
+                ".asset-card-v2"
+            )
+        );
+
+    }
+
+
+    function getButtons() {
+
+        return Array.from(
+            document.querySelectorAll(
+                ".asset-filter-button"
+            )
+        );
+
+    }
+
+
+    function updateActiveButton() {
+
+        getButtons().forEach(
+            function (button) {
+
+                const selected =
+                    (
+                        button.dataset.assetFilter
+                        || "all"
+                    ) === activeFilter;
+
+
+                button.classList.toggle(
+                    "active",
+                    selected
+                );
+
+
+                button.setAttribute(
+                    "aria-selected",
+                    selected
+                    ? "true"
+                    : "false"
+                );
+
+            }
+        );
+
+    }
+
+
+    function applyFilters() {
+
+        const search =
+            document.getElementById(
+                "asset-search-input"
+            );
+
+        const counter =
+            document.getElementById(
+                "asset-results-count"
+            );
+
+        const empty =
+            document.getElementById(
+                "asset-no-results"
+            );
+
+
+        const query =
+            normalizeText(
+                search
+                ? search.value
+                : ""
+            ).trim();
+
+
+        let visibleCount = 0;
+
+
+        getCards().forEach(
+            function (card) {
+
+                const kind =
+                    card.dataset.kind
+                    || "";
+
+                const origin =
+                    card.dataset.origin
+                    || "";
+
+                const searchable =
+                    normalizeText(
+                        (
+                            card.dataset.search
+                            || ""
+                        )
+                        + " "
+                        + card.textContent
+                    );
+
+
+                let categoryMatch = false;
+
+
+                switch (activeFilter) {
+
+                    case "all":
+
+                        categoryMatch = true;
+                        break;
+
+
+                    case "image":
+
+                        categoryMatch =
+                            kind === "image";
+
+                        break;
+
+
+                    case "video":
+
+                        categoryMatch =
+                            kind === "video";
+
+                        break;
+
+
+                    case "audio":
+
+                        categoryMatch =
+                            kind === "audio";
+
+                        break;
+
+
+                    case "real":
+
+                        categoryMatch =
+                            origin !== "demo";
+
+                        break;
+
+
+                    case "demo":
+
+                        categoryMatch =
+                            origin === "demo";
+
+                        break;
+
+                }
+
+
+                const searchMatch =
+                    !query
+                    || searchable.includes(
+                        query
+                    );
+
+
+                const show =
+                    categoryMatch
+                    && searchMatch;
+
+
+                /*
+                 * Explicit display with !important.
+                 * This guarantees immediate grid reflow.
+                 */
+
+                if (show) {
+
+                    card.hidden = false;
+
+                    card.style.removeProperty(
+                        "display"
+                    );
+
+                    visibleCount += 1;
+
+                } else {
+
+                    card.hidden = true;
+
+                    card.style.setProperty(
+                        "display",
+                        "none",
+                        "important"
+                    );
+
+                }
+
+            }
+        );
+
+
+        if (counter) {
+
+            counter.textContent =
+                visibleCount === 1
+                ? "1 activo"
+                : visibleCount
+                    + " activos";
+
+        }
+
+
+        if (empty) {
+
+            empty.hidden =
+                visibleCount !== 0;
+
+        }
+
+
+        updateActiveButton();
+
+    }
+
+
+    /*
+     * CAPTURE PHASE:
+     * intercept before old Gingao listeners.
+     */
+
+    document.addEventListener(
+        "click",
+        function (event) {
+
+            const button =
+                event.target.closest(
+                    ".asset-filter-button"
+                );
+
+
+            if (!button) {
+                return;
+            }
+
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            event.stopImmediatePropagation();
+
+
+            activeFilter =
+                button.dataset.assetFilter
+                || "all";
+
+
+            applyFilters();
+
+        },
+        true
+    );
+
+
+    document.addEventListener(
+        "input",
+        function (event) {
+
+            if (
+                event.target
+                && event.target.id
+                === "asset-search-input"
+            ) {
+
+                applyFilters();
+
+            }
+
+        },
+        true
+    );
+
+
+    function initialize() {
+
+        activeFilter = "all";
+
+        applyFilters();
+
+    }
+
+
+    if (
+        document.readyState
+        === "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            initialize,
+            {
+                once: true
+            }
+        );
+
+    } else {
+
+        initialize();
+
+    }
+
+})();
+</script>
+
+{% endblock %}
+
+
+

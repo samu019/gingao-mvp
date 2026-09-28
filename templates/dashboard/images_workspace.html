@@ -1,0 +1,774 @@
+{% extends "base.html" %}
+
+{% block title %}
+Im&aacute;genes ? {{ project.title }} ? Gingao
+
+
+<section class="workspace-panel next-stage-panel">
+
+    <div class="workspace-action">
+
+        <div>
+
+            <strong>
+                Storyboard preparado
+            </strong>
+
+            <p>
+                Cuando las im&aacute;genes est&eacute;n listas,
+                contin&uacute;a con la animaci&oacute;n.
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'videos_workspace' project.id %}"
+            class="primary-button images-generate-all-premium images-continue-premium"
+        >
+            <span class="images-global-spark">
+                &#10024;
+            </span>
+
+            <span>
+                Continuar a v&iacute;deo
+            </span>
+
+            <span class="images-action-arrow">
+                &#8594;
+            </span>
+        </a>
+
+    </div>
+
+</section>
+
+
+{% endblock %}
+
+{% block content %}
+<section class="images-premium-page">
+
+
+<div class="workspace-top">
+
+    <div>
+
+        <a
+            href="{% url 'project_workspace' project.id %}"
+            class="back-link images-back-premium"
+        >
+            <span class="images-nav-icon">
+                &#8592;
+            </span>
+
+            <span class="images-nav-copy">
+                <small>VOLVER</small>
+                <strong>Al gui&oacute;n</strong>
+            </span>
+        </a>
+
+        <h1>{{ project.title }}</h1>
+
+        <p>
+            Personajes y storyboard visual
+        </p>
+
+    </div>
+
+    <span class="status-pill large">
+        {{ project.get_status_display }}
+    </span>
+
+</div>
+
+
+<div class="production-tabs">
+
+    <a
+        href="{% url 'project_workspace' project.id %}"
+        class="production-tab"
+    >
+        <span>1</span>
+        Gui&oacute;n
+    </a>
+
+    <div class="production-tab active">
+        <span>2</span>
+        Im&aacute;genes
+    </div>
+
+    <div class="production-tab">
+        <span>3</span>
+        Corte final
+    </div>
+
+</div>
+
+
+<section class="workspace-panel image-stage">
+
+    <div class="section-heading">
+
+        <div>
+            <span class="eyebrow">
+                PERSONAJES
+            </span>
+
+            <h2>
+                Consistencia visual
+            </h2>
+
+            <p>
+                Gingao reutilizar&aacute; estas fichas
+                en todas las escenas.
+            </p>
+        </div>
+
+        <form
+            method="post"
+            action="{% url 'prepare_images' project.id %}"
+        >
+            {% csrf_token %}
+
+            <button
+                class="secondary-button image-ai-premium-button images-scene-button images-upload-button images-structure-premium"
+                type="submit"
+            >
+            <span class="images-action-icon">
+                &#10024;
+            </span>
+
+            <span>
+                Regenerar estructura
+            </span>
+
+            <span class="images-action-arrow">
+                &#8635;
+            </span>
+        </button>
+
+        </form>
+
+    </div>
+
+
+    <div class="character-grid">
+
+        {% for character in characters %}
+
+        <article class="character-card">
+
+            <div class="character-placeholder">
+                {{ character.name|slice:":1"|upper }}
+            </div>
+
+            <span class="status-pill">
+                {{ character.character_type }}
+            </span>
+
+            <h3>
+                {{ character.name }}
+            </h3>
+
+            <p>
+                {{ character.description }}
+            </p>
+
+            <details class="prompt-details images-prompt-premium">
+
+                <summary>
+                    Prompt maestro
+                </summary>
+
+                <div class="prompt-box images-prompt-premium">
+                    {{ character.visual_prompt }}
+                </div>
+
+            </details>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<section class="workspace-panel storyboard-stage">
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="eyebrow">
+                STORYBOARD
+            </span>
+
+            <h2>
+                Im&aacute;genes de las escenas
+            </h2>
+
+            <p>
+                Proveedor actual:
+                <strong>
+                    {% if image_provider_code == "fal" %}
+                        FLUX.2 Turbo
+                    {% else %}
+                        Mock
+                    {% endif %}
+                </strong>
+
+                &middot;
+
+                {% if image_provider_code == "fal" %}
+                    coste externo aproximado:
+                    <strong>~$0.008 por imagen</strong>
+                {% else %}
+                    coste:
+                    <strong>0 cr&eacute;ditos</strong>
+                {% endif %}
+            </p>
+
+        </div>
+
+
+        {% if image_provider_code == "fal" %}
+
+            <span class="status-pill">
+                Prueba una escena primero
+            </span>
+
+        {% else %}
+
+            <form
+                method="post"
+                action="{% url 'generate_all_images' project.id %}"
+            >
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Generar todas
+                </button>
+
+            </form>
+
+        {% endif %}
+
+    </div>
+
+
+    
+<!-- GINGAO_SMART_MULTI_IMAGE_UPLOAD_UI_V35 -->
+
+<section class="gingao-bulk-upload-v35">
+
+    <div class="gingao-bulk-upload-copy">
+
+        <div class="gingao-bulk-upload-icon">
+            &#8679;
+        </div>
+
+        <div>
+
+            <span class="eyebrow">
+                CARGA M&Uacute;LTIPLE
+            </span>
+
+            <h3>
+                Completa varias escenas
+                de una sola vez
+            </h3>
+
+            <p>
+                {% if pending_scene_count %}
+                    Faltan
+                    {{ pending_scene_count }}
+                    escenas con imagen real.
+                    Las nuevas im&aacute;genes
+                    se asignar&aacute;n por orden
+                    a las escenas pendientes.
+                {% else %}
+                    Todas las escenas ya tienen
+                    una imagen real.
+                    Si seleccionas una imagen
+                    por cada escena, podr&aacute;s
+                    reemplazarlas todas.
+                {% endif %}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="gingao-bulk-coverage-v35">
+
+        <div>
+            <strong>
+                {{ real_scene_count }}
+                /
+                {{ scenes|length }}
+            </strong>
+
+            <span>
+                escenas reales
+            </span>
+        </div>
+
+
+        {% if pending_scene_count %}
+
+        <div>
+            <strong>
+                {{ pending_scene_count }}
+            </strong>
+
+            <span>
+                pendientes
+            </span>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <form
+        method="post"
+        enctype="multipart/form-data"
+        action="{% url 'upload_all_scene_images' project.id %}"
+        class="gingao-bulk-upload-form-v35"
+        id="gingaoBulkUploadForm"
+    >
+
+        {% csrf_token %}
+
+
+        <label
+            class="gingao-bulk-file-picker-v35"
+            for="gingaoBulkImagesInput"
+        >
+
+            <span class="gingao-bulk-picker-icon-v35">
+                &#128444;
+            </span>
+
+            <span class="gingao-bulk-picker-copy-v35">
+
+                <strong>
+                    Seleccionar im&aacute;genes
+                </strong>
+
+                <small
+                    id="gingaoBulkImagesLabel"
+                >
+                    JPG, PNG o WebP
+                    &middot;
+                    varias a la vez
+                </small>
+
+            </span>
+
+            <span class="gingao-bulk-picker-arrow-v35">
+                &#8250;
+            </span>
+
+        </label>
+
+
+        <input
+            id="gingaoBulkImagesInput"
+            class="gingao-bulk-input-v35"
+            type="file"
+            name="scene_images"
+            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+            multiple
+        >
+
+
+        <div class="gingao-bulk-upload-footer-v35">
+
+            <span>
+
+                {% if pending_scene_positions %}
+
+                    Destino:
+                    escenas
+
+                    {% for position in pending_scene_positions %}
+
+                        {{ position }}{% if not forloop.last %}, {% endif %}
+
+                    {% endfor %}
+
+                {% else %}
+
+                    Storyboard completo
+
+                {% endif %}
+
+            </span>
+
+
+            <button
+                type="submit"
+                class="primary-button gingao-bulk-submit-v35"
+                id="gingaoBulkSubmit"
+                disabled
+            >
+
+                <span>
+                    Subir y asignar
+                </span>
+
+                <span>
+                    &#8594;
+                </span>
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+<script>
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const input =
+            document.getElementById(
+                "gingaoBulkImagesInput"
+            );
+
+        const label =
+            document.getElementById(
+                "gingaoBulkImagesLabel"
+            );
+
+        const submit =
+            document.getElementById(
+                "gingaoBulkSubmit"
+            );
+
+        if (
+            !input
+            || !label
+            || !submit
+        ) {
+
+            return;
+        }
+
+
+        input.addEventListener(
+            "change",
+            function () {
+
+                const count =
+                    input.files
+                    ? input.files.length
+                    : 0;
+
+
+                submit.disabled =
+                    count === 0;
+
+
+                if (count === 0) {
+
+                    label.textContent =
+                        "JPG, PNG o WebP \u00b7 varias a la vez";
+
+                    return;
+                }
+
+
+                if (count === 1) {
+
+                    label.textContent =
+                        "1 imagen seleccionada";
+
+                } else {
+
+                    label.textContent =
+                        count
+                        + " im\u00e1genes seleccionadas";
+                }
+            }
+        );
+    }
+);
+</script>
+
+
+
+<div class="storyboard-grid images-scenes-grid">
+
+        {% for scene in scenes %}
+
+        <article class="storyboard-card image-scene-premium">
+
+            <div class="storyboard-preview images-scene-preview">
+
+                {% if scene.storyboard_image.image_url %}
+
+                    <img
+                        src="{{ scene.storyboard_image.image_url }}"
+                        alt="Escena {{ scene.position }}"
+                    >
+
+                {% else %}
+
+                    <div class="image-pending">
+
+                        <strong>
+                            ESCENA {{ scene.position }}
+                        </strong>
+
+                        <span>
+                            Imagen pendiente
+                        </span>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="storyboard-body">
+
+                <div class="storyboard-top">
+
+                    <span class="status-pill">
+                        Escena {{ scene.position }}
+                    </span>
+
+                    <span class="scene-time">
+                        {{ scene.duration_seconds }} s
+                    </span>
+
+                </div>
+
+                <p>
+                    {{ scene.script }}
+                </p>
+
+
+                <div class="generation-status">
+
+                    {% if scene.storyboard_image.status == "ready" %}
+
+                        <span class="ready-dot"></span>
+                        Ready
+
+                    {% elif scene.storyboard_image.status == "failed" %}
+
+                        <span class="failed-dot"></span>
+                        Failed
+
+                    {% else %}
+
+                        <span class="pending-dot"></span>
+                        Pending
+
+                    {% endif %}
+
+                </div>
+
+
+                <details class="prompt-details images-prompt-premium">
+
+                    <summary>
+                        Ver prompt completo
+                    </summary>
+
+                    <div class="prompt-box images-prompt-premium">
+                        {{ scene.storyboard_image.prompt }}
+                    </div>
+
+                </details>
+
+
+                {% if "/static/generated/uploads/" in scene.storyboard_image.image_url %}
+                    <div class="uploaded-image-badge images-uploaded-badge">
+                        <span class="uploaded-image-dot"></span>
+                        Imagen subida
+                    </div>
+                {% endif %}
+
+                <div class="scene-image-actions images-actions-premium">
+
+                    <form
+                        method="post"
+                        action="{% url 'generate_scene_image' project.id scene.id %}"
+                    >
+                        {% csrf_token %}
+
+                        <button
+                            class="secondary-button full storyboard-generate image-ai-premium-button images-regenerate-button"
+                            type="submit"
+                        >
+                            {% if image_provider_code == "fal" %}
+
+                                {% if scene.storyboard_image.status == "ready" %}
+                                    Regenerar con IA
+                                {% else %}
+                                    Generar con IA
+                                {% endif %}
+
+                            {% else %}
+
+                                {% if scene.storyboard_image.status == "ready" %}
+                                    Regenerar Mock
+                                {% else %}
+                                    Generar Mock
+                                {% endif %}
+
+                            {% endif %}
+                        </button>
+
+                    </form>
+
+
+                    <form
+                        method="post"
+                        enctype="multipart/form-data"
+                        action="{% url 'upload_scene_image' project.id scene.id %}"
+                        class="scene-upload-form image-upload-premium"
+                    >
+                        {% csrf_token %}
+
+                        <label class="upload-scene-button image-upload-premium images-upload-button">
+    <span class="images-upload-icon">
+        &#8679;
+    </span>
+
+    <span class="images-upload-label">
+        Subir imagen real
+    </span>
+
+    <input
+                                type="file"
+                                name="scene_image"
+                                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                onchange="this.form.submit()"
+                            >
+</label>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+
+    <div class="workspace-action">
+
+        <div>
+
+            <strong>
+                {% if image_provider_code == "fal" %}
+                    {% if image_provider_code == "fal" %}
+                    Generaci&oacute;n real &middot; FLUX.2 Turbo
+                {% else %}
+                    Generaci&oacute;n Mock
+                {% endif %}
+                {% else %}
+                    Generaci&oacute;n Mock
+                {% endif %}
+            </strong>
+
+            <p>
+                {% if image_provider_code == "fal" %}
+                    {% if image_provider_code == "fal" %}
+                    Las nuevas generaciones usar&aacute;n fal.ai.
+                {% else %}
+                    Las generaciones autom&aacute;ticas son simuladas.
+                    Tambi&eacute;n puedes subir una imagen real.
+                {% endif %}
+                {% else %}
+                    Estamos validando el flujo completo
+                    sin consumir servicios externos.
+                {% endif %}
+            </p>
+
+        </div>
+
+        <form
+            method="post"
+            action="{% url 'generate_all_images' project.id %}"
+        >
+            {% csrf_token %}
+
+            <button
+                class="primary-button images-generate-all-v5"
+                type="submit"
+            >
+            <span class="images-global-spark">
+                &#10024;
+            </span>
+
+            <span>
+                Generar todas las im&aacute;genes
+            </span>
+
+            <span class="images-action-arrow">
+                &#8594;
+            </span>
+        </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+
+<section class="workspace-panel next-stage-panel">
+
+    <div class="workspace-action">
+
+        <div>
+
+            <strong>
+                Storyboard preparado
+            </strong>
+
+            <p>
+                Cuando las im&aacute;genes est&eacute;n listas,
+                contin&uacute;a con la animaci&oacute;n.
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'videos_workspace' project.id %}"
+            class="primary-button"
+        >
+            Continuar a v&iacute;deo &rarr;
+        </a>
+
+    </div>
+
+</section>
+
+
+
+</section>
+{% endblock %}

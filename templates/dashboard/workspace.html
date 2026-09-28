@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+{% load gingao_tags %}
+
+{% block title %}
+{{ project.title }} &middot; Gingao
+{% endblock %}
+
+{% block content %}
+
+<section class="workspace-premium-page">
+
+    <div class="workspace-stage-nav">
+
+        <a
+            href="{% url 'project_workspace' project.id %}"
+            class="workspace-stage active"
+        >
+            <span>1</span>
+            <div>
+                <small>PASO 1</small>
+                <strong>Guión</strong>
+            </div>
+        </a>
+
+        <span class="workspace-stage-line done"></span>
+
+        <a
+            href="{% url 'images_workspace' project.id %}"
+            class="workspace-stage"
+        >
+            <span>2</span>
+            <div>
+                <small>PASO 2</small>
+                <strong>Imágenes</strong>
+            </div>
+        </a>
+
+        <span class="workspace-stage-line"></span>
+
+        <a
+            href="{% url 'videos_workspace' project.id %}"
+            class="workspace-stage"
+        >
+            <span>3</span>
+            <div>
+                <small>PASO 3</small>
+                <strong>Vídeo</strong>
+            </div>
+        </a>
+
+        <span class="workspace-stage-line"></span>
+
+        <a
+            href="{% url 'final_cut' project.id %}"
+            class="workspace-stage"
+        >
+            <span>4</span>
+            <div>
+                <small>PASO 4</small>
+                <strong>Corte final</strong>
+            </div>
+        </a>
+
+    </div>
+
+
+    <div class="workspace-premium-nav">
+
+        <a
+            href="{% url 'projects' %}"
+            class="workspace-back-card"
+        >
+            <span class="workspace-back-icon">
+                &larr;
+            </span>
+
+            <span>
+                <small>VOLVER</small>
+                <strong>Mis proyectos</strong>
+            </span>
+        </a>
+
+
+        <a
+            href="{% url 'home' %}"
+            class="workspace-home-card"
+        >
+            <span class="workspace-home-icon">
+                &#8962;
+            </span>
+
+            <span>
+                <small>GINGAO</small>
+                <strong>Inicio</strong>
+            </span>
+        </a>
+
+    </div>
+
+
+
+<div class="workspace-top">
+
+    <div>
+
+        <a href="{% url 'projects' %}"
+           class="back-link">
+            &larr; Mis proyectos
+        </a>
+
+        <h1>{{ project.title }}</h1>
+
+        <p>
+            {{ project.target_duration_seconds }} segundos
+            &middot;
+            {{ project.get_status_display }}
+        </p>
+
+    </div>
+
+    <span class="status-pill large">
+        {{ project.get_status_display }}
+    </span>
+
+</div>
+
+
+<div class="production-tabs">
+
+    <div class="production-tab active">
+        <span>1</span>
+        Gui&oacute;n
+    </div>
+
+    <div class="production-tab">
+        <span>2</span>
+        Im&aacute;genes
+    </div>
+
+    <div class="production-tab">
+        <span>3</span>
+        Corte final
+    </div>
+
+</div>
+
+
+<div class="workspace-layout">
+
+<section class="workspace-panel">
+
+    <div class="section-heading">
+
+        <div>
+            <h2>Gui&oacute;n</h2>
+
+            <p>
+                Escenas, prompts y duraciones
+                preparados por Gingao.
+            </p>
+        </div>
+
+        <form
+            method="post"
+            action="{% url 'generate_script' project.id %}"
+        >
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="secondary-button workspace-regenerate-premium"
+            >
+                <span class="regen-premium-icon">
+                    &#10024;
+                </span>
+
+                <span class="regen-premium-label">
+{% if scenes|length > 1 %}
+                    Regenerar gui&oacute;n
+                {% else %}
+                    Generar gui&oacute;n
+                {% endif %}
+                </span>
+
+                <span class="regen-premium-arrow">
+                    &rarr;
+                </span>
+</button>
+        </form>
+
+    </div>
+
+
+    {% for scene in scenes %}
+
+    <article class="scene-card workspace-scene-card-premium">
+
+        <div class="scene-number">
+            {{ scene.position }}
+        </div>
+
+        <div class="scene-content">
+
+            <span class="eyebrow">
+                ESCENA {{ scene.position }}
+            </span>
+
+            <p>
+                {{ scene.script }}
+            </p>
+
+            {% if scene.image_prompt %}
+
+            <details class="prompt-details">
+
+                <summary>
+                    Prompt de imagen
+                </summary>
+
+                <div class="prompt-box">
+                    {{ scene.image_prompt }}
+                </div>
+
+            </details>
+
+            {% endif %}
+
+
+            {% if scene.video_prompt %}
+
+            <details class="prompt-details">
+
+                <summary>
+                    Prompt de v&iacute;deo
+                </summary>
+
+                <div class="prompt-box">
+                    {{ scene.video_prompt }}
+                </div>
+
+            </details>
+
+            {% endif %}
+
+            <div class="scene-meta">
+                {{ scene.duration_seconds }} s
+            </div>
+
+        </div>
+
+    </article>
+
+    {% empty %}
+
+    <div class="empty-inline">
+        No hay escenas todav&iacute;a.
+    </div>
+
+    {% endfor %}
+
+
+    {% if scenes|length > 1 %}
+
+    <div class="workspace-action">
+
+        <div>
+            <strong>
+                Gui&oacute;n preparado
+            </strong>
+
+            <p>
+                El siguiente paso ser&aacute; crear
+                personajes e im&aacute;genes.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'images_workspace' project.id %}"
+            class="primary-button"
+        >
+            Continuar a im&aacute;genes &rarr;
+        </a>
+
+    </div>
+
+    {% else %}
+
+    <div class="workspace-action">
+
+        <div>
+            <strong>
+                Idea guardada
+            </strong>
+
+            <p>
+                Pulsa Generar gui&oacute;n para dividir
+                la historia en escenas.
+            </p>
+        </div>
+
+        <form
+            method="post"
+            action="{% url 'generate_script' project.id %}"
+        >
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="primary-button"
+            >
+                Generar gui&oacute;n
+            </button>
+        </form>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+
+<aside class="workspace-summary-premium-v3 project-summary">
+
+    <span class="eyebrow">
+        PROYECTO
+    </span>
+
+    <h3>Resumen</h3>
+
+    <div class="summary-row">
+        <span>Plantilla</span>
+        <strong>{{ project.template_code }}</strong>
+    </div>
+
+    <div class="summary-row">
+        <span>Duraci&oacute;n</span>
+        <strong>
+            {{ project.target_duration_seconds }} s
+        </strong>
+    </div>
+
+    <div class="summary-row">
+        <span>Escenas</span>
+        <strong>{{ scenes|length }}</strong>
+    </div>
+
+    <div class="summary-row">
+        <span>Generaciones</span>
+        <strong>{{ generations|length }}</strong>
+    </div>
+
+    <div class="cost-box">
+
+        <span>
+            Saldo disponible
+        </span>
+
+        <strong>
+            {% if wallet.unlimited %}
+                &infin;
+            {% else %}
+                {{ wallet.balance }}
+            {% endif %}
+            cr&eacute;ditos
+        </strong>
+
+    </div>
+
+</aside>
+
+</div>
+
+
+
+</section>
+
+{% endblock %}

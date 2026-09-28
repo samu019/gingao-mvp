@@ -1,0 +1,412 @@
+{% extends "base.html" %}
+
+{% block title %}
+Sistema ? Gingao
+
+
+<section class="security-premium-panel">
+
+    <div class="security-premium-head">
+
+        <div>
+
+            <span class="eyebrow">
+                SECURITY HARDENING
+            </span>
+
+            <h2>
+                Seguridad y almacenamiento
+            </h2>
+
+            <p>
+                Estado t&eacute;cnico de la
+                configuraci&oacute;n preparada
+                para producci&oacute;n.
+            </p>
+
+        </div>
+
+        {% if security_ready %}
+
+        <span class="security-ready-badge">
+            READY
+        </span>
+
+        {% else %}
+
+        <span class="security-dev-badge">
+            DEVELOPMENT
+        </span>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="security-metric-grid">
+
+        <article class="security-metric-card">
+
+            <span>
+                DEBUG
+            </span>
+
+            <strong>
+                {% if security_info.debug %}
+                    ON
+                {% else %}
+                    OFF
+                {% endif %}
+            </strong>
+
+        </article>
+
+
+        <article class="security-metric-card">
+
+            <span>
+                HTTPS redirect
+            </span>
+
+            <strong>
+                {% if security_info.ssl_redirect %}
+                    ON
+                {% else %}
+                    OFF
+                {% endif %}
+            </strong>
+
+        </article>
+
+
+        <article class="security-metric-card">
+
+            <span>
+                Secure session
+            </span>
+
+            <strong>
+                {% if security_info.session_cookie_secure %}
+                    ON
+                {% else %}
+                    OFF
+                {% endif %}
+            </strong>
+
+        </article>
+
+
+        <article class="security-metric-card">
+
+            <span>
+                HSTS
+            </span>
+
+            <strong>
+                {{ security_info.hsts_seconds }}s
+            </strong>
+
+        </article>
+
+    </div>
+
+
+    <div class="storage-location-card">
+
+        <span>
+            Almacenamiento local actual
+        </span>
+
+        <code>
+            {{ security_info.media_root }}
+        </code>
+
+        <p>
+            Los nuevos uploads dejan de
+            guardarse dentro de static y
+            pasan a MEDIA_ROOT.
+        </p>
+
+    </div>
+
+
+    {% if security_warnings %}
+
+    <div class="security-warning-list">
+
+        <strong>
+            Antes de publicar:
+        </strong>
+
+        {% for warning in security_warnings %}
+
+        <p>
+            &bull; {{ warning }}
+        </p>
+
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+
+{% endblock %}
+
+{% block content %}
+
+<header class="topbar">
+
+    <div>
+
+        <span class="eyebrow">
+            GINGAO CORE
+        </span>
+
+        <h1>
+            Estado del sistema
+        </h1>
+
+        <p>
+            Proveedores, modo y costes internos.
+        </p>
+
+    </div>
+
+</header>
+
+
+<div class="system-status-grid">
+
+    <section class="system-panel">
+
+        <span class="eyebrow">
+            RUNTIME
+        </span>
+
+        <h2>
+            Configuraci&oacute;n
+        </h2>
+
+        <div class="system-row">
+            <span>Modo</span>
+
+            <strong>
+                {{ runtime.mode|upper }}
+            </strong>
+        </div>
+
+        <div class="system-row">
+            <span>Im&aacute;genes</span>
+
+            <strong>
+                {{ runtime.image_provider }}
+            </strong>
+        </div>
+
+        <div class="system-row">
+            <span>V&iacute;deo</span>
+
+            <strong>
+                {{ runtime.video_provider }}
+            </strong>
+        </div>
+
+        <div class="system-row">
+            <span>Audio</span>
+
+            <strong>
+                {{ runtime.audio_provider }}
+            </strong>
+        </div>
+
+        <div class="system-row">
+            <span>FAL_KEY</span>
+
+            <strong>
+                {% if runtime.fal_key_configured %}
+                    Configurada
+                {% else %}
+                    No configurada
+                {% endif %}
+            </strong>
+        </div>
+
+    </section>
+
+
+    <section class="system-panel">
+
+        <span class="eyebrow">
+            PRODUCCI&Oacute;N
+        </span>
+
+        <h2>
+            Readiness
+        </h2>
+
+        {% if production_ready %}
+
+            <div class="production-ready-box">
+                Preparado para producci&oacute;n
+            </div>
+
+        {% else %}
+
+            <div class="production-warning-box">
+
+                <strong>
+                    A&uacute;n no preparado
+                </strong>
+
+                {% for warning in production_warnings %}
+
+                    <p>
+                        &bull; {{ warning }}
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+
+{% if selected_project and cost %}
+
+<section class="workspace-panel system-cost-panel">
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="eyebrow">
+                COST ENGINE
+            </span>
+
+            <h2>
+                {{ selected_project.title }}
+            </h2>
+
+            <p>
+                Estimaci&oacute;n sobre tu proyecto
+                m&aacute;s reciente.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="cost-engine-grid">
+
+        <div class="cost-engine-card">
+
+            <span>
+                Escenas
+            </span>
+
+            <strong>
+                {{ cost.scene_count }}
+            </strong>
+
+        </div>
+
+
+        <div class="cost-engine-card">
+
+            <span>
+                Duraci&oacute;n
+            </span>
+
+            <strong>
+                {{ cost.duration_seconds }} s
+            </strong>
+
+        </div>
+
+
+        <div class="cost-engine-card">
+
+            <span>
+                Coste externo
+            </span>
+
+            <strong>
+                ${{ cost.total_external_usd|floatformat:4 }}
+            </strong>
+
+        </div>
+
+
+        <div class="cost-engine-card">
+
+            <span>
+                Cr&eacute;ditos internos
+            </span>
+
+            <strong>
+                {{ cost.total_internal_credits }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="cost-breakdown">
+
+        <div>
+            <span>
+                Im&aacute;genes
+            </span>
+
+            <strong>
+                ${{ cost.image_external_usd|floatformat:4 }}
+                ?
+                {{ cost.image_credits }}
+                cr&eacute;ditos
+            </strong>
+        </div>
+
+
+        <div>
+            <span>
+                V&iacute;deo
+            </span>
+
+            <strong>
+                ${{ cost.video_external_usd|floatformat:4 }}
+                ?
+                {{ cost.video_credits }}
+                cr&eacute;ditos
+            </strong>
+        </div>
+
+
+        <div>
+            <span>
+                Audio
+            </span>
+
+            <strong>
+                ${{ cost.audio_external_usd|floatformat:4 }}
+                ?
+                {{ cost.audio_credits }}
+                cr&eacute;ditos
+            </strong>
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+{% endblock %}

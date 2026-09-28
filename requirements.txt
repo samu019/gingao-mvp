@@ -1,0 +1,14 @@
+Django>=5.2,<5.3
+psycopg[binary]>=3.2
+celery>=5.4
+redis>=5.2
+python-dotenv>=1.0
+Pillow>=11.0
+boto3>=1.35
+requests>=2.32
+fal-client
+imageio-ffmpeg
+django-storages[s3]>=1.14
+gunicorn>=23.0
+whitenoise>=6.8
+qrcode[pil]==8.2
