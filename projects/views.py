@@ -876,6 +876,14 @@ def videos_workspace(
     )
 
 
+# =============================================================================
+# GINGAO_VIDEO_JOB_IDEMPOTENCY_V47A
+# =============================================================================
+
+# =============================================================================
+# GINGAO_VIDEO_JOB_IDEMPOTENCY_V47A
+# =============================================================================
+
 @login_required
 def generate_scene_video_view(
     request,
@@ -889,57 +897,134 @@ def generate_scene_video_view(
             project_id
         )
 
+    from django.db import transaction
+
+    from generations.models import (
+        GenerationJob,
+    )
+
+    from projects.models import (
+        Scene,
+    )
+
+    from generations.job_services import (
+        create_job,
+        mark_failed,
+    )
+
+    from generations.tasks import (
+        execute_generation_job_task,
+    )
+
     project = get_object_or_404(
         Project,
         id=project_id,
         owner=request.user,
     )
 
-    scene = get_object_or_404(
-        project.scenes,
-        id=scene_id,
-    )
-
-    from generations.video_services import (
-        generate_scene_video,
-    )
+    provider_code = os.environ.get(
+        "GINGAO_VIDEO_PROVIDER",
+        "mock"
+    ).lower()
 
     try:
 
-        result = generate_scene_video(
-            scene=scene,
-            user=request.user,
-            provider_code=os.environ.get(
-                "GINGAO_VIDEO_PROVIDER",
-                "mock"
-            ),
-        )
+        # --------------------------------------------------------------
+        # Serialize generation requests for the SAME scene.
+        #
+        # Two simultaneous POST requests cannot both create a video job:
+        # the second request waits for this Scene row lock and then
+        # create_job() sees the active queued/processing job.
+        # --------------------------------------------------------------
+        with transaction.atomic():
 
-        message = (
-            f"Video Mock de la escena "
-            f"{scene.position} generado."
-        )
+            scene = (
+                Scene.objects
+                .select_for_update()
+                .get(
+                    id=scene_id,
+                    project=project,
+                )
+            )
 
-        if (
-            result["generation"]
-            is None
-        ):
-            message += (
-                " VideoGeneration no se registro "
-                f"porque falta el campo obligatorio "
-                f"'{result['generation_missing_field']}'."
+            job, created = create_job(
+                user=request.user,
+                project=project,
+                scene=scene,
+                job_type=GenerationJob.TYPE_VIDEO,
+                provider=provider_code,
+                payload={
+                    "scene_id": scene.id,
+                },
+            )
+
+        # The transaction is already committed here.
+        # Celery therefore cannot race against an uncommitted job.
+        if not created:
+
+            messages.warning(
+                request,
+                (
+                    f"La escena {scene.position} "
+                    "ya se esta generando. "
+                    "No se envio una segunda solicitud."
+                )
+            )
+
+            return redirect(
+                "videos_workspace",
+                project.id
+            )
+
+        try:
+
+            execute_generation_job_task.delay(
+                job.id
+            )
+
+        except Exception as exc:
+
+            mark_failed(
+                job_id=job.id,
+                error_message=(
+                    "Celery dispatch failed: "
+                    f"{exc}"
+                ),
+            )
+
+            messages.error(
+                request,
+                (
+                    "No se pudo iniciar la generacion "
+                    "del video. Puedes intentarlo de nuevo."
+                )
+            )
+
+            return redirect(
+                "videos_workspace",
+                project.id
             )
 
         messages.success(
             request,
-            message
+            (
+                f"Generacion de video iniciada "
+                f"para la escena {scene.position}."
+            )
+        )
+
+    except Scene.DoesNotExist:
+
+        messages.error(
+            request,
+            "La escena solicitada no existe."
         )
 
     except Exception as exc:
 
         messages.error(
             request,
-            f"Error generando video: {exc}"
+            f"Error iniciando video: {exc}"
         )
 
     return redirect(
