@@ -43341,3 +43341,75 @@ and (
         auto;
 }
 
+
+
+/* ==========================================================
+   GINGAO_VIDEO_GENERATION_LOADING
+   Prevent accidental duplicate paid requests
+   ========================================================== */
+
+.video-generate-scene-premium.is-generating {
+
+    cursor:
+        wait !important;
+
+    opacity:
+        .82;
+
+    pointer-events:
+        none;
+
+    transform:
+        none !important;
+}
+
+.video-generate-scene-premium:disabled {
+
+    cursor:
+        wait !important;
+}
+
+.video-generation-spinner {
+
+    display:
+        none;
+
+    width:
+        14px;
+
+    height:
+        14px;
+
+    flex:
+        0 0 14px;
+
+    border:
+        2px solid
+        rgba(255,255,255,.38);
+
+    border-top-color:
+        currentColor;
+
+    border-radius:
+        50%;
+}
+
+.video-generate-scene-premium.is-generating
+.video-generation-spinner {
+
+    display:
+        inline-block;
+
+    animation:
+        gingaoVideoGenerationSpin
+        .8s linear infinite;
+}
+
+@keyframes gingaoVideoGenerationSpin {
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+}
+

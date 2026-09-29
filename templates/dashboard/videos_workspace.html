@@ -44,6 +44,58 @@ V&iacute;deo ? {{ project.title }} ? Gingao
 </section>
 
 
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const forms = document.querySelectorAll(
+        ".video-scene-generation-form"
+    );
+
+    forms.forEach(function (form) {
+
+        form.addEventListener("submit", function (event) {
+
+            const button = form.querySelector(
+                "[data-generation-button]"
+            );
+
+            if (!button) {
+                return;
+            }
+
+            if (form.dataset.submitting === "true") {
+                event.preventDefault();
+                return;
+            }
+
+            form.dataset.submitting = "true";
+
+            button.disabled = true;
+            button.setAttribute(
+                "aria-busy",
+                "true"
+            );
+
+            const label = button.querySelector(
+                "[data-generation-label]"
+            );
+
+            if (label) {
+                label.textContent =
+                    "Generando video...";
+            }
+
+            button.classList.add(
+                "is-generating"
+            );
+        });
+
+    });
+
+});
+</script>
+
 {% endblock %}
 
 {% block content %}
@@ -266,14 +318,23 @@ V&iacute;deo ? {{ project.title }} ? Gingao
                 <form
                     method="post"
                     action="{% url 'generate_scene_video' project.id scene.id %}"
+                    class="video-scene-generation-form"
                 >
                     {% csrf_token %}
 
                     <button
                         type="submit"
                         class="secondary-button full video-generate-scene-premium"
+                        data-generation-button
                     >
-                        Generar animaci&oacute;n
+                        <span
+                            class="video-generation-spinner"
+                            aria-hidden="true"
+                        ></span>
+
+                        <span data-generation-label>
+                            Generar animaci&oacute;n
+                        </span>
                     </button>
 
                 </form>
