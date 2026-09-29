@@ -52,6 +52,10 @@ document.addEventListener("DOMContentLoaded", function () {
         ".video-scene-generation-form"
     );
 
+    const generationOverlay = document.querySelector(
+        "[data-video-generation-overlay]"
+    );
+
     forms.forEach(function (form) {
 
         form.addEventListener("submit", function (event) {
@@ -89,6 +93,17 @@ document.addEventListener("DOMContentLoaded", function () {
             button.classList.add(
                 "is-generating"
             );
+
+            if (generationOverlay) {
+                generationOverlay.classList.add(
+                    "is-visible"
+                );
+
+                generationOverlay.setAttribute(
+                    "aria-hidden",
+                    "false"
+                );
+            }
         });
 
     });
@@ -100,6 +115,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
 {% block content %}
 <section class="videos-premium-page">
+
+<!-- ======================================================
+     GINGAO_VIDEO_WAIT_OVERLAY_V47C
+     Visible while synchronous video generation is running
+     ====================================================== -->
+
+<div
+    class="video-generation-wait-overlay"
+    data-video-generation-overlay
+    aria-hidden="true"
+>
+    <div
+        class="video-generation-wait-card"
+        role="status"
+        aria-live="polite"
+    >
+        <div
+            class="video-generation-wait-spinner"
+            aria-hidden="true"
+        ></div>
+
+        <strong>
+            Generando v&iacute;deo...
+        </strong>
+
+        <p>
+            Estamos creando la animaci&oacute;n
+            de esta escena.
+        </p>
+
+        <span>
+            No cierres esta p&aacute;gina
+            mientras termina el proceso.
+        </span>
+    </div>
+</div>
 
 
 <div class="workspace-top">
