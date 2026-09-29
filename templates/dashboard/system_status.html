@@ -180,6 +180,87 @@ Sistema ? Gingao
 </header>
 
 
+
+<section class="system-panel"
+         style="margin-top: 24px;">
+
+    <span class="eyebrow">
+        NOWPAYMENTS
+    </span>
+
+    <h2>
+        Live readiness
+    </h2>
+
+    <div class="system-row">
+        <span>API key</span>
+        <strong>
+            {% if nowpayments_readiness.checks.api_key %}
+                OK
+            {% else %}
+                MISSING
+            {% endif %}
+        </strong>
+    </div>
+
+    <div class="system-row">
+        <span>IPN secret</span>
+        <strong>
+            {% if nowpayments_readiness.checks.ipn_secret %}
+                OK
+            {% else %}
+                MISSING
+            {% endif %}
+        </strong>
+    </div>
+
+    <div class="system-row">
+        <span>Public base URL</span>
+        <strong>
+            {% if nowpayments_readiness.checks.public_base_url %}
+                OK
+            {% else %}
+                MISSING
+            {% endif %}
+        </strong>
+    </div>
+
+    <div class="system-row">
+        <span>HTTPS</span>
+        <strong>
+            {% if nowpayments_readiness.checks.https %}
+                OK
+            {% else %}
+                MISSING
+            {% endif %}
+        </strong>
+    </div>
+
+    <div class="system-row">
+        <span>No localhost</span>
+        <strong>
+            {% if nowpayments_readiness.checks.not_localhost %}
+                OK
+            {% else %}
+                MISSING
+            {% endif %}
+        </strong>
+    </div>
+
+    <div class="system-row">
+        <span>Estado final</span>
+        <strong>
+            {% if nowpayments_readiness.ready %}
+                READY
+            {% else %}
+                NOT READY
+            {% endif %}
+        </strong>
+    </div>
+
+</section>
+
+
 <div class="system-status-grid">
 
     <section class="system-panel">

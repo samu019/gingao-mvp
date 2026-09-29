@@ -1641,6 +1641,14 @@ def system_status_view(
 
     cfg = get_runtime_config()
 
+    from credits.nowpayments import (
+        get_live_readiness,
+    )
+
+    nowpayments_readiness = (
+        get_live_readiness()
+    )
+
     from config.security import (
         security_ready,
         security_snapshot,
@@ -1699,6 +1707,9 @@ def system_status_view(
 
             "security_info":
                 security_info,
+
+            "nowpayments_readiness":
+                nowpayments_readiness,
 
             "selected_project":
                 selected_project,
