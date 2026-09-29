@@ -1850,6 +1850,10 @@ def payment_checkout_view(
         create_payment,
     )
 
+    from credits.nowpayments import (
+        is_trusted_nowpayments_checkout_url,
+    )
+
     try:
 
         payment = create_payment(
