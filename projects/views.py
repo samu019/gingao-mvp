@@ -877,11 +877,7 @@ def videos_workspace(
 
 
 # =============================================================================
-# GINGAO_VIDEO_JOB_IDEMPOTENCY_V47A
-# =============================================================================
-
-# =============================================================================
-# GINGAO_VIDEO_JOB_IDEMPOTENCY_V47A
+# GINGAO_VIDEO_SYNC_FALLBACK_V47B
 # =============================================================================
 
 @login_required
@@ -909,11 +905,13 @@ def generate_scene_video_view(
 
     from generations.job_services import (
         create_job,
+        mark_processing,
+        mark_completed,
         mark_failed,
     )
 
-    from generations.tasks import (
-        execute_generation_job_task,
+    from generations.video_services import (
+        generate_scene_video,
     )
 
     project = get_object_or_404(
@@ -930,11 +928,8 @@ def generate_scene_video_view(
     try:
 
         # --------------------------------------------------------------
-        # Serialize generation requests for the SAME scene.
-        #
-        # Two simultaneous POST requests cannot both create a video job:
-        # the second request waits for this Scene row lock and then
-        # create_job() sees the active queued/processing job.
+        # Serialize requests for the SAME scene.
+        # Only one active video job may exist at a time.
         # --------------------------------------------------------------
         with transaction.atomic():
 
@@ -958,8 +953,6 @@ def generate_scene_video_view(
                 },
             )
 
-        # The transaction is already committed here.
-        # Celery therefore cannot race against an uncommitted job.
         if not created:
 
             messages.warning(
@@ -976,40 +969,52 @@ def generate_scene_video_view(
                 project.id
             )
 
+        # --------------------------------------------------------------
+        # Render Free currently has no Celery worker.
+        # Execute synchronously while preserving GenerationJob state.
+        # --------------------------------------------------------------
+        mark_processing(
+            job.id
+        )
+
         try:
 
-            execute_generation_job_task.delay(
-                job.id
+            result = generate_scene_video(
+                scene=scene,
+                user=request.user,
+                provider_code=provider_code,
+            )
+
+            result_url = (
+                result.get("url", "")
+                if isinstance(result, dict)
+                else ""
+            )
+
+            if not result_url:
+                raise RuntimeError(
+                    "El proveedor termino sin URL de video."
+                )
+
+            mark_completed(
+                job_id=job.id,
+                result_url=result_url,
             )
 
         except Exception as exc:
 
             mark_failed(
                 job_id=job.id,
-                error_message=(
-                    "Celery dispatch failed: "
-                    f"{exc}"
-                ),
+                error_message=str(exc),
             )
 
-            messages.error(
-                request,
-                (
-                    "No se pudo iniciar la generacion "
-                    "del video. Puedes intentarlo de nuevo."
-                )
-            )
-
-            return redirect(
-                "videos_workspace",
-                project.id
-            )
+            raise
 
         messages.success(
             request,
             (
-                f"Generacion de video iniciada "
-                f"para la escena {scene.position}."
+                f"Video de la escena "
+                f"{scene.position} generado."
             )
         )
 
@@ -1024,7 +1029,7 @@ def generate_scene_video_view(
 
         messages.error(
             request,
-            f"Error iniciando video: {exc}"
+            f"Error generando video: {exc}"
         )
 
     return redirect(
