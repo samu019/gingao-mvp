@@ -186,11 +186,27 @@ V&iacute;deo ? {{ project.title }} ? Gingao
 
                     {% with video=scene_videos|get_item:scene.id %}
 
+                    {% if video.is_real_video %}
+
+                    <video
+                        src="{{ video.url }}"
+                        class="real-video-player"
+                        controls
+                        preload="metadata"
+                        playsinline
+                    >
+                        Tu navegador no puede reproducir este video.
+                    </video>
+
+                    {% else %}
+
                     <img
                         src="{{ video.url }}"
                         alt="Video escena {{ scene.position }}"
                         class="mock-video-motion"
                     >
+
+                    {% endif %}
 
                     {% endwith %}
 

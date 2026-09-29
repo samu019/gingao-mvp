@@ -831,6 +831,23 @@ def videos_workspace(
                             url = value
                             break
 
+                clean_url = (
+                    str(url)
+                    .lower()
+                    .split("?", 1)[0]
+                )
+
+                is_real_video = (
+                    clean_url.endswith(
+                        (
+                            ".mp4",
+                            ".webm",
+                            ".mov",
+                            ".m4v",
+                        )
+                    )
+                )
+
                 scene_videos[
                     generation.scene_id
                 ] = {
@@ -838,6 +855,8 @@ def videos_workspace(
                         generation,
                     "url":
                         url,
+                    "is_real_video":
+                        is_real_video,
                 }
 
     return render(
