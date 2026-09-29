@@ -248,6 +248,40 @@ Sistema ? Gingao
     </div>
 
     <div class="system-row">
+        <span>API service</span>
+        <strong>
+            {% if nowpayments_connectivity.api_status %}
+                OK
+            {% else %}
+                FAIL
+            {% endif %}
+        </strong>
+    </div>
+
+    <div class="system-row">
+        <span>API key validation</span>
+        <strong>
+            {% if nowpayments_connectivity.api_key %}
+                OK
+            {% else %}
+                FAIL
+            {% endif %}
+        </strong>
+    </div>
+
+    <div class="system-row">
+        <span>Conectividad real</span>
+        <strong>
+            {% if nowpayments_connectivity.ready %}
+                CONNECTED
+            {% else %}
+                NOT CONNECTED
+            {% endif %}
+        </strong>
+    </div>
+
+
+    <div class="system-row">
         <span>Estado final</span>
         <strong>
             {% if nowpayments_readiness.ready %}

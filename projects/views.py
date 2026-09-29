@@ -1643,11 +1643,24 @@ def system_status_view(
 
     from credits.nowpayments import (
         get_live_readiness,
+        check_nowpayments_connectivity,
     )
 
     nowpayments_readiness = (
         get_live_readiness()
     )
+
+    nowpayments_connectivity = {
+        "api_status": False,
+        "api_key": False,
+        "ready": False,
+        "error": "",
+    }
+
+    if nowpayments_readiness["ready"]:
+        nowpayments_connectivity = (
+            check_nowpayments_connectivity()
+        )
 
     from config.security import (
         security_ready,
@@ -1710,6 +1723,9 @@ def system_status_view(
 
             "nowpayments_readiness":
                 nowpayments_readiness,
+
+            "nowpayments_connectivity":
+                nowpayments_connectivity,
 
             "selected_project":
                 selected_project,

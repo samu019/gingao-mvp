@@ -141,6 +141,68 @@ def get_live_readiness():
     }
 
 
+def check_nowpayments_connectivity():
+    """
+    Read-only connectivity test.
+
+    - GET /status: checks NOWPayments API availability.
+    - GET /estimate: validates our x-api-key without creating a payment.
+    - Does not create invoices, payments or modify credits.
+    """
+    result = {
+        "api_status": False,
+        "api_key": False,
+        "ready": False,
+        "error": "",
+    }
+
+    try:
+        status_response = requests.get(
+            settings.NOWPAYMENTS_API_BASE_URL + "/status",
+            timeout=settings.NOWPAYMENTS_TIMEOUT_SECONDS,
+        )
+        status_response.raise_for_status()
+
+        status_data = status_response.json()
+
+        result["api_status"] = (
+            str(status_data.get("message", "")).upper()
+            == "OK"
+        )
+
+        estimate_response = requests.get(
+            settings.NOWPAYMENTS_API_BASE_URL + "/estimate",
+            headers=_headers(),
+            params={
+                "amount": "1",
+                "currency_from": "usd",
+                "currency_to": "btc",
+            },
+            timeout=settings.NOWPAYMENTS_TIMEOUT_SECONDS,
+        )
+        estimate_response.raise_for_status()
+
+        estimate_data = estimate_response.json()
+
+        result["api_key"] = (
+            "estimated_amount" in estimate_data
+            or "amount_from" in estimate_data
+        )
+
+        result["ready"] = (
+            result["api_status"]
+            and result["api_key"]
+        )
+
+    except Exception as exc:
+        result["error"] = (
+            exc.__class__.__name__
+        )
+
+    return result
+
+
+
 def require_live_readiness():
     result = get_live_readiness()
 
