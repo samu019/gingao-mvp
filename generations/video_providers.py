@@ -6,7 +6,7 @@ import hashlib
 import os
 
 from django.conf import settings
-from config.storage import save_generated_text, storage_local_path
+from config.storage import save_generated_bytes, save_generated_text, storage_local_path
 from .generation_profiles import get_generation_profile
 
 
@@ -438,6 +438,116 @@ class FalVideoProvider(VideoProvider):
         )
 
 
+    def _persist_remote_video(
+        self,
+        *,
+        remote_url,
+        project,
+        scene,
+    ):
+        """
+        Download a real provider video and persist it through
+        Django default_storage before database registration.
+
+        This prevents VideoGeneration / Asset from depending
+        directly on a provider-owned temporary URL.
+        """
+
+        import requests
+        from uuid import uuid4
+
+        max_bytes = 250 * 1024 * 1024
+
+        with requests.get(
+            remote_url,
+            stream=True,
+            timeout=(15, 180),
+        ) as response:
+
+            response.raise_for_status()
+
+            content_type = str(
+                response.headers.get(
+                    "Content-Type",
+                    ""
+                )
+                or ""
+            ).lower()
+
+            clean_url = str(
+                remote_url
+                or ""
+            ).split(
+                "?",
+                1,
+            )[0].lower()
+
+            if (
+                not content_type.startswith("video/")
+                and not clean_url.endswith(
+                    (
+                        ".mp4",
+                        ".mov",
+                        ".webm",
+                        ".m4v",
+                    )
+                )
+            ):
+                raise RuntimeError(
+                    "fal.ai devolvio un recurso que "
+                    "no parece ser video."
+                )
+
+            payload = bytearray()
+
+            for chunk in response.iter_content(
+                chunk_size=1024 * 1024
+            ):
+                if not chunk:
+                    continue
+
+                payload.extend(chunk)
+
+                if len(payload) > max_bytes:
+                    raise RuntimeError(
+                        "El video generado supera el "
+                        "limite seguro de 250 MB."
+                    )
+
+        if not payload:
+            raise RuntimeError(
+                "fal.ai devolvio un video vacio."
+            )
+
+        filename = (
+            f"scene_{scene.position}_"
+            f"{uuid4().hex[:16]}.mp4"
+        )
+
+        saved = save_generated_bytes(
+            category="video_real",
+            filename=filename,
+            content=bytes(payload),
+            project_id=project.pk,
+        )
+
+        durable_url = str(
+            saved.get(
+                "url",
+                ""
+            )
+            or ""
+        ).strip()
+
+        if not durable_url:
+            raise RuntimeError(
+                "El storage guardo el video pero "
+                "no devolvio una URL."
+            )
+
+        return durable_url
+
+
     def _local_image_path(
         self,
         image_url,
@@ -793,6 +903,15 @@ class FalVideoProvider(VideoProvider):
                 )
 
 
+            durable_url = (
+                self._persist_remote_video(
+                    remote_url=remote_url,
+                    project=project,
+                    scene=scene,
+                )
+            )
+
+
             estimated_cost = (
                 self._external_cost_estimate(
                     resolution=resolution,
@@ -804,7 +923,7 @@ class FalVideoProvider(VideoProvider):
 
             return VideoResult(
                 success=True,
-                url=remote_url,
+                url=durable_url,
                 provider=self.code,
                 external_cost_usd=(
                     estimated_cost
