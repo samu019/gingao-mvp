@@ -43180,7 +43180,7 @@ and (
 }
 
 .payment-card-coming-soon-button::after {
-    content: "  ?  Pr?ximamente";
+    content: "  \00B7  PR\00D3XIMAMENTE";
 
     display:
         inline-block;
@@ -43278,5 +43278,34 @@ and (
             !important;
     }
 
+}
+
+
+
+/* ==========================================================
+   GINGAO_V50D5K_CARD_FINAL_POLISH
+   ========================================================== */
+
+.payment-card-coming-soon {
+    gap: 0 !important;
+    margin-top: 2px;
+}
+
+.payment-card-coming-soon-button,
+.payment-card-coming-soon-button:disabled {
+    min-height: 42px !important;
+    padding: 8px 14px !important;
+    font-size: 11px !important;
+}
+
+.payment-card-coming-soon-button::after {
+    margin-left: 6px;
+    padding: 3px 8px;
+    font-size: 7px;
+    letter-spacing: .04em;
+}
+
+.payment-card-coming-soon-note {
+    display: none !important;
 }
 
