@@ -42591,3 +42591,479 @@ and (
         width: 100%;
     }
 }
+
+
+/* ==========================================================
+   GINGAO_V50D5E_USDT_PREMIUM_COMPACT
+   ========================================================== */
+
+
+/* Main USDT area */
+
+.payment-crypto-instructions {
+    margin-top: 18px;
+    padding: 18px;
+    border:
+        1px solid
+        rgba(103, 78, 234, .10);
+    border-radius: 22px;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.96),
+            rgba(248,247,255,.98)
+        );
+    box-shadow:
+        0 12px 34px
+        rgba(36, 30, 90, .055);
+}
+
+
+/* Amount / network rows */
+
+.payment-crypto-instructions
+.payment-info-row {
+    min-height: 54px;
+    padding:
+        10px 14px;
+    border-bottom:
+        1px solid
+        rgba(30,34,60,.065);
+}
+
+.payment-crypto-instructions
+.payment-info-row > span {
+    color:
+        #747b91;
+    font-size:
+        12px;
+    font-weight:
+        750;
+}
+
+.payment-crypto-instructions
+.payment-info-row strong {
+    color:
+        #171a31;
+    font-size:
+        14px;
+    font-weight:
+        900;
+}
+
+
+/* Amount + copy button */
+
+.payment-copy-value {
+    display:
+        flex;
+    align-items:
+        center;
+    justify-content:
+        flex-end;
+    gap:
+        10px;
+    flex-wrap:
+        wrap;
+}
+
+
+/* QR card */
+
+.payment-qr-box {
+    grid-template-columns:
+        118px minmax(0, 1fr) !important;
+
+    gap:
+        16px !important;
+
+    margin-top:
+        16px !important;
+
+    padding:
+        14px !important;
+
+    border:
+        1px solid
+        rgba(103,78,234,.10) !important;
+
+    border-radius:
+        18px !important;
+
+    background:
+        rgba(255,255,255,.92) !important;
+
+    box-shadow:
+        0 8px 24px
+        rgba(28,32,68,.045);
+}
+
+.payment-qr-image-wrap {
+    padding:
+        8px !important;
+
+    border-radius:
+        14px !important;
+
+    border:
+        1px solid
+        rgba(30,34,60,.06);
+}
+
+.payment-qr-image {
+    width:
+        102px !important;
+
+    height:
+        102px !important;
+}
+
+.payment-qr-copy strong {
+    margin-bottom:
+        5px !important;
+
+    color:
+        #171a31;
+
+    font-size:
+        13px !important;
+
+    font-weight:
+        900;
+}
+
+.payment-qr-copy p {
+    max-width:
+        500px;
+
+    color:
+        #737a90;
+
+    font-size:
+        12px;
+
+    line-height:
+        1.55 !important;
+}
+
+
+/* Address section */
+
+.payment-crypto-address {
+    margin-top:
+        14px;
+
+    padding:
+        14px;
+
+    border:
+        1px solid
+        rgba(103,78,234,.09);
+
+    border-radius:
+        16px;
+
+    background:
+        rgba(255,255,255,.82);
+}
+
+.payment-crypto-address > span {
+    display:
+        block;
+
+    margin-bottom:
+        9px;
+
+    color:
+        #747b91;
+
+    font-size:
+        11px;
+
+    font-weight:
+        800;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        .035em;
+}
+
+.payment-copy-address-row {
+    display:
+        grid !important;
+
+    grid-template-columns:
+        minmax(0, 1fr) auto;
+
+    align-items:
+        center !important;
+
+    gap:
+        10px !important;
+
+    margin-top:
+        0 !important;
+}
+
+.payment-copy-address-row code {
+    display:
+        block;
+
+    min-width:
+        0;
+
+    padding:
+        10px 12px;
+
+    border-radius:
+        11px;
+
+    background:
+        #f6f5ff;
+
+    color:
+        #272b4c;
+
+    font-size:
+        11px;
+
+    line-height:
+        1.45;
+
+    overflow-wrap:
+        anywhere;
+
+    word-break:
+        break-word;
+}
+
+
+/* Premium copy buttons */
+
+.payment-copy-button {
+    min-height:
+        38px;
+
+    padding:
+        8px 13px !important;
+
+    border:
+        1px solid
+        rgba(102,72,245,.15) !important;
+
+    border-radius:
+        11px !important;
+
+    background:
+        rgba(102,72,245,.075) !important;
+
+    color:
+        #5c3ee5;
+
+    font-size:
+        11px !important;
+
+    font-weight:
+        900 !important;
+
+    line-height:
+        1;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        box-shadow .18s ease;
+}
+
+.payment-copy-button:hover {
+    transform:
+        translateY(-1px);
+
+    background:
+        rgba(102,72,245,.12) !important;
+
+    box-shadow:
+        0 6px 16px
+        rgba(88,61,210,.09);
+}
+
+.payment-copy-button.is-copied {
+    background:
+        rgba(39,174,96,.10) !important;
+
+    border-color:
+        rgba(39,174,96,.18) !important;
+
+    color:
+        #21844d;
+}
+
+
+/* Instruction text */
+
+.payment-crypto-instructions
+.payment-live-help {
+    margin:
+        14px 2px 0;
+
+    padding:
+        12px 14px;
+
+    border:
+        1px solid
+        rgba(208,171,65,.18);
+
+    border-radius:
+        13px;
+
+    background:
+        rgba(255,247,221,.55);
+
+    color:
+        #756334;
+
+    font-size:
+        11px;
+
+    line-height:
+        1.55;
+}
+
+
+/* Refresh payment status */
+
+.payment-usdt-status-actions {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    margin-top:
+        12px;
+
+    flex-wrap:
+        wrap;
+}
+
+.payment-refresh-status-button {
+    min-height:
+        40px;
+
+    padding:
+        0 16px;
+
+    border:
+        0;
+
+    border-radius:
+        12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7346f5,
+            #3e7af4
+        );
+
+    color:
+        #fff;
+
+    font: inherit;
+
+    font-size:
+        12px;
+
+    font-weight:
+        900;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+        0 8px 18px
+        rgba(86,67,220,.16);
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.payment-refresh-status-button:hover {
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 11px 24px
+        rgba(86,67,220,.20);
+}
+
+.payment-refresh-status-help {
+    color:
+        #858b9f;
+
+    font-size:
+        10px;
+
+    line-height:
+        1.45;
+}
+
+
+/* Mobile */
+
+@media (max-width: 640px) {
+
+    .payment-crypto-instructions {
+        padding:
+            14px;
+    }
+
+    .payment-qr-box {
+        grid-template-columns:
+            1fr !important;
+
+        text-align:
+            center;
+    }
+
+    .payment-copy-value {
+        justify-content:
+            flex-start;
+    }
+
+    .payment-copy-address-row {
+        grid-template-columns:
+            1fr !important;
+    }
+
+    .payment-copy-button {
+        width:
+            100%;
+    }
+
+    .payment-usdt-status-actions {
+        display:
+            grid;
+
+        grid-template-columns:
+            1fr;
+
+        text-align:
+            center;
+    }
+
+    .payment-refresh-status-button {
+        width:
+            100%;
+    }
+}
+

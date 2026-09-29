@@ -466,6 +466,26 @@ Pago | Gingao
                         de la confirmaci&oacute;n del proveedor.
                     </p>
 
+
+                    {# GINGAO_V50D5E_USDT_REFRESH_STATUS #}
+
+                    <div class="payment-usdt-status-actions">
+
+                        <button
+                            type="button"
+                            class="payment-refresh-status-button"
+                            onclick="window.location.reload()"
+                        >
+                            Actualizar estado
+                        </button>
+
+                        <span class="payment-refresh-status-help">
+                            El saldo se actualizar&aacute; cuando
+                            NOWPayments confirme la operaci&oacute;n.
+                        </span>
+
+                    </div>
+
                 </div>
 
             {% endif %}
@@ -527,7 +547,7 @@ document.addEventListener("click", async function (event) {
     try {
         await navigator.clipboard.writeText(value);
 
-        button.textContent = "Copiado ?";
+        button.textContent = "Copiado";
         button.classList.add("is-copied");
 
         setTimeout(function () {
@@ -548,7 +568,7 @@ document.addEventListener("click", async function (event) {
         document.execCommand("copy");
         input.remove();
 
-        button.textContent = "Copiado ?";
+        button.textContent = "Copiado";
 
         setTimeout(function () {
             button.textContent = originalText;
