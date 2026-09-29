@@ -346,12 +346,12 @@ Pago | Gingao
 
         {% if payment.status == "pending" or payment.status == "processing" %}
 
-            {% if payment.payment_method == "card" and payment.checkout_url %}
+            {% if payment.payment_method == "card" and safe_checkout_url %}
 
                 <div class="payment-live-action">
 
                     <a
-                        href="{{ payment.checkout_url }}"
+                        href="{{ safe_checkout_url }}"
                         class="checkout-primary-action"
                         rel="noopener noreferrer"
                     >

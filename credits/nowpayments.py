@@ -3,6 +3,7 @@ import hmac
 import json
 from dataclasses import dataclass
 from decimal import Decimal
+from urllib.parse import urlparse
 
 import requests
 from django.conf import settings
@@ -139,6 +140,52 @@ def get_live_readiness():
         "public_base_url":
             public_base,
     }
+
+
+
+
+def is_trusted_nowpayments_checkout_url(value):
+    """
+    Accept only HTTPS checkout URLs hosted by NOWPayments.
+
+    Examples allowed:
+      https://nowpayments.io/...
+      https://checkout.nowpayments.io/...
+      https://<subdomain>.nowpayments.io/...
+
+    No network request is performed.
+    """
+    try:
+        parsed = urlparse(str(value).strip())
+    except Exception:
+        return False
+
+    if parsed.scheme.lower() != "https":
+        return False
+
+    if not parsed.hostname:
+        return False
+
+    if parsed.username or parsed.password:
+        return False
+
+    hostname = parsed.hostname.lower().rstrip(".")
+
+    if not (
+        hostname == "nowpayments.io"
+        or hostname.endswith(".nowpayments.io")
+    ):
+        return False
+
+    try:
+        port = parsed.port
+    except ValueError:
+        return False
+
+    if port not in (None, 443):
+        return False
+
+    return True
 
 
 def check_nowpayments_connectivity():

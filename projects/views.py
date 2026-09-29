@@ -1863,8 +1863,8 @@ def payment_checkout_view(
             payment.payment_method == "card"
             and payment.provider == "nowpayments"
             and payment.checkout_url
-            and payment.checkout_url.startswith(
-                ("https://", "http://")
+            and is_trusted_nowpayments_checkout_url(
+                payment.checkout_url
             )
         ):
             return redirect(
@@ -1895,17 +1895,34 @@ def payment_detail_view(
 ):
     from credits.models import Payment
 
+    from credits.nowpayments import (
+        is_trusted_nowpayments_checkout_url,
+    )
+
     payment = get_object_or_404(
         Payment,
         id=payment_id,
         user=request.user,
     )
 
+    safe_checkout_url = ""
+
+    if (
+        payment.provider == "nowpayments"
+        and payment.checkout_url
+        and is_trusted_nowpayments_checkout_url(
+            payment.checkout_url
+        )
+    ):
+        safe_checkout_url = payment.checkout_url
+
     return render(
         request,
         "dashboard/payment_detail.html",
         {
             "payment": payment,
+            "safe_checkout_url":
+                safe_checkout_url,
             "wallet": _wallet_for(
                 request.user
             ),
