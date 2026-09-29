@@ -43075,7 +43075,7 @@ and (
 
 .payment-card-coming-soon {
     display: grid;
-    gap: 6px;
+    gap: 4px;
 }
 
 .payment-card-coming-soon-button,
@@ -43086,13 +43086,19 @@ and (
     transform: none !important;
     box-shadow: none !important;
     pointer-events: none;
+    font-size: 13px !important;
+    line-height: 1.15 !important;
+    min-height: 44px;
+    padding: 10px 14px !important;
 }
 
 .payment-card-coming-soon-note {
     display: block;
     text-align: center;
     color: var(--muted);
-    font-size: 10px;
-    line-height: 1.4;
+    font-size: 8px !important;
+    line-height: 1.2 !important;
+    max-width: 210px;
+    margin: 0 auto;
 }
 
