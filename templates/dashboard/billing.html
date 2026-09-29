@@ -272,41 +272,32 @@ Cr&eacute;ditos y planes | Gingao
 
             <div class="payment-method-buttons">
 
-                <form
-                    method="post"
-                    action="{% url 'payment_checkout' plan.code 'card' %}"
-                >
+                {# GINGAO_V50D5H_CARD_COMING_SOON #}
 
-                    {% csrf_token %}
+                <div class="payment-card-coming-soon">
 
                     <button
-                        type="submit"
+                        type="button"
                         class="
-                            payment-plan-button
-                            payment-card-button
                             {% if plan.highlighted %}
                                 primary-button
                             {% else %}
                                 secondary-button
                             {% endif %}
                             full
+                            payment-card-coming-soon-button
                         "
+                        disabled
+                        aria-disabled="true"
                     >
-
-                        <span
-                            class="payment-button-emoji"
-                            aria-hidden="true"
-                        >
-                            &#128179;
-                        </span>
-
-                        <span>
-                            Pagar con tarjeta
-                        </span>
-
+                        &#128179; Tarjeta - Pr&oacute;ximamente
                     </button>
 
-                </form>
+                    <small class="payment-card-coming-soon-note">
+                        Pago con tarjeta en proceso de activaci&oacute;n.
+                    </small>
+
+                </div>
 
 
                 <form

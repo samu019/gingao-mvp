@@ -43067,3 +43067,32 @@ and (
     }
 }
 
+
+
+/* ==========================================================
+   GINGAO_V50D5H_CARD_COMING_SOON
+   ========================================================== */
+
+.payment-card-coming-soon {
+    display: grid;
+    gap: 6px;
+}
+
+.payment-card-coming-soon-button,
+.payment-card-coming-soon-button:disabled {
+    cursor: not-allowed !important;
+    opacity: .62;
+    filter: saturate(.75);
+    transform: none !important;
+    box-shadow: none !important;
+    pointer-events: none;
+}
+
+.payment-card-coming-soon-note {
+    display: block;
+    text-align: center;
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.4;
+}
+
