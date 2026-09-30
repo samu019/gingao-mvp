@@ -106,7 +106,7 @@ Corte final &middot; {{ project.title }} &middot; Gingao
         </div>
 
 
-        
+
 <div class="final-preview-stack">
 
     <div class="final-video-cover-premium">
@@ -255,7 +255,7 @@ Corte final &middot; {{ project.title }} &middot; Gingao
         </div>
 
 
-        
+
 
 <!-- GINGAO_FINAL_TRANSPORT_V19 -->
 
@@ -431,7 +431,7 @@ Corte final &middot; {{ project.title }} &middot; Gingao
                         missing
                     {% endif %}
                 "
-            
+
             data-gingao-scene="{{ item.scene.position }}"
             data-gingao-start="{{ item.start }}"
             data-gingao-end="{{ item.end }}"
@@ -571,19 +571,32 @@ Corte final &middot; {{ project.title }} &middot; Gingao
                 <form
                     method="post"
                     action="{% url 'generate_project_audio' project.id %}"
-                >
+
+                      class="audio-generation-form-v49d"
+                  >
                     {% csrf_token %}
 
                     <button
                         type="submit"
                         class="secondary-button final-audio-button-premium"
-                    >
+
+                          data-audio-generation-button
+                      >
+
+                          <span
+                              class="audio-generation-spinner-v49d"
+                              aria-hidden="true"
+                          ></span>
+
+                          <span data-audio-generation-label>
                         {% if audio_info.url %}
                             Regenerar audio Mock
                         {% else %}
                             Generar narraci&oacute;n
                         {% endif %}
-                    </button>
+                                              </span>
+
+                      </button>
 
                 </form>
 
@@ -690,7 +703,7 @@ Corte final &middot; {{ project.title }} &middot; Gingao
 
             {% if all_ready %}
 
-            
+
 
 {% if final_export_url %}
 
@@ -2807,6 +2820,130 @@ document.addEventListener(
     }
 );
 
+</script>
+
+
+
+<!-- ======================================================
+     GINGAO_AUDIO_GENERATION_LOADING_V49D
+     ====================================================== -->
+
+<div
+    class="audio-generation-wait-overlay-v49d"
+    data-audio-generation-overlay
+    aria-hidden="true"
+>
+    <div
+        class="audio-generation-wait-card-v49d"
+        role="status"
+        aria-live="polite"
+    >
+
+        <span
+            class="audio-generation-wait-spinner-v49d"
+            aria-hidden="true"
+        ></span>
+
+        <strong>
+            Generando audio...
+        </strong>
+
+        <span>
+            Estamos preparando la narraci&oacute;n con IA.
+        </span>
+
+        <small>
+            No cierres esta p&aacute;gina mientras
+            termina el proceso.
+        </small>
+
+    </div>
+</div>
+
+
+<script>
+/* GINGAO_AUDIO_GENERATION_LOADING_RUNTIME_V49D */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const forms =
+            document.querySelectorAll(
+                ".audio-generation-form-v49d"
+            );
+
+        const overlay =
+            document.querySelector(
+                "[data-audio-generation-overlay]"
+            );
+
+        forms.forEach(
+            function (form) {
+
+                form.addEventListener(
+                    "submit",
+                    function (event) {
+
+                        if (
+                            form.dataset.submitting
+                            === "true"
+                        ) {
+
+                            event.preventDefault();
+                            return;
+                        }
+
+                        form.dataset.submitting =
+                            "true";
+
+                        const button =
+                            form.querySelector(
+                                "[data-audio-generation-button]"
+                            );
+
+                        const label =
+                            form.querySelector(
+                                "[data-audio-generation-label]"
+                            );
+
+                        if (button) {
+
+                            button.disabled = true;
+
+                            button.setAttribute(
+                                "aria-busy",
+                                "true"
+                            );
+
+                            button.classList.add(
+                                "is-generating"
+                            );
+                        }
+
+                        if (label) {
+
+                            label.textContent =
+                                "Generando audio...";
+                        }
+
+                        if (overlay) {
+
+                            overlay.classList.add(
+                                "is-visible"
+                            );
+
+                            overlay.setAttribute(
+                                "aria-hidden",
+                                "false"
+                            );
+                        }
+                    }
+                );
+            }
+        );
+    }
+);
 </script>
 
 {% endblock %}
