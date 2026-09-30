@@ -126,20 +126,37 @@ document.addEventListener("DOMContentLoaded", function () {
                         method: "POST",
                         body: new FormData(form),
                         credentials: "same-origin",
-                        redirect: "follow"
+
+                        // GINGAO_VIDEO_PRESERVE_MESSAGES_V58E
+                        //
+                        // Do not follow Django's redirect inside fetch.
+                        // Following it here would render base.html inside
+                        // the hidden fetch response and consume Django
+                        // messages before the real browser navigation.
+                        redirect: "manual"
                     }
                 );
 
-                if (!response.ok) {
+                const redirectAccepted =
+                    response.type === "opaqueredirect"
+                    || (
+                        response.status >= 300
+                        && response.status < 400
+                    );
+
+                if (
+                    !response.ok
+                    && !redirectAccepted
+                ) {
                     throw new Error(
                         "Video generation request failed: "
                         + response.status
                     );
                 }
 
-                window.location.assign(
-                    response.url || window.location.href
-                );
+                // Perform the visible GET only after the POST finishes.
+                // Django messages remain available for base.html.
+                window.location.reload();
 
             } catch (error) {
                 console.error(
