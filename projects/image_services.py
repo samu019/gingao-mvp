@@ -277,15 +277,21 @@ def build_storyboard_prompt(
             for marker in vehicle_markers
         )
     ):
+        # GINGAO_POSITIVE_SINGLE_OCCUPANT_COMPOSITION_V56D
         single_vehicle_occupant_guard = (
-            "\n\nSINGLE VEHICLE OCCUPANT RULE:\n"
-            "The protagonist is the only person in the vehicle. "
-            "Do not add passengers or additional occupants. "
-            "Do not invent another driver or companion. "
-            "If the vehicle interior is visible through windows, "
-            "only the protagonist may be visible inside. "
-            "Do not show extra human faces, heads or bodies "
-            "inside the vehicle."
+            "\n\nSINGLE VEHICLE OCCUPANT COMPOSITION:\n"
+            "Exactly one human exists inside the entire vehicle: "
+            "the protagonist in the driver's seat. "
+            "Show the protagonist clearly seated behind the steering wheel. "
+            "The front passenger seat is clearly empty. "
+            "All rear seats are clearly empty. "
+            "There is exactly one human face visible in or through the car. "
+            "Use a driver-side exterior camera angle whenever possible. "
+            "Keep passenger-side and rear windows dark or naturally tinted "
+            "if needed to prevent false occupants. "
+            "The cabin contains one human silhouette only. "
+            "No passenger, companion, second driver or background occupant "
+            "may appear inside the vehicle."
         )
 
     if any(
