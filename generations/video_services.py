@@ -313,6 +313,96 @@ def create_video_asset(
     ), None
 
 
+# =============================================================================
+# GINGAO_RUNTIME_VIDEO_MOTION_BOUNDARY_V58B
+# =============================================================================
+
+def build_runtime_video_prompt(scene):
+    """
+    Add a narrative motion boundary at generation time.
+
+    This protects both newly generated scenes and legacy projects whose
+    stored video_prompt predates the scene-motion rules.
+    """
+    stored_prompt = str(
+        getattr(
+            scene,
+            "video_prompt",
+            "",
+        )
+        or ""
+    ).strip()
+
+    narrative_beat = str(
+        getattr(
+            scene,
+            "script",
+            "",
+        )
+        or ""
+    ).strip()
+
+    try:
+        next_scene = (
+            scene.project.scenes
+            .filter(
+                position__gt=scene.position
+            )
+            .order_by("position")
+            .first()
+        )
+    except Exception:
+        next_scene = None
+
+    next_beat = ""
+
+    if next_scene is not None:
+        next_beat = str(
+            getattr(
+                next_scene,
+                "script",
+                "",
+            )
+            or ""
+        ).strip()
+
+    parts = []
+
+    if stored_prompt:
+        parts.append(
+            "Original motion direction:\n"
+            + stored_prompt
+        )
+
+    if narrative_beat:
+        parts.append(
+            "CURRENT SCENE NARRATIVE BEAT:\n"
+            + narrative_beat
+        )
+
+    boundary = (
+        "MOTION BOUNDARY:\n"
+        "Animate only the CURRENT SCENE NARRATIVE BEAT. "
+        "Do not invent or extend the main action beyond what this "
+        "scene explicitly requires. "
+        "Keep subject displacement restrained when the action is short. "
+        "Prefer subtle natural body motion, breathing, hair or clothing "
+        "movement, environmental motion, lighting changes, or gentle "
+        "camera motion instead of advancing the story. "
+        "End in a natural state from which the following scene can continue."
+    )
+
+    parts.append(boundary)
+
+    if next_beat:
+        parts.append(
+            "NEXT SCENE - RESERVED, DO NOT START IT YET:\n"
+            + next_beat
+        )
+
+    return "\n\n".join(parts).strip()
+
+
 @transaction.atomic
 def generate_scene_video(
     *,
@@ -347,8 +437,12 @@ def generate_scene_video(
         provider_code
     )
 
+    runtime_prompt = build_runtime_video_prompt(
+        scene
+    )
+
     result = provider.generate(
-        prompt=scene.video_prompt,
+        prompt=runtime_prompt,
         project=project,
         scene=scene,
         image_url=storyboard.image_url,
