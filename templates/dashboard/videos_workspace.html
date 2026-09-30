@@ -91,8 +91,14 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
             if (label) {
+                const isRegeneration =
+                    form.dataset.generationMode ===
+                    "regenerate";
+
                 label.textContent =
-                    "Generando video...";
+                    isRegeneration
+                        ? "Regenerando video..."
+                        : "Generando video...";
             }
 
             button.classList.add(
@@ -381,6 +387,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     method="post"
                     action="{% url 'generate_scene_video' project.id scene.id %}"
                     class="video-scene-generation-form"
+                    {% if scene.id in scene_videos %}
+                    data-generation-mode="regenerate"
+                    {% else %}
+                    data-generation-mode="generate"
+                    {% endif %}
                 >
                     {% csrf_token %}
 
@@ -395,7 +406,12 @@ document.addEventListener("DOMContentLoaded", function () {
                         ></span>
 
                         <span data-generation-label>
-                            Generar animaci&oacute;n
+                            {# GINGAO_VIDEO_REGENERATION_LABEL_V58C #}
+                            {% if scene.id in scene_videos %}
+                                Regenerar animaci&oacute;n
+                            {% else %}
+                                Generar animaci&oacute;n
+                            {% endif %}
                         </span>
                     </button>
 
