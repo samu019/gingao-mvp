@@ -2,6 +2,72 @@
 
 {% block title %}
 Crear v&iacute;deo &middot; Gingao
+
+<script>
+/* GINGAO_VOICE_SELECTOR_RUNTIME_V49B */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const selector =
+            document.getElementById(
+                "gingaoVoiceSelector"
+            );
+
+        const voiceRadios =
+            document.querySelectorAll(
+                'input[name="voice_enabled"]'
+            );
+
+        if (
+            !selector
+            || !voiceRadios.length
+        ) {
+            return;
+        }
+
+
+        function updateVoiceSelector() {
+
+            const enabled =
+                document.querySelector(
+                    'input[name="voice_enabled"]:checked'
+                );
+
+            const hasVoice =
+                enabled
+                && enabled.value === "1";
+
+            selector.classList.toggle(
+                "is-disabled",
+                !hasVoice
+            );
+
+            selector.setAttribute(
+                "aria-hidden",
+                hasVoice
+                    ? "false"
+                    : "true"
+            );
+        }
+
+
+        voiceRadios.forEach(
+            function (radio) {
+
+                radio.addEventListener(
+                    "change",
+                    updateVoiceSelector
+                );
+            }
+        );
+
+        updateVoiceSelector();
+    }
+);
+</script>
+
 {% endblock %}
 
 {% block content %}
@@ -385,6 +451,120 @@ Crear v&iacute;deo &middot; Gingao
                     </small>
 
                 </label>
+
+            </div>
+
+            <!-- ==================================================
+                 GINGAO_VOICE_SELECTOR_V49B
+                 ================================================== -->
+
+            <div
+                class="gingao-voice-selector-v49b"
+                id="gingaoVoiceSelector"
+            >
+
+                <div class="creator-field-head">
+                    <span class="creator-field-label">
+                        Tipo de voz
+                    </span>
+
+                    <span class="gingao-voice-helper-v49b">
+                        Elige el estilo de narraci&oacute;n
+                    </span>
+                </div>
+
+
+                <div class="gingao-voice-grid-v49b">
+
+                    <label class="gingao-voice-card-v49b">
+                        <input
+                            type="radio"
+                            name="voice_preset"
+                            value="warm_female"
+                            checked
+                        >
+                        <strong>Femenina c&aacute;lida</strong>
+                        <small>Cercana, suave y natural</small>
+                    </label>
+
+
+                    <label class="gingao-voice-card-v49b">
+                        <input
+                            type="radio"
+                            name="voice_preset"
+                            value="young_female"
+                        >
+                        <strong>Femenina joven</strong>
+                        <small>Fresca, ligera y din&aacute;mica</small>
+                    </label>
+
+
+                    <label class="gingao-voice-card-v49b">
+                        <input
+                            type="radio"
+                            name="voice_preset"
+                            value="elegant_female"
+                        >
+                        <strong>Femenina elegante</strong>
+                        <small>Refinada y profesional</small>
+                    </label>
+
+
+                    <label class="gingao-voice-card-v49b">
+                        <input
+                            type="radio"
+                            name="voice_preset"
+                            value="deep_male"
+                        >
+                        <strong>Masculina profunda</strong>
+                        <small>Grave y con presencia</small>
+                    </label>
+
+
+                    <label class="gingao-voice-card-v49b">
+                        <input
+                            type="radio"
+                            name="voice_preset"
+                            value="young_male"
+                        >
+                        <strong>Masculina joven</strong>
+                        <small>Moderna, clara y natural</small>
+                    </label>
+
+
+                    <label class="gingao-voice-card-v49b">
+                        <input
+                            type="radio"
+                            name="voice_preset"
+                            value="mature_male"
+                        >
+                        <strong>Masculina madura</strong>
+                        <small>Seria y con car&aacute;cter</small>
+                    </label>
+
+
+                    <label class="gingao-voice-card-v49b">
+                        <input
+                            type="radio"
+                            name="voice_preset"
+                            value="cinematic"
+                        >
+                        <strong>Narrador cinematogr&aacute;fico</strong>
+                        <small>Ideal para historias</small>
+                    </label>
+
+
+                    <label class="gingao-voice-card-v49b">
+                        <input
+                            type="radio"
+                            name="voice_preset"
+                            value="energetic"
+                        >
+                        <strong>En&eacute;rgica</strong>
+                        <small>Expresiva y din&aacute;mica</small>
+                    </label>
+
+                </div>
 
             </div>
 

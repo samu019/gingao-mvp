@@ -302,6 +302,18 @@ def create_video(request):
             == "1"
         )
 
+        # GINGAO_VOICE_SELECTION_V49B
+        from generations.voice_catalog import (
+            normalize_voice_preset,
+        )
+
+        voice_preset = normalize_voice_preset(
+            request.POST.get(
+                "voice_preset",
+                "warm_female"
+            )
+        )
+
         options = (
             normalize_creation_options(
                 duration=raw_duration,
@@ -345,6 +357,7 @@ def create_video(request):
                                 "voice_enabled"
                             ]
                         ),
+                          voice_preset=voice_preset,
                         quality_tier=(
                             options[
                                 "quality"

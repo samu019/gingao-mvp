@@ -18,6 +18,12 @@ class Project(models.Model):
         default=True,
     )
 
+    # GINGAO_VOICE_PRESET_V49A
+    voice_preset = models.CharField(
+        max_length=40,
+        default="warm_female",
+    )
+
     quality_tier = models.CharField(
         max_length=20,
         default="standard",

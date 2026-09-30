@@ -43974,3 +43974,187 @@ and (
     }
 }
 
+
+
+/* ==========================================================
+   GINGAO_VOICE_SELECTOR_STYLES_V49B
+   ========================================================== */
+
+.gingao-voice-selector-v49b {
+
+    margin-top:
+        18px;
+
+    padding-top:
+        16px;
+
+    border-top:
+        1px solid
+        rgba(100, 86, 170, .12);
+
+    transition:
+        opacity .18s ease,
+        transform .18s ease;
+}
+
+
+.gingao-voice-selector-v49b.is-disabled {
+
+    display:
+        none;
+}
+
+
+.gingao-voice-helper-v49b {
+
+    color:
+        var(--muted);
+
+    font-size:
+        11px;
+
+    font-weight:
+        650;
+}
+
+
+.gingao-voice-grid-v49b {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap:
+        8px;
+}
+
+
+.gingao-voice-card-v49b {
+
+    position:
+        relative;
+
+    min-width:
+        0;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        3px;
+
+    padding:
+        11px 12px;
+
+    border:
+        1px solid
+        rgba(107, 85, 210, .13);
+
+    border-radius:
+        13px;
+
+    background:
+        rgba(255,255,255,.72);
+
+    cursor:
+        pointer;
+
+    transition:
+        border-color .16s ease,
+        box-shadow .16s ease,
+        transform .16s ease;
+}
+
+
+.gingao-voice-card-v49b:hover {
+
+    transform:
+        translateY(-1px);
+
+    border-color:
+        rgba(107, 85, 210, .28);
+
+    box-shadow:
+        0 8px 20px
+        rgba(35, 29, 80, .06);
+}
+
+
+.gingao-voice-card-v49b input {
+
+    position:
+        absolute;
+
+    opacity:
+        0;
+
+    pointer-events:
+        none;
+}
+
+
+.gingao-voice-card-v49b:has(input:checked) {
+
+    border-color:
+        rgba(105, 77, 232, .70);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(128, 92, 255, .11),
+            rgba(255,255,255,.92)
+        );
+
+    box-shadow:
+        0 0 0 2px
+        rgba(105, 77, 232, .08);
+}
+
+
+.gingao-voice-card-v49b strong {
+
+    color:
+        var(--text);
+
+    font-size:
+        12px;
+
+    font-weight:
+        800;
+}
+
+
+.gingao-voice-card-v49b small {
+
+    color:
+        var(--muted);
+
+    font-size:
+        10px;
+
+    line-height:
+        1.35;
+}
+
+
+@media (max-width: 699px) {
+
+    .gingao-voice-grid-v49b {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .gingao-voice-card-v49b {
+
+        padding:
+            10px;
+    }
+}
+

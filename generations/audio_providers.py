@@ -225,8 +225,33 @@ class ElevenLabsAudioProvider(AudioProvider):
         )
 
 
-    def _voice_id(self):
+    # GINGAO_PROJECT_VOICE_RESOLUTION_V49A
+    def _voice_id(
+        self,
+        project=None,
+    ):
+        from .voice_catalog import (
+            get_voice_id,
+        )
 
+        project_voice = ""
+
+        if project is not None:
+
+            preset_code = getattr(
+                project,
+                "voice_preset",
+                "",
+            )
+
+            project_voice = get_voice_id(
+                preset_code
+            )
+
+        if project_voice:
+            return project_voice
+
+        # Backward-compatible global fallback.
         return (
             os.environ.get(
                 "GINGAO_ELEVENLABS_VOICE_ID",
@@ -363,7 +388,9 @@ class ElevenLabsAudioProvider(AudioProvider):
 
 
         voice_id = (
-            self._voice_id()
+            self._voice_id(
+                project=project
+            )
         )
 
         if not voice_id:
