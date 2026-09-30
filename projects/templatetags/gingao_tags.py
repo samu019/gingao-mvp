@@ -322,17 +322,17 @@ def project_stage_label(project):
     )
 
     mapping = {
-        "script": "GUI?N",
-        "guion": "GUI?N",
-        "gui?n": "GUI?N",
+        "script": "GUI\u00d3N",
+        "guion": "GUI\u00d3N",
+        "gui?n": "GUI\u00d3N",
 
-        "images": "IM?GENES",
-        "image": "IM?GENES",
-        "imagenes": "IM?GENES",
-        "im?genes": "IM?GENES",
+        "images": "IM\u00c1GENES",
+        "image": "IM\u00c1GENES",
+        "imagenes": "IM\u00c1GENES",
+        "im?genes": "IM\u00c1GENES",
 
-        "video": "V?DEO",
-        "v?deo": "V?DEO",
+        "video": "V\u00cdDEO",
+        "v?deo": "V\u00cdDEO",
 
         "final": "FINAL",
         "final_cut": "FINAL",
