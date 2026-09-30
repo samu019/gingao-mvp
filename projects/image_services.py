@@ -207,32 +207,15 @@ def build_storyboard_prompt(
     scene,
     characters,
 ):
-    character_context = " ".join(
-        f"{character.name}: {character.visual_prompt}"
-        for character in characters
-    )
-
     scene_text = (
         f"{scene.script} "
         f"{scene.image_prompt}"
     ).lower()
 
-    interior_vehicle_markers = (
-        "driver",
-        "driver's seat",
-        "inside the car",
-        "car interior",
-        "vehicle interior",
-        "steering wheel",
-        "at the wheel",
-        "al volante",
-        "interior del coche",
-        "dentro del coche",
-    )
+    # -------------------------------------------------------------------------
+    # Semantic entity groups
+    # -------------------------------------------------------------------------
 
-    single_person_guard = ""
-
-    # GINGAO_SINGLE_VEHICLE_OCCUPANT_GUARD_V56C
     human_type_markers = {
         "character",
         "person",
@@ -252,6 +235,26 @@ def build_storyboard_prompt(
         )
     ]
 
+    non_human_characters = [
+        character
+        for character in characters
+        if character not in human_characters
+    ]
+
+    character_context = " ".join(
+        f"{character.name}: {character.visual_prompt}"
+        for character in characters
+    )
+
+    non_human_context = " ".join(
+        f"{character.name}: {character.visual_prompt}"
+        for character in non_human_characters
+    )
+
+    # -------------------------------------------------------------------------
+    # Vehicle scene detection
+    # -------------------------------------------------------------------------
+
     vehicle_markers = (
         "car",
         "vehicle",
@@ -268,15 +271,116 @@ def build_storyboard_prompt(
         "autom?vil",
     )
 
+    interior_vehicle_markers = (
+        "driver's seat",
+        "inside the car",
+        "car interior",
+        "vehicle interior",
+        "steering wheel",
+        "at the wheel",
+        "al volante",
+        "interior del coche",
+        "dentro del coche",
+        "se sienta al volante",
+    )
+
+    exterior_driving_markers = (
+        "driving",
+        "drives",
+        "driven",
+        "turning onto",
+        "turns onto",
+        "moving along",
+        "moving through",
+        "travelling",
+        "traveling",
+        "avenue",
+        "road",
+        "street",
+        "conduce",
+        "conduciendo",
+        "circula",
+        "circulando",
+        "toma una avenida",
+        "avenida",
+        "carretera",
+        "calle",
+    )
+
+    has_vehicle = any(
+        marker in scene_text
+        for marker in vehicle_markers
+    )
+
+    is_interior_vehicle_scene = any(
+        marker in scene_text
+        for marker in interior_vehicle_markers
+    )
+
+    is_exterior_driving_scene = (
+        has_vehicle
+        and not is_interior_vehicle_scene
+        and any(
+            marker in scene_text
+            for marker in exterior_driving_markers
+        )
+    )
+
+    # =========================================================================
+    # GINGAO_EXTERIOR_DRIVING_COMPOSITION_V56E
+    #
+    # Exterior driving shots intentionally hide the cabin.
+    # This avoids FLUX inventing passengers or duplicate faces.
+    # The original image_prompt is NOT reused here because it may explicitly
+    # request a visible driver through the window.
+    # =========================================================================
+
+    if is_exterior_driving_scene:
+        return (
+            "VERTICAL 9:16 CINEMATIC PHOTOREALISTIC EXTERIOR "
+            "DRIVING SHOT.\n\n"
+
+            "EXTERIOR VEHICLE COMPOSITION ? HIGHEST PRIORITY:\n"
+            "Show the vehicle from outside while it is moving through "
+            "the environment described by the story. "
+            "Use a cinematic front three-quarter, side, rear "
+            "three-quarter, or tracking angle. "
+            "The vehicle itself is the visual subject of this shot. "
+            "The cabin must NOT be visually readable. "
+            "Use realistic dark glass, natural reflections, city-light "
+            "reflections, angle, framing, or motion to obscure the cabin. "
+            "No human face may be visible through the windshield or windows. "
+            "No human body, head, passenger, driver, silhouette, or occupant "
+            "may be visible anywhere inside the vehicle. "
+            "Do not depict the protagonist through the glass in this shot. "
+            "Do not show faces reflected in the windows. "
+            "Do not create additional occupants.\n\n"
+
+            f"NARRATIVE ACTION:\n{scene.script}\n\n"
+
+            "NON-HUMAN VISUAL CONTINUITY:\n"
+            f"{non_human_context}\n\n"
+
+            "Preserve the exact recurring vehicle make, model, color, "
+            "body style, wheels, headlights, proportions and realistic "
+            "appearance established in previous scenes. "
+            "Preserve the established location and nighttime atmosphere. "
+            "The shot must communicate vehicle movement without showing "
+            "any person inside the cabin. "
+            "Vertical 9:16 composition."
+        )
+
+    # -------------------------------------------------------------------------
+    # Interior / ordinary vehicle protection
+    # -------------------------------------------------------------------------
+
     single_vehicle_occupant_guard = ""
 
     if (
         len(human_characters) == 1
-        and any(
-            marker in scene_text
-            for marker in vehicle_markers
-        )
+        and has_vehicle
     ):
+        # GINGAO_SINGLE_VEHICLE_OCCUPANT_GUARD_V56C
         # GINGAO_POSITIVE_SINGLE_OCCUPANT_COMPOSITION_V56D
         single_vehicle_occupant_guard = (
             "\n\nSINGLE VEHICLE OCCUPANT COMPOSITION:\n"
@@ -286,7 +390,7 @@ def build_storyboard_prompt(
             "The front passenger seat is clearly empty. "
             "All rear seats are clearly empty. "
             "There is exactly one human face visible in or through the car. "
-            "Use a driver-side exterior camera angle whenever possible. "
+            "Use a driver-side camera angle whenever possible. "
             "Keep passenger-side and rear windows dark or naturally tinted "
             "if needed to prevent false occupants. "
             "The cabin contains one human silhouette only. "
@@ -294,10 +398,10 @@ def build_storyboard_prompt(
             "may appear inside the vehicle."
         )
 
-    if any(
-        marker in scene_text
-        for marker in interior_vehicle_markers
-    ):
+    single_person_guard = ""
+
+    if is_interior_vehicle_scene:
+        # GINGAO_SINGLE_PERSON_INTERIOR_GUARD_V56A
         single_person_guard = (
             "\n\nSINGLE PERSON INTERIOR RULE:\n"
             "Show exactly one visible human inside the vehicle. "
