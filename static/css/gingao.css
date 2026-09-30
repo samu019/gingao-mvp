@@ -44323,3 +44323,355 @@ and (
     }
 }
 
+
+
+/* ==========================================================
+   GINGAO_STRUCTURE_LOADING_STYLES_V52E
+   Regenerate structure loading + duplicate-submit protection
+   ========================================================== */
+
+.images-structure-premium.is-generating-structure {
+    cursor: wait !important;
+    pointer-events: none;
+    opacity: .82;
+
+    transform:
+        none !important;
+}
+
+.images-structure-premium.is-generating-structure:hover {
+    transform:
+        none !important;
+}
+
+.images-structure-premium.is-generating-structure
+.images-structure-spinner-v52e {
+
+    transform-origin:
+        center;
+
+    animation:
+        gingaoStructureSpinV52E
+        .75s
+        linear
+        infinite !important;
+}
+
+.images-structure-premium.is-generating-structure
+.images-action-icon {
+
+    animation:
+        gingaoStructurePulseV52E
+        1.15s
+        ease-in-out
+        infinite;
+}
+
+.images-structure-premium:disabled {
+    cursor:
+        wait !important;
+}
+
+@keyframes gingaoStructureSpinV52E {
+
+    from {
+        transform:
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+}
+
+@keyframes gingaoStructurePulseV52E {
+
+    0%,
+    100% {
+        opacity:
+            .55;
+    }
+
+    50% {
+        opacity:
+            1;
+    }
+}
+
+@media (
+    prefers-reduced-motion: reduce
+) {
+
+    .images-structure-premium.is-generating-structure
+    .images-structure-spinner-v52e {
+
+        animation-duration:
+            1.6s !important;
+    }
+
+    .images-structure-premium.is-generating-structure
+    .images-action-icon {
+
+        animation:
+            none !important;
+    }
+}
+
+
+
+/* ==========================================================
+   GINGAO_STRUCTURE_PREMIUM_SPINNER_V52F
+   Premium continuous loading feedback for structure regeneration
+   ========================================================== */
+
+.images-structure-spinner-wrap-v52f {
+
+    width:
+        20px;
+
+    height:
+        20px;
+
+    flex:
+        0 0 20px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        50%;
+
+    color:
+        #6948df;
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+}
+
+
+.images-structure-spinner-v52f {
+
+    width:
+        18px;
+
+    height:
+        18px;
+
+    display:
+        block;
+
+    overflow:
+        visible;
+
+    transform-origin:
+        50% 50%;
+}
+
+
+.images-structure-spinner-track-v52f {
+
+    fill:
+        none;
+
+    stroke:
+        rgba(105,72,223,.16);
+
+    stroke-width:
+        2.2;
+}
+
+
+.images-structure-spinner-ring-v52f {
+
+    fill:
+        none;
+
+    stroke:
+        currentColor;
+
+    stroke-width:
+        2.4;
+
+    stroke-linecap:
+        round;
+
+    stroke-dasharray:
+        34 24;
+
+    transform-origin:
+        12px 12px;
+}
+
+
+/* Normal state: subtle static reload indicator */
+.images-structure-premium:not(.is-generating-structure)
+.images-structure-spinner-v52f {
+
+    transform:
+        rotate(-28deg);
+}
+
+
+/* Loading state */
+.images-structure-premium.is-generating-structure {
+
+    cursor:
+        wait !important;
+
+    pointer-events:
+        none;
+
+    opacity:
+        .86;
+
+    transform:
+        none !important;
+
+    box-shadow:
+        0 10px 28px
+        rgba(83,59,186,.14),
+
+        inset 0 1px 0
+        rgba(255,255,255,.52) !important;
+}
+
+
+.images-structure-premium.is-generating-structure
+.images-structure-spinner-wrap-v52f {
+
+    color:
+        #6747e9;
+}
+
+
+.images-structure-premium.is-generating-structure
+.images-structure-spinner-v52f {
+
+    animation:
+        gingaoStructurePremiumSpinV52F
+        .72s
+        linear
+        infinite;
+}
+
+
+.images-structure-premium.is-generating-structure
+.images-structure-spinner-ring-v52f {
+
+    animation:
+        gingaoStructurePremiumDashV52F
+        1.15s
+        ease-in-out
+        infinite;
+}
+
+
+.images-structure-premium.is-generating-structure
+.images-action-icon {
+
+    animation:
+        gingaoStructurePremiumSparkV52F
+        1.2s
+        ease-in-out
+        infinite;
+}
+
+
+.images-structure-premium:disabled {
+
+    cursor:
+        wait !important;
+}
+
+
+/* Prevent hover animation while loading */
+.images-structure-premium.is-generating-structure:hover {
+
+    transform:
+        none !important;
+}
+
+
+@keyframes gingaoStructurePremiumSpinV52F {
+
+    from {
+        transform:
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+}
+
+
+@keyframes gingaoStructurePremiumDashV52F {
+
+    0% {
+        stroke-dasharray:
+            12 46;
+    }
+
+    50% {
+        stroke-dasharray:
+            38 20;
+    }
+
+    100% {
+        stroke-dasharray:
+            12 46;
+    }
+}
+
+
+@keyframes gingaoStructurePremiumSparkV52F {
+
+    0%,
+    100% {
+        opacity:
+            .52;
+
+        transform:
+            scale(.94);
+    }
+
+    50% {
+        opacity:
+            1;
+
+        transform:
+            scale(1.08);
+    }
+}
+
+
+@media (
+    prefers-reduced-motion: reduce
+) {
+
+    .images-structure-premium.is-generating-structure
+    .images-structure-spinner-v52f {
+
+        animation-duration:
+            1.8s;
+    }
+
+    .images-structure-premium.is-generating-structure
+    .images-structure-spinner-ring-v52f,
+    .images-structure-premium.is-generating-structure
+    .images-action-icon {
+
+        animation:
+            none !important;
+    }
+}
+

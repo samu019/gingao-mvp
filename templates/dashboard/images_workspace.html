@@ -127,27 +127,99 @@ Im&aacute;genes ? {{ project.title }} ? Gingao
         <form
             method="post"
             action="{% url 'prepare_images' project.id %}"
+            class="images-structure-form-v52e"
+            data-structure-generation-form
         >
             {% csrf_token %}
 
             <button
                 class="secondary-button image-ai-premium-button images-scene-button images-upload-button images-structure-premium"
                 type="submit"
+                data-structure-generation-button
+                aria-busy="false"
             >
             <span class="images-action-icon">
                 &#10024;
             </span>
 
-            <span>
+            <span data-structure-generation-label>
                 Regenerar estructura
             </span>
 
-            <span class="images-action-arrow">
-                &#8635;
+            <span
+                class="images-structure-spinner-wrap-v52f"
+                aria-hidden="true"
+            >
+                <svg
+                    class="images-structure-spinner-v52f"
+                    viewBox="0 0 24 24"
+                    focusable="false"
+                >
+                    <circle
+                        class="images-structure-spinner-track-v52f"
+                        cx="12"
+                        cy="12"
+                        r="9"
+                    ></circle>
+
+                    <circle
+                        class="images-structure-spinner-ring-v52f"
+                        cx="12"
+                        cy="12"
+                        r="9"
+                    ></circle>
+                </svg>
             </span>
         </button>
 
         </form>
+
+        <script>
+        // GINGAO_STRUCTURE_LOADING_V52E
+        (() => {
+            const form = document.querySelector(
+                "[data-structure-generation-form]"
+            );
+
+            if (!form) {
+                return;
+            }
+
+            const button = form.querySelector(
+                "[data-structure-generation-button]"
+            );
+
+            const label = form.querySelector(
+                "[data-structure-generation-label]"
+            );
+
+            if (!button || !label) {
+                return;
+            }
+
+            form.addEventListener("submit", (event) => {
+                if (form.dataset.submitting === "true") {
+                    event.preventDefault();
+                    return;
+                }
+
+                form.dataset.submitting = "true";
+
+                button.disabled = true;
+                button.classList.add(
+                    "is-generating-structure"
+                );
+
+                button.setAttribute(
+                    "aria-busy",
+                    "true"
+                );
+
+                label.textContent =
+                    "Generando estructura?";
+            });
+        })();
+        </script>
 
     </div>
 
