@@ -1,4 +1,5 @@
 from pathlib import Path
+import logging
 import os
 from django.contrib import messages
 from django.contrib.auth import (
@@ -24,6 +25,8 @@ from .services import generate_project_script
 
 
 User = get_user_model()
+
+logger = logging.getLogger(__name__)
 
 
 def _wallet_for(user):
@@ -2185,6 +2188,27 @@ def generate_project_audio_view(
         )
 
     except Exception as exc:
+
+        # GINGAO_AUDIO_ERROR_LOGGING_V51B
+        # Safe production diagnostics:
+        # never log API keys, voice IDs or request headers.
+        logger.exception(
+            (
+                "Audio generation failed "
+                "project_id=%s "
+                "provider=%s "
+                "job_id=%s "
+                "reserved_credits=%s "
+                "error_type=%s "
+                "error=%s"
+            ),
+            project.id,
+            provider_code,
+            getattr(job, "id", None),
+            reserved_credits,
+            type(exc).__name__,
+            str(exc),
+        )
 
         messages.error(
             request,
