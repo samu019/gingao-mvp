@@ -60,16 +60,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
         form.addEventListener("submit", function (event) {
 
+            // GINGAO_VIDEO_LOADING_PAINT_V57A
+            // Delay the real synchronous POST until the browser
+            // has painted the premium loading state.
+            event.preventDefault();
+
             const button = form.querySelector(
                 "[data-generation-button]"
             );
 
             if (!button) {
+                HTMLFormElement.prototype.submit.call(form);
                 return;
             }
 
             if (form.dataset.submitting === "true") {
-                event.preventDefault();
                 return;
             }
 
@@ -104,6 +109,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     "false"
                 );
             }
+
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    HTMLFormElement.prototype.submit.call(form);
+                });
+            });
         });
 
     });
