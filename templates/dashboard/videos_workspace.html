@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     forms.forEach(function (form) {
 
-        form.addEventListener("submit", function (event) {
+        form.addEventListener("submit", async function (event) {
 
             // GINGAO_VIDEO_LOADING_PAINT_V57A
             // Delay the real synchronous POST until the browser
@@ -116,11 +116,76 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
             }
 
-            requestAnimationFrame(function () {
-                requestAnimationFrame(function () {
-                    HTMLFormElement.prototype.submit.call(form);
-                });
-            });
+            // GINGAO_VIDEO_SUBMIT_FETCH_V58D
+            // Keep this page alive while the synchronous backend/FAL
+            // generation is running so the loading UI remains visible.
+            try {
+                const response = await fetch(
+                    form.action,
+                    {
+                        method: "POST",
+                        body: new FormData(form),
+                        credentials: "same-origin",
+                        redirect: "follow"
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(
+                        "Video generation request failed: "
+                        + response.status
+                    );
+                }
+
+                window.location.assign(
+                    response.url || window.location.href
+                );
+
+            } catch (error) {
+                console.error(
+                    "Video generation failed:",
+                    error
+                );
+
+                form.dataset.submitting = "false";
+
+                button.disabled = false;
+                button.removeAttribute(
+                    "aria-busy"
+                );
+
+                button.classList.remove(
+                    "is-generating"
+                );
+
+                if (generationOverlay) {
+                    generationOverlay.classList.remove(
+                        "is-visible"
+                    );
+
+                    generationOverlay.setAttribute(
+                        "aria-hidden",
+                        "true"
+                    );
+                }
+
+                if (label) {
+                    const isRegeneration =
+                        form.dataset.generationMode ===
+                        "regenerate";
+
+                    label.textContent =
+                        isRegeneration
+                            ? "Regenerar animaci?n"
+                            : "Generar animaci?n";
+                }
+
+                alert(
+                    "No se pudo confirmar la generaci?n del v?deo. "
+                    + "No vuelvas a pulsar inmediatamente; "
+                    + "recarga la p?gina primero para comprobar el estado."
+                );
+            }
         });
 
     });
