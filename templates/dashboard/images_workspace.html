@@ -610,30 +610,39 @@ document.addEventListener(
                     <form
                         method="post"
                         action="{% url 'generate_scene_image' project.id scene.id %}"
+                        class="image-scene-generation-form"
                     >
                         {% csrf_token %}
 
                         <button
                             class="secondary-button full storyboard-generate image-ai-premium-button images-regenerate-button"
                             type="submit"
+                            data-image-generation-button
                         >
-                            {% if image_provider_code == "fal" %}
+                            <span
+                                class="image-generation-spinner"
+                                aria-hidden="true"
+                            ></span>
 
-                                {% if scene.storyboard_image.status == "ready" %}
-                                    Regenerar con IA
+                            <span data-image-generation-label>
+                                {% if image_provider_code == "fal" %}
+
+                                    {% if scene.storyboard_image.status == "ready" %}
+                                        Regenerar con IA
+                                    {% else %}
+                                        Generar con IA
+                                    {% endif %}
+
                                 {% else %}
-                                    Generar con IA
+
+                                    {% if scene.storyboard_image.status == "ready" %}
+                                        Regenerar Mock
+                                    {% else %}
+                                        Generar Mock
+                                    {% endif %}
+
                                 {% endif %}
-
-                            {% else %}
-
-                                {% if scene.storyboard_image.status == "ready" %}
-                                    Regenerar Mock
-                                {% else %}
-                                    Generar Mock
-                                {% endif %}
-
-                            {% endif %}
+                            </span>
                         </button>
 
                     </form>
@@ -771,4 +780,114 @@ document.addEventListener(
 
 
 </section>
+
+<!-- ======================================================
+     GINGAO_IMAGE_GENERATION_LOADING_V48B
+     ====================================================== -->
+
+<div
+    class="image-generation-wait-overlay"
+    data-image-generation-overlay
+    aria-hidden="true"
+>
+    <div
+        class="image-generation-wait-card"
+        role="status"
+        aria-live="polite"
+    >
+        <div
+            class="image-generation-wait-spinner"
+            aria-hidden="true"
+        ></div>
+
+        <strong>
+            Generando imagen...
+        </strong>
+
+        <p>
+            Estamos creando esta escena con IA.
+        </p>
+
+        <span>
+            No cierres esta p&aacute;gina
+            mientras termina el proceso.
+        </span>
+    </div>
+</div>
+
+<script>
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const forms = document.querySelectorAll(
+            ".image-scene-generation-form"
+        );
+
+        const overlay = document.querySelector(
+            "[data-image-generation-overlay]"
+        );
+
+        forms.forEach(function (form) {
+
+            form.addEventListener(
+                "submit",
+                function (event) {
+
+                    const button = form.querySelector(
+                        "[data-image-generation-button]"
+                    );
+
+                    if (!button) {
+                        return;
+                    }
+
+                    if (
+                        form.dataset.submitting
+                        === "true"
+                    ) {
+                        event.preventDefault();
+                        return;
+                    }
+
+                    form.dataset.submitting = "true";
+
+                    button.disabled = true;
+
+                    button.setAttribute(
+                        "aria-busy",
+                        "true"
+                    );
+
+                    button.classList.add(
+                        "is-generating"
+                    );
+
+                    const label = button.querySelector(
+                        "[data-image-generation-label]"
+                    );
+
+                    if (label) {
+                        label.textContent =
+                            "Generando imagen...";
+                    }
+
+                    if (overlay) {
+
+                        overlay.classList.add(
+                            "is-visible"
+                        );
+
+                        overlay.setAttribute(
+                            "aria-hidden",
+                            "false"
+                        );
+                    }
+                }
+            );
+        });
+    }
+);
+</script>
+
 {% endblock %}

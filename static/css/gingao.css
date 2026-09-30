@@ -43665,3 +43665,312 @@ and (
     }
 }
 
+
+
+/* ==========================================================
+   GINGAO_IMAGE_GENERATION_LOADING_V48B
+   Prevent duplicate image generation and show wait state
+   ========================================================== */
+
+.images-regenerate-button.is-generating {
+
+    cursor:
+        wait !important;
+
+    opacity:
+        .82;
+
+    pointer-events:
+        none;
+
+    transform:
+        none !important;
+}
+
+
+.images-regenerate-button:disabled {
+
+    cursor:
+        wait !important;
+}
+
+
+.image-generation-spinner {
+
+    display:
+        none;
+
+    width:
+        14px;
+
+    height:
+        14px;
+
+    flex:
+        0 0 14px;
+
+    border:
+        2px solid
+        rgba(255,255,255,.38);
+
+    border-top-color:
+        currentColor;
+
+    border-radius:
+        50%;
+}
+
+
+.images-regenerate-button.is-generating
+.image-generation-spinner {
+
+    display:
+        inline-block;
+
+    animation:
+        gingaoImageGenerationSpin
+        .8s linear infinite;
+}
+
+
+.image-generation-wait-overlay {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    z-index:
+        10000;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        24px;
+
+    background:
+        rgba(8,10,18,.72);
+
+    backdrop-filter:
+        blur(8px);
+
+    -webkit-backdrop-filter:
+        blur(8px);
+
+    opacity:
+        0;
+
+    visibility:
+        hidden;
+
+    pointer-events:
+        none;
+
+    transition:
+        opacity .18s ease,
+        visibility .18s ease;
+}
+
+
+.image-generation-wait-overlay.is-visible {
+
+    opacity:
+        1;
+
+    visibility:
+        visible;
+
+    pointer-events:
+        all;
+}
+
+
+.image-generation-wait-card {
+
+    width:
+        min(420px, 100%);
+
+    min-height:
+        250px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        14px;
+
+    padding:
+        38px 30px;
+
+    text-align:
+        center;
+
+    border:
+        1px solid
+        rgba(255,255,255,.12);
+
+    border-radius:
+        24px;
+
+    background:
+        rgba(20,23,35,.96);
+
+    box-shadow:
+        0 28px 80px
+        rgba(0,0,0,.42);
+}
+
+
+.image-generation-wait-spinner {
+
+    width:
+        46px;
+
+    height:
+        46px;
+
+    margin-bottom:
+        5px;
+
+    border:
+        4px solid
+        rgba(255,255,255,.16);
+
+    border-top-color:
+        #8a6cff;
+
+    border-radius:
+        50%;
+
+    animation:
+        gingaoImageGenerationSpin
+        .8s linear infinite;
+}
+
+
+.image-generation-wait-card strong {
+
+    color:
+        #ffffff;
+
+    font-size:
+        24px;
+
+    font-weight:
+        900;
+}
+
+
+.image-generation-wait-card p {
+
+    margin:
+        0;
+
+    color:
+        rgba(255,255,255,.82);
+
+    font-size:
+        15px;
+
+    font-weight:
+        650;
+}
+
+
+.image-generation-wait-card span {
+
+    color:
+        rgba(255,255,255,.54);
+
+    font-size:
+        12px;
+
+    font-weight:
+        600;
+
+    line-height:
+        1.45;
+}
+
+
+@keyframes gingaoImageGenerationSpin {
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+}
+
+
+@media (max-width: 699px) {
+
+    .image-generation-wait-overlay {
+
+        padding:
+            18px;
+    }
+
+
+    .image-generation-wait-card {
+
+        min-height:
+            220px;
+
+        padding:
+            30px 22px;
+
+        border-radius:
+            20px;
+    }
+
+
+    .image-generation-wait-card strong {
+
+        font-size:
+            21px;
+    }
+
+
+    .image-generation-wait-card p {
+
+        font-size:
+            14px;
+    }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .image-generation-wait-overlay {
+
+        transition:
+            none;
+    }
+
+
+    .image-generation-wait-spinner,
+    .images-regenerate-button.is-generating
+    .image-generation-spinner {
+
+        animation-duration:
+            1.6s;
+    }
+}
+
