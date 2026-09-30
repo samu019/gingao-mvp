@@ -274,10 +274,58 @@ STORY_SCENES_SCHEMA = {
 }
 
 
+# =============================================================================
+# GINGAO_NARRATION_BUDGET_V55B
+# =============================================================================
+
+def narration_word_budget(
+    duration_seconds,
+    scene_count,
+):
+    """
+    Approximate spoken-word budget for natural short-form narration.
+
+    Target: ~2.2 words/second.
+    Hard ceiling: ~2.6 words/second.
+    """
+
+    try:
+        duration = max(
+            1,
+            int(duration_seconds or 15),
+        )
+    except (
+        TypeError,
+        ValueError,
+    ):
+        duration = 15
+
+    scene_count = max(
+        1,
+        int(scene_count or 1),
+    )
+
+    target_words = max(
+        scene_count,
+        round(duration * 2.2),
+    )
+
+    max_words = max(
+        target_words,
+        round(duration * 2.6),
+    )
+
+    return {
+        "target_words": target_words,
+        "max_words": max_words,
+    }
+
+
 def generate_story_scenes_openai(
     idea,
     *,
     scene_count,
+    target_duration_seconds=15,
     aspect_ratio="9:16",
     template_code="custom",
     model=None,
@@ -326,6 +374,19 @@ def generate_story_scenes_openai(
         ).strip()
     )
 
+    narration_budget = narration_word_budget(
+        target_duration_seconds,
+        scene_count,
+    )
+
+    target_words = narration_budget[
+        "target_words"
+    ]
+
+    max_words = narration_budget[
+        "max_words"
+    ]
+
     prompt = f"""
 You are the story-planning engine for Gingao,
 an AI video generation platform.
@@ -338,6 +399,9 @@ USER STORY:
 PROJECT:
 - aspect ratio: {aspect_ratio}
 - template hint: {template_code}
+- total video duration: {target_duration_seconds} seconds
+- target narration length: about {target_words} words total
+- absolute narration ceiling: {max_words} words total
 
 CRITICAL CONTENT RULES:
 
@@ -389,9 +453,22 @@ Do not use vague placeholders such as:
 when the concrete subjects/actions are known.
 
 6. script:
-Write the narration or scene description in the SAME LANGUAGE
-as the user's story.
-It must describe the actual event in that scene.
+Write ONLY the narration that can actually be spoken in the final video.
+Use the SAME LANGUAGE as the user's story.
+
+The combined word count of ALL script fields must target about
+{target_words} words and MUST NOT exceed {max_words} words.
+
+Keep narration concise, natural and useful.
+Prefer one short sentence or phrase per scene.
+
+Do NOT put image-generation instructions in script.
+Do NOT put camera instructions in script.
+Do NOT put animation instructions in script.
+Do NOT copy image_prompt or video_prompt into script.
+
+The script must describe the actual story event,
+not technical generation instructions.
 
 7. image_prompt:
 Write a precise ENGLISH image-generation prompt for THAT scene.
@@ -545,6 +622,7 @@ def generate_story_scenes(
     idea,
     *,
     scene_count,
+    target_duration_seconds=15,
     aspect_ratio="9:16",
     template_code="custom",
     provider=None,
@@ -561,6 +639,9 @@ def generate_story_scenes(
         return generate_story_scenes_openai(
             idea,
             scene_count=scene_count,
+            target_duration_seconds=(
+                target_duration_seconds
+            ),
             aspect_ratio=aspect_ratio,
             template_code=template_code,
         )

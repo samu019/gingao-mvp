@@ -106,6 +106,9 @@ def generate_project_script(
         generate_story_scenes(
             idea,
             scene_count=scene_count,
+            target_duration_seconds=(
+                project.target_duration_seconds
+            ),
             aspect_ratio=(
                 project.aspect_ratio
                 or "9:16"
