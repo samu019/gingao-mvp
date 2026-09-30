@@ -232,6 +232,62 @@ def build_storyboard_prompt(
 
     single_person_guard = ""
 
+    # GINGAO_SINGLE_VEHICLE_OCCUPANT_GUARD_V56C
+    human_type_markers = {
+        "character",
+        "person",
+        "human",
+        "persona",
+        "humano",
+    }
+
+    human_characters = [
+        character
+        for character in characters
+        if (
+            (character.character_type or "")
+            .strip()
+            .lower()
+            in human_type_markers
+        )
+    ]
+
+    vehicle_markers = (
+        "car",
+        "vehicle",
+        "bmw",
+        "automobile",
+        "sedan",
+        "coupe",
+        "suv",
+        "coche",
+        "vehiculo",
+        "veh?culo",
+        "auto",
+        "automovil",
+        "autom?vil",
+    )
+
+    single_vehicle_occupant_guard = ""
+
+    if (
+        len(human_characters) == 1
+        and any(
+            marker in scene_text
+            for marker in vehicle_markers
+        )
+    ):
+        single_vehicle_occupant_guard = (
+            "\n\nSINGLE VEHICLE OCCUPANT RULE:\n"
+            "The protagonist is the only person in the vehicle. "
+            "Do not add passengers or additional occupants. "
+            "Do not invent another driver or companion. "
+            "If the vehicle interior is visible through windows, "
+            "only the protagonist may be visible inside. "
+            "Do not show extra human faces, heads or bodies "
+            "inside the vehicle."
+        )
+
     if any(
         marker in scene_text
         for marker in interior_vehicle_markers
@@ -251,6 +307,7 @@ def build_storyboard_prompt(
         f"{scene.image_prompt}\n\n"
         f"CHARACTER CONSISTENCY:\n"
         f"{character_context}"
+        f"{single_vehicle_occupant_guard}"
         f"{single_person_guard}\n\n"
         "Keep every recurring character exactly consistent "
         "across all scenes. Vertical 9:16 composition."
