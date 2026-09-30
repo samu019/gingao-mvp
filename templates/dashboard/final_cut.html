@@ -500,15 +500,14 @@ Corte final &middot; {{ project.title }} &middot; Gingao
                     <p>
                         Proveedor:
                         <strong>
-                            {% if audio_provider_code == "mock" %}
-                                Mock Audio Provider
-                            {% else %}
-                                {{ audio_provider_code }}
-                            {% endif %}
+                            {{ audio_provider_label }}
                         </strong>
                         &middot;
                         coste:
-                        <strong>0 cr&eacute;ditos</strong>
+                        <strong>
+                            {{ audio_credit_cost }}
+                            cr&eacute;ditos
+                        </strong>
                     </p>
 
 <div class="gingao-audio-meta-premium">
@@ -540,7 +539,7 @@ Corte final &middot; {{ project.title }} &middot; Gingao
             <small>Motor actual</small>
 
             <strong>
-                Mock
+                {{ audio_provider_label }}
             </strong>
         </div>
 
@@ -557,7 +556,8 @@ Corte final &middot; {{ project.title }} &middot; Gingao
             <small>Coste</small>
 
             <strong>
-                0 cr&eacute;ditos
+                {{ audio_credit_cost }}
+                cr&eacute;ditos
             </strong>
         </div>
 
@@ -590,7 +590,7 @@ Corte final &middot; {{ project.title }} &middot; Gingao
 
                           <span data-audio-generation-label>
                         {% if audio_info.url %}
-                            Regenerar audio Mock
+                            Regenerar narraci&oacute;n
                         {% else %}
                             Generar narraci&oacute;n
                         {% endif %}
@@ -1105,12 +1105,17 @@ Corte final &middot; {{ project.title }} &middot; Gingao
 
         <div class="summary-row final-summary-row-premium">
             <span>Proveedor</span>
-            <strong>Mock</strong>
+            <strong>
+                {{ audio_provider_label }}
+            </strong>
         </div>
 
         <div class="summary-credit final-summary-credit-premium">
-            <span>Coste externo</span>
-            <strong>$0.00</strong>
+            <span>Coste de narraci&oacute;n</span>
+            <strong>
+                {{ audio_credit_cost }}
+                cr&eacute;ditos
+            </strong>
         </div>
 
     </aside>

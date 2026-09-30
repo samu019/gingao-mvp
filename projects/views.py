@@ -1743,6 +1743,45 @@ def final_cut_view(
         user=request.user,
     )
 
+    # GINGAO_FINAL_AUDIO_RUNTIME_INFO_V51A
+    # Keep Final Cut pricing/provider display aligned
+    # with the real audio generation backend.
+    from generations.pricing import (
+        estimate_audio_cost,
+    )
+
+    audio_provider_code = (
+        os.environ.get(
+            "GINGAO_AUDIO_PROVIDER",
+            "mock",
+        )
+        .strip()
+        .lower()
+    )
+
+    audio_cost_estimate = (
+        estimate_audio_cost(
+            total_duration
+        )
+    )
+
+    audio_credit_cost = int(
+        audio_cost_estimate.internal_credits
+        or 0
+    )
+
+    audio_provider_label = (
+        "ElevenLabs"
+        if audio_provider_code
+        == "elevenlabs"
+        else (
+            "Mock Audio Provider"
+            if audio_provider_code
+            == "mock"
+            else audio_provider_code
+        )
+    )
+
 
     visual_coverage = (
         get_project_visual_coverage(
@@ -1799,10 +1838,11 @@ def final_cut_view(
             "final_export_url":
                 final_export_url,
             "audio_provider_code":
-                os.environ.get(
-                    "GINGAO_AUDIO_PROVIDER",
-                    "mock"
-                ).lower(),
+                audio_provider_code,
+            "audio_provider_label":
+                audio_provider_label,
+            "audio_credit_cost":
+                audio_credit_cost,
         }
     )
 
