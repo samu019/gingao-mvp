@@ -497,6 +497,31 @@ Describe only the movement, expressions, camera behavior,
 environmental motion and action that should occur from the scene image.
 Do not redesign subjects.
 
+# GINGAO_SCENE_MOTION_BOUNDARY_V58A
+Animate ONLY the action explicitly assigned to THIS scene.
+Do not begin, anticipate, imply, or complete an action that belongs
+to the following scene.
+
+Each clip must represent one bounded narrative beat.
+The end of the clip should leave subjects in a natural state from
+which the next scene can continue.
+
+If the scene contains a short action, use restrained physical motion.
+Do not invent long walking, running, driving, reaching, turning,
+camera travel, or subject displacement merely to fill the clip length.
+
+For example:
+- if the scene is "a woman exits a hotel", show her crossing the doorway
+  and taking only a few natural steps outside;
+- do NOT already make her walk all the way toward a parked car if that
+  belongs to the next scene;
+- if the next scene is "she approaches the car", reserve that movement
+  for the next scene.
+
+Prefer subtle secondary motion, natural breathing, clothing movement,
+hair movement, environmental motion, light changes, or gentle camera
+movement instead of extending the main story action beyond its scene.
+
 9. Follow the user's requested visual style if one is present.
 If no visual style is specified, use a coherent cinematic treatment
 appropriate to the actual story without changing subject identity.
