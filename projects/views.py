@@ -706,6 +706,25 @@ def generate_scene_image_view(
                 )
             )
 
+            # GINGAO_SINGLE_STORYBOARD_PROMPT_REFRESH_V56B
+            from projects.image_services import (
+                build_storyboard_prompt,
+            )
+
+            refreshed_prompt = build_storyboard_prompt(
+                scene,
+                list(project.characters.all()),
+            )
+
+            if storyboard.prompt != refreshed_prompt:
+                storyboard.prompt = refreshed_prompt
+                storyboard.save(
+                    update_fields=[
+                        "prompt",
+                        "updated_at",
+                    ]
+                )
+
             job, created = create_job(
                 user=request.user,
                 project=project,
