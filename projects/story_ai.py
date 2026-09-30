@@ -456,6 +456,12 @@ when the concrete subjects/actions are known.
 Write ONLY the narration that can actually be spoken in the final video.
 Use the SAME LANGUAGE as the user's story.
 
+# GINGAO_SCRIPT_LANGUAGE_V55D
+The script must stay entirely in that language.
+Do not introduce unnecessary words from another language.
+Foreign words are allowed only when they are proper names,
+brand names, model names, places, or terms that must remain unchanged.
+
 The combined word count of ALL script fields must target about
 {target_words} words and MUST NOT exceed {max_words} words.
 
