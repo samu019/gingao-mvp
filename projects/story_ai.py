@@ -233,3 +233,338 @@ def analyze_story(
     raise RuntimeError(
         f"Unsupported story provider: {provider}"
     )
+
+
+
+# =============================================================================
+# GINGAO_GENERIC_SCENE_GENERATOR_V54B
+# =============================================================================
+
+STORY_SCENES_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "scenes": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "script": {
+                        "type": "string",
+                    },
+                    "image_prompt": {
+                        "type": "string",
+                    },
+                    "video_prompt": {
+                        "type": "string",
+                    },
+                },
+                "required": [
+                    "script",
+                    "image_prompt",
+                    "video_prompt",
+                ],
+                "additionalProperties": False,
+            },
+        },
+    },
+    "required": [
+        "scenes",
+    ],
+    "additionalProperties": False,
+}
+
+
+def generate_story_scenes_openai(
+    idea,
+    *,
+    scene_count,
+    aspect_ratio="9:16",
+    template_code="custom",
+    model=None,
+    timeout=90,
+):
+    """
+    Convert a free-form user story into concrete scene definitions.
+
+    Does not mutate Django models.
+    Does not generate images, video or audio.
+    """
+
+    idea = str(
+        idea or ""
+    ).strip()
+
+    if not idea:
+        raise RuntimeError(
+            "Story idea is empty."
+        )
+
+    scene_count = max(
+        1,
+        int(scene_count or 1),
+    )
+
+    api_key = (
+        os.environ
+        .get(
+            "OPENAI_API_KEY",
+            "",
+        )
+        .strip()
+    )
+
+    if not api_key:
+        raise RuntimeError(
+            "OPENAI_API_KEY is not configured."
+        )
+
+    model = (
+        model
+        or os.environ.get(
+            "GINGAO_STORY_MODEL",
+            "gpt-5.6-luna",
+        ).strip()
+    )
+
+    prompt = f"""
+You are the story-planning engine for Gingao,
+an AI video generation platform.
+
+Transform the user's story into exactly {scene_count} sequential scenes.
+
+USER STORY:
+{idea}
+
+PROJECT:
+- aspect ratio: {aspect_ratio}
+- template hint: {template_code}
+
+CRITICAL CONTENT RULES:
+
+1. Preserve the user's actual subjects literally and semantically.
+
+If the user describes:
+- a banana, keep a banana;
+- a carrot, keep a carrot;
+- a human person, keep that human person;
+- a woman with black hair and a red jacket, preserve those traits;
+- a dog, preserve the dog;
+- a BMW, preserve the BMW;
+- a house, preserve the house.
+
+Never replace a subject with a generic fruit, person,
+animal, object, vehicle, or other substitute.
+
+2. Do NOT assume the story is about fruit.
+Do NOT assume it is a cartoon.
+Do NOT assume it is about children.
+Do NOT force anthropomorphism.
+Do NOT invent arms, legs, faces or human behavior
+unless the story requires them.
+
+3. Respect every important visual attribute supplied by the user:
+- age
+- gender presentation
+- hairstyle
+- hair color
+- skin appearance
+- clothing
+- accessories
+- object type
+- vehicle make/model/color
+- architecture
+- environment
+- species
+- colors
+- materials
+- relevant physical characteristics.
+
+4. Keep recurring subjects visually consistent across scenes.
+
+5. Each scene must describe what ACTUALLY happens at that moment.
+Do not use vague placeholders such as:
+- "the character reacts"
+- "the protagonist acts"
+- "the conflict increases"
+when the concrete subjects/actions are known.
+
+6. script:
+Write the narration or scene description in the SAME LANGUAGE
+as the user's story.
+It must describe the actual event in that scene.
+
+7. image_prompt:
+Write a precise ENGLISH image-generation prompt for THAT scene.
+Explicitly name every important subject visible in the scene.
+Describe their concrete appearance, action, location and composition.
+Preserve continuity with previous scenes.
+
+Do not merely say:
+"same character",
+"main character",
+"the protagonist",
+"fruit character",
+"the person".
+
+State the actual identity and useful visual traits.
+
+8. video_prompt:
+Write a precise ENGLISH image-to-video motion prompt.
+Describe only the movement, expressions, camera behavior,
+environmental motion and action that should occur from the scene image.
+Do not redesign subjects.
+
+9. Follow the user's requested visual style if one is present.
+If no visual style is specified, use a coherent cinematic treatment
+appropriate to the actual story without changing subject identity.
+
+10. The scenes must form one continuous story:
+beginning -> development -> action/conflict -> resolution.
+
+Return exactly {scene_count} scenes.
+""".strip()
+
+    payload = {
+        "model": model,
+        "store": False,
+        "input": prompt,
+        "text": {
+            "format": {
+                "type": "json_schema",
+                "name": "gingao_story_scenes",
+                "strict": True,
+                "schema": STORY_SCENES_SCHEMA,
+            }
+        },
+    }
+
+    response = requests.post(
+        OPENAI_RESPONSES_URL,
+        headers={
+            "Authorization":
+                f"Bearer {api_key}",
+            "Content-Type":
+                "application/json",
+        },
+        json=payload,
+        timeout=timeout,
+    )
+
+    if response.status_code >= 400:
+        raise RuntimeError(
+            "Story scene AI request failed "
+            f"with HTTP {response.status_code}: "
+            f"{response.text[:500]}"
+        )
+
+    data = response.json()
+
+    output_text = _extract_output_text(
+        data
+    )
+
+    parsed = json.loads(
+        output_text
+    )
+
+    scenes = parsed.get(
+        "scenes"
+    )
+
+    if not isinstance(
+        scenes,
+        list,
+    ):
+        raise RuntimeError(
+            "Story scene AI returned invalid scenes."
+        )
+
+    if len(scenes) != scene_count:
+        raise RuntimeError(
+            "Story scene AI returned "
+            f"{len(scenes)} scenes; "
+            f"expected {scene_count}."
+        )
+
+    result = []
+
+    for index, scene in enumerate(
+        scenes,
+        start=1,
+    ):
+        if not isinstance(
+            scene,
+            dict,
+        ):
+            raise RuntimeError(
+                f"Scene {index} is invalid."
+            )
+
+        script = str(
+            scene.get(
+                "script",
+                "",
+            )
+        ).strip()
+
+        image_prompt = str(
+            scene.get(
+                "image_prompt",
+                "",
+            )
+        ).strip()
+
+        video_prompt = str(
+            scene.get(
+                "video_prompt",
+                "",
+            )
+        ).strip()
+
+        if (
+            not script
+            or not image_prompt
+            or not video_prompt
+        ):
+            raise RuntimeError(
+                f"Scene {index} contains empty fields."
+            )
+
+        result.append(
+            {
+                "script": script,
+                "image_prompt": image_prompt,
+                "video_prompt": video_prompt,
+            }
+        )
+
+    return result
+
+
+def generate_story_scenes(
+    idea,
+    *,
+    scene_count,
+    aspect_ratio="9:16",
+    template_code="custom",
+    provider=None,
+):
+    provider = (
+        provider
+        or os.environ.get(
+            "GINGAO_STORY_PROVIDER",
+            "openai",
+        )
+    ).strip().lower()
+
+    if provider == "openai":
+        return generate_story_scenes_openai(
+            idea,
+            scene_count=scene_count,
+            aspect_ratio=aspect_ratio,
+            template_code=template_code,
+        )
+
+    raise RuntimeError(
+        f"Unsupported story provider: {provider}"
+    )
