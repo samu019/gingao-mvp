@@ -1064,6 +1064,12 @@ def generate_scene_video_view(
 
     from django.db import transaction
 
+    from credits.services import (
+        InsufficientCredits,
+        reserve_credits,
+        refund_credits,
+    )
+
     from generations.models import (
         GenerationJob,
     )
@@ -1083,6 +1089,10 @@ def generate_scene_video_view(
         generate_scene_video,
     )
 
+    from generations.pricing import (
+        estimate_video_scene_cost,
+    )
+
     project = get_object_or_404(
         Project,
         id=project_id,
@@ -1092,14 +1102,20 @@ def generate_scene_video_view(
     provider_code = os.environ.get(
         "GINGAO_VIDEO_PROVIDER",
         "mock"
-    ).lower()
+    ).strip().lower()
+
+    reserved_credits = 0
+    job = None
 
     try:
 
-        # --------------------------------------------------------------
-        # Serialize requests for the SAME scene.
-        # Only one active video job may exist at a time.
-        # --------------------------------------------------------------
+        # ==============================================================
+        # GINGAO_VIDEO_CREDIT_GUARD_V50B
+        #
+        # Duplicate protection happens before any credit reservation.
+        # A second active request therefore cannot charge twice.
+        # ==============================================================
+
         with transaction.atomic():
 
             scene = (
@@ -1138,10 +1154,32 @@ def generate_scene_video_view(
                 project.id
             )
 
+        estimate = (
+            estimate_video_scene_cost(
+                scene.duration_seconds
+            )
+        )
+
+        reserved_credits = int(
+            estimate.internal_credits
+            or 0
+        )
+
+        if reserved_credits > 0:
+
+            reserve_credits(
+                request.user,
+                reserved_credits,
+                reference=(
+                    f"video-generation:{job.id}"
+                ),
+            )
+
         # --------------------------------------------------------------
         # Render Free currently has no Celery worker.
         # Execute synchronously while preserving GenerationJob state.
         # --------------------------------------------------------------
+
         mark_processing(
             job.id
         )
@@ -1161,8 +1199,10 @@ def generate_scene_video_view(
             )
 
             if not result_url:
+
                 raise RuntimeError(
-                    "El proveedor termino sin URL de video."
+                    "El proveedor termino sin "
+                    "URL de video."
                 )
 
             mark_completed(
@@ -1177,6 +1217,16 @@ def generate_scene_video_view(
                 error_message=str(exc),
             )
 
+            if reserved_credits > 0:
+
+                refund_credits(
+                    request.user,
+                    reserved_credits,
+                    reference=(
+                        f"refund:video-generation:{job.id}"
+                    ),
+                )
+
             raise
 
         messages.success(
@@ -1185,6 +1235,21 @@ def generate_scene_video_view(
                 f"Video de la escena "
                 f"{scene.position} generado."
             )
+        )
+
+    except InsufficientCredits as exc:
+
+        if job is not None:
+
+            mark_failed(
+                job_id=job.id,
+                error_message=str(exc),
+            )
+
+        messages.error(
+            request,
+            "No tienes creditos suficientes "
+            "para generar este video."
         )
 
     except Scene.DoesNotExist:
