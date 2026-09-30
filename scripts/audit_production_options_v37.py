@@ -50,8 +50,36 @@ for field in [
 assert "calculate_creation_cost" in pricing
 assert "normalize_creation_options" in pricing
 
-assert "reserve_credits(" in views
-assert "transaction.atomic()" in views
+create_start = views.index(
+    "def create_video("
+)
+
+create_end = views.index(
+    "\n@login_required\ndef generate_script_view",
+    create_start,
+)
+
+create_view = views[
+    create_start:
+    create_end
+]
+
+assert "transaction.atomic()" in create_view
+
+assert (
+    "reserve_credits("
+    not in create_view
+)
+
+assert (
+    "estimated_credit_cost"
+    in create_view
+)
+
+assert (
+    "GINGAO_CREATION_ESTIMATE_NO_CHARGE_V50A"
+    in create_view
+)
 
 assert 'name="aspect_ratio"' in template
 assert 'name="voice_enabled"' in template
@@ -68,6 +96,6 @@ print("DURATION: PRESERVED")
 print("QUALITY TIERS: OK")
 print("LIVE CREDIT ESTIMATE: OK")
 print("BACKEND PRICE VALIDATION: OK")
-print("CREDIT RESERVATION: OK")
+print("CREATION DOES NOT CHARGE WALLET: OK")
 print("PROJECT SETTINGS PERSISTENCE: OK")
 print("AUDIT_PRODUCTION_OPTIONS_V37: OK")

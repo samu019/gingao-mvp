@@ -252,11 +252,6 @@ def create_video(request):
 
         from django.db import transaction
 
-        from credits.services import (
-            reserve_credits,
-            InsufficientCredits,
-        )
-
         from .creation_pricing import (
             normalize_creation_options,
         )
@@ -323,94 +318,66 @@ def create_video(request):
             )
         )
 
-        try:
+        # GINGAO_CREATION_ESTIMATE_NO_CHARGE_V50A
+        #
+        # Project creation stores only an estimate.
+        # Credits are charged when real generation happens.
+        with transaction.atomic():
 
-            with transaction.atomic():
-
-                reserve_credits(
-                    request.user,
-                    options["cost"],
-                    reference=(
-                        "create-project:"
-                        + title[:80]
-                    ),
-                )
-
-                project = (
-                    Project.objects.create(
-                        owner=request.user,
-                        title=title,
-                        template_code=template_code,
-                        status="draft",
-                        target_duration_seconds=(
-                            options[
-                                "duration"
-                            ]
-                        ),
-                        aspect_ratio=(
-                            options[
-                                "aspect_ratio"
-                            ]
-                        ),
-                        voice_enabled=(
-                            options[
-                                "voice_enabled"
-                            ]
-                        ),
-                          voice_preset=voice_preset,
-                        quality_tier=(
-                            options[
-                                "quality"
-                            ]
-                        ),
-                        estimated_credit_cost=(
-                            options[
-                                "cost"
-                            ]
-                        ),
-                    )
-                )
-
-                project.scenes.create(
-                    position=1,
-                    script=idea,
-                    duration_seconds=(
+            project = (
+                Project.objects.create(
+                    owner=request.user,
+                    title=title,
+                    template_code=template_code,
+                    status="draft",
+                    target_duration_seconds=(
                         options[
                             "duration"
                         ]
                     ),
+                    aspect_ratio=(
+                        options[
+                            "aspect_ratio"
+                        ]
+                    ),
+                    voice_enabled=(
+                        options[
+                            "voice_enabled"
+                        ]
+                    ),
+                    voice_preset=voice_preset,
+                    quality_tier=(
+                        options[
+                            "quality"
+                        ]
+                    ),
+                    estimated_credit_cost=(
+                        options[
+                            "cost"
+                        ]
+                    ),
                 )
-
-        except InsufficientCredits:
-
-            messages.error(
-                request,
-                "No tienes creditos "
-                "suficientes para esta "
-                "configuracion."
             )
 
-            return render(
-                request,
-                "dashboard/create_video.html",
-                {
-                    "wallet":
-                        _wallet_for(
-                            request.user
-                        ),
-                    "template_code":
-                        template_code,
-                }
+            project.scenes.create(
+                position=1,
+                script=idea,
+                duration_seconds=(
+                    options[
+                        "duration"
+                    ]
+                ),
             )
 
         messages.success(
             request,
             (
                 "Proyecto creado. "
-                f"Se han usado "
+                f"Coste estimado: "
                 f"{options['cost']} "
                 "creditos. "
-                "Ahora genera el guion."
+                "Los creditos se descontaran "
+                "al generar contenido."
             )
         )
 

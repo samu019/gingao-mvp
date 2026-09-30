@@ -241,8 +241,13 @@ with transaction.atomic():
     )
 
     print(
-        "Expected:",
+        "Stored estimate expected:",
         expected_cost,
+    )
+
+    print(
+        "Expected creation charge:",
+        0,
     )
 
 
@@ -284,10 +289,19 @@ with transaction.atomic():
 
     assert (
         charged
-        == expected_cost
+        == 0
     ), (
-        f"Wallet charged {charged}, "
-        f"expected {expected_cost}."
+        f"Wallet changed during project "
+        f"creation: charged={charged}. "
+        "Expected 0."
+    )
+
+    assert (
+        current_balance
+        == initial_balance
+    ), (
+        "Project creation must not "
+        "change wallet balance."
     )
 
 
@@ -316,7 +330,7 @@ with transaction.atomic():
     print("VOICE PERSISTENCE: OK")
     print("QUALITY PERSISTENCE: OK")
     print("BACKEND COST CALCULATION: OK")
-    print("WALLET CHARGE: OK")
+    print("WALLET UNCHANGED AT CREATION: OK")
     print("INITIAL SCENE: OK")
 
 
