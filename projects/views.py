@@ -618,6 +618,10 @@ def prepare_images_view(request, project_id):
 
 
 
+# =============================================================================
+# GINGAO_IMAGE_GENERATION_GUARD_V48A
+# =============================================================================
+
 @login_required
 def generate_scene_image_view(
     request,
@@ -630,9 +634,36 @@ def generate_scene_image_view(
             project_id
         )
 
-    from .models import StoryboardImage
+    from django.db import transaction
+
+    from projects.models import (
+        Scene,
+        StoryboardImage,
+    )
+
+    from generations.models import (
+        GenerationJob,
+    )
+
     from generations.image_services import (
         generate_storyboard_image,
+    )
+
+    from generations.job_services import (
+        create_job,
+        mark_processing,
+        mark_completed,
+        mark_failed,
+    )
+
+    from generations.pricing import (
+        estimate_image_cost,
+    )
+
+    from credits.services import (
+        reserve_credits,
+        refund_credits,
+        InsufficientCredits,
     )
 
     project = get_object_or_404(
@@ -641,40 +672,198 @@ def generate_scene_image_view(
         owner=request.user,
     )
 
-    storyboard = get_object_or_404(
-        StoryboardImage.objects.select_related(
-            "scene",
-            "scene__project",
-        ),
-        scene_id=scene_id,
-        scene__project=project,
-    )
+    provider_code = os.environ.get(
+        "GINGAO_IMAGE_PROVIDER",
+        "mock",
+    ).strip().lower()
+
+    reserved_credits = 0
+    job = None
 
     try:
-        result = generate_storyboard_image(
-            storyboard=storyboard,
-            user=request.user,
-            provider_code=os.environ.get(
-                "GINGAO_IMAGE_PROVIDER",
-                "mock",
-            ),
-        )
 
-        if result["asset"] is None:
+        # --------------------------------------------------------------
+        # Serialize requests for the SAME scene.
+        # Prevents duplicate paid image generation.
+        # --------------------------------------------------------------
+        with transaction.atomic():
+
+            scene = (
+                Scene.objects
+                .select_for_update()
+                .get(
+                    id=scene_id,
+                    project=project,
+                )
+            )
+
+            storyboard = (
+                StoryboardImage.objects
+                .select_related(
+                    "scene",
+                    "scene__project",
+                )
+                .get(
+                    scene=scene,
+                )
+            )
+
+            job, created = create_job(
+                user=request.user,
+                project=project,
+                scene=scene,
+                job_type=GenerationJob.TYPE_IMAGE,
+                provider=provider_code,
+                payload={
+                    "scene_id": scene.id,
+                    "storyboard_id": storyboard.id,
+                },
+            )
+
+        if not created:
+
             messages.warning(
                 request,
-                "Imagen generada correctamente. "
-                "El modelo Asset actual no permite "
-                "registrarla automaticamente."
-            )
-        else:
-            messages.success(
-                request,
-                "Imagen Mock generada y guardada "
-                "en Mis activos."
+                (
+                    f"La imagen de la escena "
+                    f"{scene.position} ya se esta generando. "
+                    "No se envio una segunda solicitud."
+                )
             )
 
+            return redirect(
+                "images_workspace",
+                project.id
+            )
+
+        estimate = estimate_image_cost()
+
+        reserved_credits = int(
+            estimate.internal_credits or 0
+        )
+
+        if reserved_credits > 0:
+
+            reserve_credits(
+                request.user,
+                reserved_credits,
+                reference=(
+                    f"image-generation:{job.id}"
+                ),
+            )
+
+        mark_processing(
+            job.id
+        )
+
+        try:
+
+            result = generate_storyboard_image(
+                storyboard=storyboard,
+                user=request.user,
+                provider_code=provider_code,
+            )
+
+            storyboard.refresh_from_db()
+
+            result_url = (
+                storyboard.image_url or ""
+            )
+
+            if not result_url:
+                raise RuntimeError(
+                    "El proveedor termino sin URL de imagen."
+                )
+
+            mark_completed(
+                job_id=job.id,
+                result_url=result_url,
+            )
+
+        except Exception as exc:
+
+            mark_failed(
+                job_id=job.id,
+                error_message=str(exc),
+            )
+
+            if reserved_credits > 0:
+
+                refund_credits(
+                    request.user,
+                    reserved_credits,
+                    reference=(
+                        f"refund:image-generation:{job.id}"
+                    ),
+                )
+
+            raise
+
+        if result["asset"] is None:
+
+            messages.warning(
+                request,
+                (
+                    "Imagen generada correctamente, "
+                    "pero no pudo registrarse "
+                    "automaticamente en Mis activos."
+                )
+            )
+
+        else:
+
+            if provider_code == "fal":
+
+                messages.success(
+                    request,
+                    (
+                        f"Imagen IA de la escena "
+                        f"{scene.position} generada "
+                        "y guardada correctamente."
+                    )
+                )
+
+            else:
+
+                messages.success(
+                    request,
+                    (
+                        f"Imagen Mock de la escena "
+                        f"{scene.position} generada "
+                        "y guardada correctamente."
+                    )
+                )
+
+    except InsufficientCredits as exc:
+
+        if job is not None:
+
+            mark_failed(
+                job_id=job.id,
+                error_message=str(exc),
+            )
+
+        messages.error(
+            request,
+            str(exc),
+        )
+
+    except Scene.DoesNotExist:
+
+        messages.error(
+            request,
+            "La escena solicitada no existe."
+        )
+
+    except StoryboardImage.DoesNotExist:
+
+        messages.error(
+            request,
+            "La escena no tiene storyboard preparado."
+        )
+
     except Exception as exc:
+
         messages.error(
             request,
             f"Error generando imagen: {exc}"
