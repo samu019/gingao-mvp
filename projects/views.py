@@ -1874,6 +1874,8 @@ def generate_project_audio_view(
     request,
     project_id,
 ):
+    # GINGAO_AUDIO_GENERATION_GUARD_V49C
+
     if request.method != "POST":
 
         return redirect(
@@ -1881,31 +1883,203 @@ def generate_project_audio_view(
             project_id
         )
 
+    from django.db import transaction
+
+    from credits.services import (
+        InsufficientCredits,
+        reserve_credits,
+        refund_credits,
+    )
+
+    from generations.audio_services import (
+        generate_project_audio,
+        project_duration,
+    )
+
+    from generations.job_services import (
+        create_job,
+        mark_processing,
+        mark_completed,
+        mark_failed,
+    )
+
+    from generations.models import (
+        GenerationJob,
+    )
+
+    from generations.pricing import (
+        estimate_audio_cost,
+    )
+
     project = get_object_or_404(
         Project,
         id=project_id,
         owner=request.user,
     )
 
-    from generations.audio_services import (
-        generate_project_audio,
+    if not bool(
+        getattr(
+            project,
+            "voice_enabled",
+            True,
+        )
+    ):
+
+        messages.warning(
+            request,
+            "Este proyecto tiene la narracion "
+            "desactivada."
+        )
+
+        return redirect(
+            "final_cut",
+            project.id
+        )
+
+    provider_code = (
+        os.environ.get(
+            "GINGAO_AUDIO_PROVIDER",
+            "mock"
+        )
+        .strip()
+        .lower()
     )
+
+    job = None
+    reserved_credits = 0
 
     try:
 
-        result = generate_project_audio(
-            project=project,
-            user=request.user,
-            provider_code=os.environ.get(
-                "GINGAO_AUDIO_PROVIDER",
-                "mock"
-            ),
-        )
+        with transaction.atomic():
 
-        message = (
-            "Narracion Mock preparada "
-            f"({result['duration']} s)."
-        )
+            project = (
+                Project.objects
+                .select_for_update()
+                .get(
+                    id=project.id,
+                    owner=request.user,
+                )
+            )
+
+            job, created = create_job(
+                user=request.user,
+                project=project,
+                job_type=(
+                    GenerationJob.TYPE_AUDIO
+                ),
+                scene=None,
+                provider=provider_code,
+                payload={
+                    "project_id":
+                        project.id,
+
+                    "voice_preset":
+                        getattr(
+                            project,
+                            "voice_preset",
+                            "",
+                        ),
+                },
+            )
+
+            if not created:
+
+                messages.warning(
+                    request,
+                    "La narracion ya se esta "
+                    "generando. No se ha iniciado "
+                    "una segunda solicitud."
+                )
+
+                return redirect(
+                    "final_cut",
+                    project.id
+                )
+
+            duration = project_duration(
+                project
+            )
+
+            estimate = estimate_audio_cost(
+                duration
+            )
+
+            reserved_credits = int(
+                estimate.internal_credits
+                or 0
+            )
+
+            if reserved_credits > 0:
+
+                reserve_credits(
+                    request.user,
+                    reserved_credits,
+                    reference=(
+                        f"audio-generation:{job.id}"
+                    ),
+                )
+
+            mark_processing(
+                job.id
+            )
+
+        try:
+
+            result = generate_project_audio(
+                project=project,
+                user=request.user,
+                provider_code=provider_code,
+            )
+
+            result_url = (
+                result.get("url")
+                or ""
+            )
+
+            if not result_url:
+
+                raise RuntimeError(
+                    "El proveedor no devolvio "
+                    "una URL de audio."
+                )
+
+            mark_completed(
+                job_id=job.id,
+                result_url=result_url,
+            )
+
+        except Exception as exc:
+
+            mark_failed(
+                job_id=job.id,
+                error_message=str(exc),
+            )
+
+            if reserved_credits > 0:
+
+                refund_credits(
+                    request.user,
+                    reserved_credits,
+                    reference=(
+                        f"audio-refund:{job.id}"
+                    ),
+                )
+
+            raise
+
+        if provider_code == "elevenlabs":
+
+            message = (
+                "Narracion IA preparada "
+                f"({result['duration']} s)."
+            )
+
+        else:
+
+            message = (
+                "Narracion Mock preparada "
+                f"({result['duration']} s)."
+            )
 
         if result["asset"] is None:
 
@@ -1919,6 +2093,23 @@ def generate_project_audio_view(
         messages.success(
             request,
             message
+        )
+
+    except InsufficientCredits:
+
+        if job is not None:
+
+            mark_failed(
+                job_id=job.id,
+                error_message=(
+                    "Creditos insuficientes."
+                ),
+            )
+
+        messages.error(
+            request,
+            "No tienes creditos suficientes "
+            "para generar esta narracion."
         )
 
     except Exception as exc:
