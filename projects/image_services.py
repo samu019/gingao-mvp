@@ -218,10 +218,47 @@ def prepare_storyboard(project):
 
     for scene in project.scenes.all():
 
+        # GINGAO_SINGLE_PERSON_INTERIOR_GUARD_V56A
+        scene_text = (
+            f"{scene.script} "
+            f"{scene.image_prompt}"
+        ).lower()
+
+        interior_vehicle_markers = (
+            "driver",
+            "driver's seat",
+            "inside the car",
+            "car interior",
+            "vehicle interior",
+            "steering wheel",
+            "at the wheel",
+            "al volante",
+            "interior del coche",
+            "dentro del coche",
+        )
+
+        single_person_guard = ""
+
+        if any(
+            marker in scene_text
+            for marker in interior_vehicle_markers
+        ):
+            single_person_guard = (
+                "\n\nSINGLE PERSON INTERIOR RULE:\n"
+                "Show exactly one visible human inside the vehicle. "
+                "Only the intended driver may be visible. "
+                "No passenger. No second person. No duplicate face. "
+                "No duplicated head or body. "
+                "No mirror or window reflection that looks like "
+                "another human face. "
+                "Do not create extra people in the cabin."
+            )
+
         prompt = (
             f"{scene.image_prompt}\n\n"
             f"CHARACTER CONSISTENCY:\n"
-            f"{character_context}\n\n"
+            f"{character_context}"
+            f"{single_person_guard}\n\n"
             "Keep every recurring character exactly consistent "
             "across all scenes. Vertical 9:16 composition."
         )
