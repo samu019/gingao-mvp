@@ -4,6 +4,12 @@ class Project(models.Model):
     STATUS=[('draft','Draft'),('script','Script'),('images','Images'),('rendering','Rendering'),('complete','Complete'),('failed','Failed')]
     owner=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='projects')
     title=models.CharField(max_length=160)
+
+    # GINGAO_STORY_IDEA_PERSISTENCE_V52A
+    story_idea = models.TextField(
+        blank=True,
+    )
+
     template_code=models.CharField(max_length=64,default='fruit_story')
     status=models.CharField(max_length=16,choices=STATUS,default='draft')
     target_duration_seconds=models.PositiveIntegerField(default=15)

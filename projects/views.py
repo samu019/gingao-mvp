@@ -331,6 +331,7 @@ def create_video(request):
                 Project.objects.create(
                     owner=request.user,
                     title=title,
+                    story_idea=idea,
                     template_code=template_code,
                     status="draft",
                     target_duration_seconds=(
@@ -414,12 +415,10 @@ def generate_script_view(request, project_id):
         owner=request.user,
     )
 
-    first_scene = project.scenes.first()
-
+    # GINGAO_STORY_IDEA_PERSISTENCE_V52A
     idea = (
-        first_scene.script
-        if first_scene
-        else project.title
+        project.story_idea
+        or project.title
     )
 
     scenes = generate_project_script(
