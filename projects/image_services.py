@@ -226,10 +226,14 @@ def prepare_storyboard(project):
             "across all scenes. Vertical 9:16 composition."
         )
 
+        # GINGAO_STORYBOARD_INVALIDATION_V52D
+        # A rebuilt visual structure invalidates the previous
+        # scene image logically. The physical file is preserved.
         item, _ = StoryboardImage.objects.update_or_create(
             scene=scene,
             defaults={
                 "prompt": prompt,
+                "image_url": "",
                 "status": "pending",
             }
         )

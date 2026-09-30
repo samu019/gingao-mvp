@@ -590,7 +590,7 @@ document.addEventListener(
 
             <div class="storyboard-preview images-scene-preview">
 
-                {% if scene.storyboard_image.image_url %}
+                {% if scene.storyboard_image.status == "ready" and scene.storyboard_image.image_url %}
 
                     <img
                         src="{{ scene.storyboard_image.image_url }}"

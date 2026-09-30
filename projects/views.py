@@ -515,22 +515,38 @@ def images_workspace(request, project_id):
     for scene in scenes:
 
         try:
+            storyboard_image = (
+                scene.storyboard_image
+            )
+
             image_url = (
-                scene.storyboard_image.image_url
+                storyboard_image.image_url
                 or ""
             )
+
+            image_status = (
+                storyboard_image.status
+                or ""
+            )
+
         except Exception:
             image_url = ""
+            image_status = ""
 
         suffix = Path(
             str(image_url).split("?")[0]
         ).suffix.lower()
 
-        if (
-            image_url
+        # GINGAO_REAL_IMAGE_STATE_V52D
+        # A stale URL must never count as current coverage.
+        is_real_scene_image = (
+            image_status == "ready"
+            and bool(image_url)
             and suffix
             in real_image_extensions
-        ):
+        )
+
+        if is_real_scene_image:
             real_scene_count += 1
 
         else:
