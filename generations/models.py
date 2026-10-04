@@ -102,6 +102,10 @@ class GenerationJob(models.Model):
         default=0
     )
 
+    estimated_credits = models.PositiveIntegerField(
+        default=0
+    )
+
     max_attempts = models.PositiveIntegerField(
         default=3
     )
