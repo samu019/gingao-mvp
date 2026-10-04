@@ -1083,7 +1083,7 @@ def videos_workspace(
 
 
 # =============================================================================
-# GINGAO_VIDEO_SYNC_FALLBACK_V47B
+# GINGAO_VIDEO_ASYNC_CELERY_V58W
 # =============================================================================
 
 @login_required
@@ -1101,6 +1101,10 @@ def generate_scene_video_view(
 
     from django.db import transaction
 
+    from credits.models import (
+        CreditTransaction,
+    )
+
     from credits.services import (
         InsufficientCredits,
         reserve_credits,
@@ -1117,17 +1121,15 @@ def generate_scene_video_view(
 
     from generations.job_services import (
         create_job,
-        mark_processing,
-        mark_completed,
         mark_failed,
-    )
-
-    from generations.video_services import (
-        generate_scene_video,
     )
 
     from generations.pricing import (
         estimate_video_scene_cost,
+    )
+
+    from generations.tasks import (
+        execute_generation_job_task,
     )
 
     project = get_object_or_404(
@@ -1143,14 +1145,19 @@ def generate_scene_video_view(
 
     reserved_credits = 0
     job = None
+    scene = None
 
     try:
 
         # ==============================================================
-        # GINGAO_VIDEO_CREDIT_GUARD_V50B
+        # GINGAO_VIDEO_ASYNC_CREDIT_GUARD_V58W
         #
-        # Duplicate protection happens before any credit reservation.
-        # A second active request therefore cannot charge twice.
+        # The Scene row is locked so simultaneous requests for the same
+        # scene cannot both create an active video job.
+        #
+        # Job creation + credit reservation live inside the SAME
+        # transaction. If credit reservation fails, the GenerationJob
+        # creation is rolled back instead of leaving a queued orphan.
         # ==============================================================
 
         with transaction.atomic():
@@ -1175,6 +1182,48 @@ def generate_scene_video_view(
                 },
             )
 
+            if created:
+
+                estimate = (
+                    estimate_video_scene_cost(
+                        scene.duration_seconds
+                    )
+                )
+
+                reserved_credits = int(
+                    estimate.internal_credits
+                    or 0
+                )
+
+                if reserved_credits > 0:
+
+                    reserve_credits(
+                        request.user,
+                        reserved_credits,
+                        reference=(
+                            f"video-generation:{job.id}"
+                        ),
+                    )
+
+                # Persist the exact amount reserved so the Celery
+                # worker can refund the correct amount if generation
+                # fails after the HTTP request has already finished.
+
+                job.estimated_credits = (
+                    reserved_credits
+                )
+
+                job.save(
+                    update_fields=[
+                        "estimated_credits",
+                        "updated_at",
+                    ]
+                )
+
+        # ==============================================================
+        # DUPLICATE ACTIVE JOB
+        # ==============================================================
+
         if not created:
 
             messages.warning(
@@ -1191,86 +1240,75 @@ def generate_scene_video_view(
                 project.id
             )
 
-        estimate = (
-            estimate_video_scene_cost(
-                scene.duration_seconds
-            )
-        )
-
-        reserved_credits = int(
-            estimate.internal_credits
-            or 0
-        )
-
-        if reserved_credits > 0:
-
-            reserve_credits(
-                request.user,
-                reserved_credits,
-                reference=(
-                    f"video-generation:{job.id}"
-                ),
-            )
-
-        # --------------------------------------------------------------
-        # Render Free currently has no Celery worker.
-        # Execute synchronously while preserving GenerationJob state.
-        # --------------------------------------------------------------
-
-        mark_processing(
-            job.id
-        )
+        # ==============================================================
+        # CELERY DISPATCH
+        #
+        # The database transaction above has already committed before
+        # this point. Therefore the worker cannot race against an
+        # uncommitted GenerationJob.
+        # ==============================================================
 
         try:
 
-            result = generate_scene_video(
-                scene=scene,
-                user=request.user,
-                provider_code=provider_code,
-            )
-
-            result_url = (
-                result.get("url", "")
-                if isinstance(result, dict)
-                else ""
-            )
-
-            if not result_url:
-
-                raise RuntimeError(
-                    "El proveedor termino sin "
-                    "URL de video."
-                )
-
-            mark_completed(
-                job_id=job.id,
-                result_url=result_url,
+            execute_generation_job_task.delay(
+                job.id
             )
 
         except Exception as exc:
 
+            # Celery dispatch itself failed. The job cannot be processed,
+            # therefore mark it failed and return the reserved credits.
+
             mark_failed(
                 job_id=job.id,
-                error_message=str(exc),
+                error_message=(
+                    "Celery dispatch failed: "
+                    f"{exc}"
+                ),
             )
 
             if reserved_credits > 0:
 
-                refund_credits(
-                    request.user,
-                    reserved_credits,
-                    reference=(
-                        f"refund:video-generation:{job.id}"
-                    ),
+                refund_reference = (
+                    f"refund:video-generation:{job.id}"
                 )
 
-            raise
+                already_refunded = (
+                    CreditTransaction.objects
+                    .filter(
+                        reference=refund_reference,
+                        kind="refund",
+                    )
+                    .exists()
+                )
+
+                if not already_refunded:
+
+                    refund_credits(
+                        request.user,
+                        reserved_credits,
+                        reference=refund_reference,
+                    )
+
+            messages.error(
+                request,
+                (
+                    "No se pudo iniciar la generacion "
+                    "del video. Los creditos reservados "
+                    "han sido devueltos."
+                )
+            )
+
+            return redirect(
+                "videos_workspace",
+                project.id
+            )
 
         messages.success(
             request,
             (
-                f"Video de la escena "
-                f"{scene.position} generado."
+                f"Generacion del video de la escena "
+                f"{scene.position} iniciada."
             )
         )
 
@@ -1300,7 +1338,7 @@ def generate_scene_video_view(
 
         messages.error(
             request,
-            f"Error generando video: {exc}"
+            f"Error iniciando generacion de video: {exc}"
         )
 
     return redirect(

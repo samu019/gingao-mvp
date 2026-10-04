@@ -53,6 +53,58 @@ from generations.job_runner import (
     execute_job,
 )
 
+from credits.models import (
+    CreditTransaction,
+)
+
+from credits.services import (
+    refund_credits,
+)
+
+
+
+def _refund_failed_video_job(
+    job,
+):
+    if job.job_type != (
+        GenerationJob.TYPE_VIDEO
+    ):
+        return
+
+    amount = int(
+        getattr(
+            job,
+            "estimated_credits",
+            0,
+        )
+        or 0
+    )
+
+    if amount <= 0:
+        return
+
+    reference = (
+        f"refund:video-generation:{job.id}"
+    )
+
+    already_refunded = (
+        CreditTransaction.objects
+        .filter(
+            reference=reference,
+            kind="refund",
+        )
+        .exists()
+    )
+
+    if already_refunded:
+        return
+
+    refund_credits(
+        job.user,
+        amount,
+        reference=reference,
+    )
+
 
 @shared_task(
     bind=True,
@@ -130,6 +182,26 @@ def execute_generation_job_task(
 
         # execute_job already updates the
         # GenerationJob state to failed.
+        #
+        # Video jobs also refund their reserved internal credits.
+        # The refund is idempotent by reference so the same job cannot
+        # receive the same refund twice.
+
+        refund_error = ""
+
+        try:
+
+            _refund_failed_video_job(
+                job
+            )
+
+        except Exception as refund_exc:
+
+            refund_error = (
+                f" Credit refund failed: "
+                f"{refund_exc}"
+            )
+
         return {
             "ok": False,
             "job_id": job.id,
@@ -137,6 +209,9 @@ def execute_generation_job_task(
                 GenerationJob
                 .STATUS_FAILED
             ),
-            "error": str(exc)[:4000],
+            "error": (
+                str(exc)[:4000]
+                + refund_error
+            )[:4000],
         }
 
